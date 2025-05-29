@@ -66,7 +66,7 @@ MY_CFLAGS = -I include
 # The linker options.
 MY_LIBS   = -L lib -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
 
-# The pre-processor options used by the cpp (man cpp for more).
+# The pre-processor options used by the cpp (main cpp for more).
 CPPFLAGS  = -Wall
 
 # The options used in linking as well as in any direct use of ld.
