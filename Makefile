@@ -11,7 +11,7 @@ GLAD_SRC = $(GLAD_DIR)/src/glad.c
 
 # Compiler
 CC = g++
-CFLAGS = -std=c++17 -m64 -Iengine/include -I$(SDL2_INCLUDE) -I$(GLAD_INCLUDE)
+CFLAGS = -std=c++17 -m64 $(addprefix -I, $(shell find engine -type d)) -I$(SDL2_INCLUDE) -I$(GLAD_INCLUDE)
 LDFLAGS = -mconsole -L$(SDL2_LIB) -lSDL2main -lSDL2 -lopengl32
 
 # Sources

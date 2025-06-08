@@ -4,8 +4,8 @@
 #include <iostream>
 #include <chrono>
 
-#include "TestLevel.h"
-#include "Camera.h"
+#include "Levels/TestLevel.h"
+#include "Camera/Camera.h"
 #include "Math.h"   // Your own math header replacing glm
 
 int main(int argc, char* argv[]) {
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     glEnable(GL_DEPTH_TEST);
 
     // Use your own Vector3 class here
-    Camera camera(Vector3(0.0f, 2.0f, 5.0f), Vector3(0.0f, 1.0f, 0.0f));
+    Camera camera(Vec3(0.0f, 2.0f, 5.0f), Vec3(0.0f, 1.0f, 0.0f));
     LoadTestLevel();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -60,20 +60,37 @@ int main(int argc, char* argv[]) {
                 (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
                 running = false;
             } else if (event.type == SDL_MOUSEMOTION) {
-                camera.ProcessMouseMotion(event.motion.xrel, event.motion.yrel);
+                camera.ProcessMouseMovement(event.motion.xrel, event.motion.yrel);
             }
         }
 
         const Uint8* keystate = SDL_GetKeyboardState(nullptr);
-        camera.ProcessKeyboard(keystate, deltaTime);
+			if (keystate[SDL_SCANCODE_W])
+				camera.ProcessKeyboard(FORWARD, deltaTime);
+			if (keystate[SDL_SCANCODE_S])
+				camera.ProcessKeyboard(BACKWARD, deltaTime);
+			if (keystate[SDL_SCANCODE_A])
+				camera.ProcessKeyboard(LEFT, deltaTime);
+			if (keystate[SDL_SCANCODE_D])
+				camera.ProcessKeyboard(RIGHT, deltaTime);
+
+		enum Camera_Movement {
+			FORWARD,
+			BACKWARD,
+			LEFT,
+			RIGHT
+		};
+
 
         glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		RenderTestLevel();
+		SDL_GL_SwapWindow(window); // platform-specific
 
-        // Use your own Matrix4 class and math functions instead of glm
-        Matrix4 view = camera.GetViewMatrix();
-        Matrix4 projection = Matrix4::Perspective(ToRadians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-        RenderTestLevel(view, projection);
+        // Use your own Mat4 class and math functions instead of glm
+        Mat4 view = camera.GetViewMatrix();
+        Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+        RenderTestLevel();
 
         SDL_GL_SwapWindow(window);
     }
