@@ -8,26 +8,9 @@ void LoadTestLevel()
 {
     rotationAngle = 0.0f;
 
-    glEnable(GL_DEPTH_TEST); // ✅ enable depth testing
-	glDepthFunc(GL_LEQUAL);  // ✅ standard depth test function
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // bright red
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-	
-	float fovY = 60.0f;
-	float aspect = 1280.0f / 720.0f;
-	float nearZ = 0.1f;
-	float farZ = 100.0f;
-	
-	float top = tanf((fovY * 0.5f) * (3.14159f / 180.0f)) * nearZ;
-	float bottom = -top;
-	float right = top * aspect;
-	float left = -right;
-	
-	glFrustum(left, right, bottom, top, nearZ, farZ);
-
-    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);        // Enable depth testing
+    glDepthFunc(GL_LEQUAL);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Bright red background
 }
 
 void DrawCube(float x, float y, float z, float size)
@@ -61,17 +44,21 @@ void DrawCube(float x, float y, float z, float size)
     glPopMatrix();
 }
 
-void RenderTestLevel()
+void RenderTestLevel(const Mat4& view, const Mat4& projection)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // ✅ clear both
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glLoadIdentity();
-    glTranslatef(0.0f, -1.5f, -10.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(projection.toGLMatrix()); // ✅ Use your math library's matrix
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(view.toGLMatrix());
+
+    glPushMatrix();
     glRotatef(rotationAngle, 0.0f, 1.0f, 0.0f);
-
     rotationAngle += 0.3f;
 
-    // Draw floor (large green quad)
+    // Draw floor
     glColor3f(0.2f, 0.8f, 0.3f);
     glBegin(GL_QUADS);
     glVertex3f(-10.0f, 0.0f, -10.0f);
@@ -80,9 +67,11 @@ void RenderTestLevel()
     glVertex3f(-10.0f, 0.0f,  10.0f);
     glEnd();
 
-    // Draw some cubes
+    // Draw two cubes
     glColor3f(1.0f, 0.0f, 0.0f); DrawCube(-2.0f, 1.0f, 0.0f, 2.0f);
-    glColor3f(0.0f, 0.0f, 1.0f); DrawCube(2.0f, 1.0f, 0.0f, 2.0f);
+    glColor3f(0.0f, 0.0f, 1.0f); DrawCube( 2.0f, 1.0f, 0.0f, 2.0f);
+
+    glPopMatrix();
 }
 
 void CleanupTestLevel()

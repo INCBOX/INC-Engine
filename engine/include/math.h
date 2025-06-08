@@ -36,6 +36,10 @@ struct Vec3 {
 struct Mat4 {
     float m[16];
 
+    const float* toGLMatrix() const {
+        return &m[0];
+    }
+
     Mat4() {
         for (int i = 0; i < 16; ++i) m[i] = 0;
         m[0] = m[5] = m[10] = m[15] = 1.0f;
