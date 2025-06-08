@@ -75,12 +75,16 @@ $(OUT): $(SRC)
 # Post-Build: Copy DLLs and Run
 # -------------------------------
 postbuild:
-	@echo "Checking and copying DLLs if needed..."
+	@echo Checking and copying DLLs if needed...
 	@if [ ! -f bin/SDL2.dll ]; then cp $(SDL2_DLL) bin/SDL2.dll; fi
 	@if [ ! -f bin/libstdc++-6.dll ]; then cp W64lib/stb/bin/libstdc++-6.dll bin/; fi
 	@if [ ! -f bin/libgcc_s_seh-1.dll ]; then cp W64lib/stb/bin/libgcc_s_seh-1.dll bin/; fi
 	@if [ ! -f bin/libwinpthread-1.dll ]; then cp W64lib/stb/bin/libwinpthread-1.dll bin/; fi
-	@echo "Build complete. Launching..."
+	@echo Build complete.
+	@echo Copying shader files to runtime directory...
+	@mkdir -p bin/resources/shaders
+	@cp -r engine/Shaders/* bin/resources/shaders/
+	@echo Launching...
 	@./bin/INC-Engine.exe
 
 # -------------------------------

@@ -1,79 +1,118 @@
 #include "TestLevel_1.h"
 #include "../Math/Math.h"
-#include <GL/gl.h>
-#include <cmath>
+#include <glad/glad.h>
+#include <vector>
+#include <iostream>
 
-static float rotationAngle = 0.0f;
+// Hardcoded basic shaders
+const char* vertexShaderSrc = R"(
+#version 330 core
+layout(location = 0) in vec3 aPos;
+uniform mat4 view;
+uniform mat4 projection;
+void main() {
+    gl_Position = projection * view * vec4(aPos, 1.0);
+}
+)";
+
+const char* fragmentShaderSrc = R"(
+#version 330 core
+out vec4 FragColor;
+void main() {
+    FragColor = vec4(1.0, 0.5, 0.2, 1.0); // Orange
+}
+)";
+
+// Cube data
+static GLuint vao = 0, vbo = 0;
+static GLuint shaderProgram = 0;
+
+static float cubeVertices[] = {
+    -1, -1, -1,   1, -1, -1,   1,  1, -1,  -1,  1, -1, // back
+    -1, -1,  1,   1, -1,  1,   1,  1,  1,  -1,  1,  1  // front
+};
+
+static unsigned int cubeIndices[] = {
+    0, 1, 2, 2, 3, 0,       // back face
+    4, 5, 6, 6, 7, 4,       // front face
+    0, 4, 7, 7, 3, 0,       // left face
+    1, 5, 6, 6, 2, 1,       // right face
+    3, 2, 6, 6, 7, 3,       // top face
+    0, 1, 5, 5, 4, 0        // bottom face
+};
+
+static GLuint ebo = 0;
+
+static GLuint CompileShader(GLenum type, const char* src) {
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &src, nullptr);
+    glCompileShader(shader);
+
+    GLint success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetShaderInfoLog(shader, 512, nullptr, log);
+        std::cerr << "[Shader Error] " << log << std::endl;
+    }
+
+    return shader;
+}
 
 void LoadTestLevel_1()
 {
-    rotationAngle = 0.0f;
+    // Compile and link shaders
+    GLuint vs = CompileShader(GL_VERTEX_SHADER, vertexShaderSrc);
+    GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
 
-    glEnable(GL_DEPTH_TEST);        // Enable depth testing
-    glDepthFunc(GL_LEQUAL);
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Bright red background
-}
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vs);
+    glAttachShader(shaderProgram, fs);
+    glLinkProgram(shaderProgram);
 
-void DrawCube(float x, float y, float z, float size)
-{
-    float hs = size / 2.0f;
+    // Clean up shaders (linked already)
+    glDeleteShader(vs);
+    glDeleteShader(fs);
 
-    glPushMatrix();
-    glTranslatef(x, y, z);
+    // Create VAO, VBO, EBO
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
 
-    glBegin(GL_QUADS);
-    // Front
-    glVertex3f(-hs, -hs,  hs); glVertex3f(hs, -hs,  hs);
-    glVertex3f(hs,  hs,  hs); glVertex3f(-hs,  hs,  hs);
-    // Back
-    glVertex3f(-hs, -hs, -hs); glVertex3f(-hs,  hs, -hs);
-    glVertex3f(hs,  hs, -hs); glVertex3f(hs, -hs, -hs);
-    // Top
-    glVertex3f(-hs,  hs, -hs); glVertex3f(-hs,  hs,  hs);
-    glVertex3f(hs,  hs,  hs); glVertex3f(hs,  hs, -hs);
-    // Bottom
-    glVertex3f(-hs, -hs, -hs); glVertex3f(hs, -hs, -hs);
-    glVertex3f(hs, -hs,  hs); glVertex3f(-hs, -hs,  hs);
-    // Right
-    glVertex3f(hs, -hs, -hs); glVertex3f(hs,  hs, -hs);
-    glVertex3f(hs,  hs,  hs); glVertex3f(hs, -hs,  hs);
-    // Left
-    glVertex3f(-hs, -hs, -hs); glVertex3f(-hs, -hs,  hs);
-    glVertex3f(-hs,  hs,  hs); glVertex3f(-hs,  hs, -hs);
-    glEnd();
+    glBindVertexArray(vao);
 
-    glPopMatrix();
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 void RenderTestLevel_1(const Mat4& view, const Mat4& projection)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(shaderProgram);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(projection.toGLMatrix()); // ✅ Use your math library's matrix
+    // Upload matrices
+    GLint viewLoc = glGetUniformLocation(shaderProgram, "view");
+    GLint projLoc = glGetUniformLocation(shaderProgram, "projection");
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(view.toGLMatrix());
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.toGLMatrix());
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection.toGLMatrix());
 
-    glPushMatrix();
-
-    // Draw floor
-    glColor3f(0.2f, 0.8f, 0.3f);
-    glBegin(GL_QUADS);
-    glVertex3f(-10.0f, 0.0f, -10.0f);
-    glVertex3f( 10.0f, 0.0f, -10.0f);
-    glVertex3f( 10.0f, 0.0f,  10.0f);
-    glVertex3f(-10.0f, 0.0f,  10.0f);
-    glEnd();
-
-    // Draw two cubes
-    glColor3f(1.0f, 0.0f, 0.0f); DrawCube(-2.0f, 1.0f, 0.0f, 2.0f);
-    glColor3f(0.0f, 0.0f, 1.0f); DrawCube( 2.0f, 1.0f, 0.0f, 2.0f);
-
-    glPopMatrix();
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void UnloadTestLevel_1()
 {
-    // Nothing to clean yet
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteProgram(shaderProgram);
 }
