@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     SDL_Window* window = SDL_CreateWindow("INC-Engine Test Level",
@@ -84,15 +84,13 @@ int main(int argc, char* argv[]) {
 
         glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		RenderTestLevel();
 		SDL_GL_SwapWindow(window); // platform-specific
 
         // Use your own Mat4 class and math functions instead of glm
         Mat4 view = camera.GetViewMatrix();
         Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-        RenderTestLevel();
-
-        SDL_GL_SwapWindow(window);
     }
 
     CleanupTestLevel();
