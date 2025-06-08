@@ -169,11 +169,13 @@ void Console::Render(int width, int height) {
 
     GLint loc = glGetUniformLocation(consoleShader, "uProjection");
     glUniformMatrix4fv(loc, 1, GL_FALSE, ortho);
-
+	
+    glDisable(GL_DEPTH_TEST);
     glBindVertexArray(consoleVAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
-
+    glEnable(GL_DEPTH_TEST);
+	
     // Text overlay
     font.RenderText("> " + inputBuffer, 10, height * 0.22f, width, height);
 }

@@ -92,6 +92,18 @@ struct Mat4 {
         result.m[14] = f.dot(eye);
         return result;
     }
+
+    static Mat4 orthographic(float left, float right, float bottom, float top, float nearZ, float farZ) {
+        Mat4 result;
+        result.m[0] = 2.0f / (right - left);
+        result.m[5] = 2.0f / (top - bottom);
+        result.m[10] = -2.0f / (farZ - nearZ);
+        result.m[12] = -(right + left) / (right - left);
+        result.m[13] = -(top + bottom) / (top - bottom);
+        result.m[14] = -(farZ + nearZ) / (farZ - nearZ);
+        result.m[15] = 1.0f;
+        return result;
+    }
 };
 
 inline float radians(float degrees) {

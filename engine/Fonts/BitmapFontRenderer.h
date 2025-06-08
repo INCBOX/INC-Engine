@@ -21,4 +21,8 @@ private:
     int cellWidth = 0;
     int cellHeight = 0;
     GLuint textureID = 0;
+
+    // ✅ Modern OpenGL data
+    GLuint vao = 0;
+    GLuint vbo = 0;
 };
