@@ -1,13 +1,12 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <chrono>
 
 #include "TestLevel.h"
 #include "Camera.h"
+#include "Math.h"   // Your own math header replacing glm
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -43,7 +42,8 @@ int main(int argc, char* argv[]) {
     glViewport(0, 0, 1280, 720);
     glEnable(GL_DEPTH_TEST);
 
-    Camera camera(glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // Use your own Vector3 class here
+    Camera camera(Vector3(0.0f, 2.0f, 5.0f), Vector3(0.0f, 1.0f, 0.0f));
     LoadTestLevel();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -70,8 +70,9 @@ int main(int argc, char* argv[]) {
         glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+        // Use your own Matrix4 class and math functions instead of glm
+        Matrix4 view = camera.GetViewMatrix();
+        Matrix4 projection = Matrix4::Perspective(ToRadians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
         RenderTestLevel(view, projection);
 
         SDL_GL_SwapWindow(window);
