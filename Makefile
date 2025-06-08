@@ -12,10 +12,10 @@ GLAD_SRC = $(GLAD_DIR)/src/glad.c
 # Compiler
 CC = g++
 CFLAGS = -std=c++17 -m64 -Iengine/include -I$(SDL2_INCLUDE) -I$(GLAD_INCLUDE)
-LDFLAGS = -L$(SDL2_LIB) -lSDL2 -lSDL2main -lopengl32
+LDFLAGS = -mconsole -L$(SDL2_LIB) -lSDL2 -lSDL2main -lopengl32
 
 # Sources
-SRC = engine/src/main.cpp $(GLAD_SRC)
+SRC = $(wildcard engine/src/*.cpp) $(GLAD_SRC)
 OUT = bin/INC-Engine.exe
 
 all: $(OUT)
