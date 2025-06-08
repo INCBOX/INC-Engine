@@ -4,8 +4,9 @@
 #include "Math.h"
 #include "Camera/FPSCamera.h"
 #include "Levels/TestLevel_1.h"
-#include "Console/Console.h" // ✅ NEW
-#include "HUD/HUD.h" // ✅ NEW
+#include "Console/Console.h"
+#include "HUD/HUD.h"
+#include "Skybox/Skybox.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -61,6 +62,7 @@ int main(int argc, char* argv[]) {
 	hud.Init();
 	Console console(&hud);
     LoadTestLevel_1();
+    InitSkybox();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
     bool running = true;
@@ -107,7 +109,9 @@ int main(int argc, char* argv[]) {
         glEnable(GL_DEPTH_TEST);
         Mat4 view = camera.GetViewMatrix();
         Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-        RenderTestLevel_1(view, projection);
+		
+        RenderSkybox(view, projection);      // ✅ Skybox first (depth trick)
+        RenderTestLevel_1(view, projection); // ✅ Then scene
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);
@@ -116,7 +120,9 @@ int main(int argc, char* argv[]) {
         SDL_GL_SwapWindow(window);
     }
 
-    UnloadTestLevel_1();
+    CleanupSkybox();      // ✅ Cleanup
+    UnloadTestLevel_1();  // ✅ Cleanup
+
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();

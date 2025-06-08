@@ -73,16 +73,18 @@ GLuint loadCubemap(const std::vector<std::string>& faces) {
     glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
 
     for (GLuint i = 0; i < faces.size(); i++) {
+        std::cout << "[Skybox] Loading face: " << faces[i] << std::endl;
         int w, h, ch;
         unsigned char* data = stbi_load(faces[i].c_str(), &w, &h, &ch, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
         } else {
-            std::cerr << "Failed to load cubemap face: " << faces[i] << std::endl;
+            std::cerr << "[Skybox] Failed to load cubemap face: " << faces[i] << std::endl;
             stbi_image_free(data);
         }
     }
+
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -94,12 +96,12 @@ GLuint loadCubemap(const std::vector<std::string>& faces) {
 
 void InitSkybox() {
     std::vector<std::string> faces = {
-        "resources/textures/common/jettelly_space_common_black_RIGHT.png",
-        "resources/textures/common/jettelly_space_common_black_LEFT.png",
-        "resources/textures/common/jettelly_space_common_black_UP.png",
-        "resources/textures/common/jettelly_space_common_black_DOWN.png",
-        "resources/textures/common/jettelly_space_common_black_FRONT.png",
-        "resources/textures/common/jettelly_space_common_black_BACK.png"
+        "bin/resources/textures/skybox/jettelly_space_common_black_RIGHT.png",
+        "bin/resources/textures/skybox/jettelly_space_common_black_LEFT.png",
+        "bin/resources/textures/skybox/jettelly_space_common_black_UP.png",
+        "bin/resources/textures/skybox/jettelly_space_common_black_DOWN.png",
+        "bin/resources/textures/skybox/jettelly_space_common_black_FRONT.png",
+        "bin/resources/textures/skybox/jettelly_space_common_black_BACK.png"
     };
 
     cubemapTex = loadCubemap(faces);
@@ -112,6 +114,9 @@ void InitSkybox() {
     glLinkProgram(shader);
     glDeleteShader(vs);
     glDeleteShader(fs);
+
+    glUseProgram(shader);
+    glUniform1i(glGetUniformLocation(shader, "skybox"), 0); // 🧠 Link sampler
 
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -129,18 +134,25 @@ void SetSkyboxVisible(bool visible) {
 void RenderSkybox(const Mat4& view, const Mat4& projection) {
     if (!skyboxVisible) return;
 
+    // Zero out translation in view matrix
+    Mat4 viewNoTrans = view;
+    viewNoTrans.m[12] = 0.0f;
+    viewNoTrans.m[13] = 0.0f;
+    viewNoTrans.m[14] = 0.0f;
+
     glDepthFunc(GL_LEQUAL);
     glUseProgram(shader);
 
     GLint v = glGetUniformLocation(shader, "view");
     GLint p = glGetUniformLocation(shader, "projection");
-    glUniformMatrix4fv(v, 1, GL_FALSE, view.m);
+    glUniformMatrix4fv(v, 1, GL_FALSE, viewNoTrans.m);
     glUniformMatrix4fv(p, 1, GL_FALSE, projection.m);
 
     glBindVertexArray(skyboxVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTex);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
     glDepthFunc(GL_LESS);
 }
 

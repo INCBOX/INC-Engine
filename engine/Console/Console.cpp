@@ -15,6 +15,10 @@ static GLuint consoleShader = 0;
 // === Shader loading helpers ===
 static std::string LoadTextFile(const char* path) {
     std::ifstream f(path);
+    if (!f.is_open()) {
+        std::cerr << "[ShaderLoader] Failed to load: " << path << std::endl;
+        return "";
+    }
     std::stringstream s;
     s << f.rdbuf();
     return s.str();
@@ -36,8 +40,8 @@ static GLuint CompileShader(GLenum type, const std::string& src) {
 }
 
 static GLuint LoadConsoleShader() {
-    std::string vs = LoadTextFile("resources/shaders/console.vert");
-    std::string fs = LoadTextFile("resources/shaders/console.frag");
+	std::string vs = LoadTextFile("bin/resources/shaders/console.vert");
+	std::string fs = LoadTextFile("bin/resources/shaders/console.frag");
 
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs);
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs);
