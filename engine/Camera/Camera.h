@@ -1,7 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Math.h"
+#pragma once
+#include "../Math/Math.h"
 
 class Camera {
 public:
