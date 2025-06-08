@@ -5,11 +5,12 @@
 #include <SDL2/SDL.h>
 #include "Fonts/BitmapFontRenderer.h"
 
+class HUD; // Forward declaration
+
 class Console {
 public:
-    bool InitShader(); // ✅ Load console.vert and console.frag into consoleShader
-    bool InitFont();
     Console();
+    Console(HUD* hud); // ✅ New constructor
 
     void Toggle();
     bool IsActive() const;
@@ -26,4 +27,5 @@ private:
     int historyIndex;
 
     BitmapFontRenderer font;
+    HUD* hudRef = nullptr; // ✅ Store pointer to HUD
 };

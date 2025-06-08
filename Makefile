@@ -46,6 +46,7 @@ LDFLAGS = -mconsole -lmingw32 -L$(SDL2_LIB) -lSDL2main -lSDL2 -lopengl32
 # -------------------------------
 # Add all .cpp files in engine folders and GLAD loader
 SRC = $(wildcard engine/src/*.cpp) \
+      $(wildcard engine/HUD/*.cpp) \
       $(wildcard engine/Console/*.cpp) \
       $(wildcard engine/Fonts/*.cpp) \
       $(wildcard engine/Camera/*.cpp) \

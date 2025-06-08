@@ -5,6 +5,7 @@
 #include "Camera/FPSCamera.h"
 #include "Levels/TestLevel_1.h"
 #include "Console/Console.h" // ✅ NEW
+#include "HUD/HUD.h" // ✅ NEW
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -37,31 +38,29 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
-if (!glContext) {
-    std::cerr << "[Error] Failed to create OpenGL context!" << std::endl;
-    return 1;
-}
+	if (!glContext) {
+		std::cerr << "[Error] Failed to create OpenGL context!" << std::endl;
+		return 1;
+	}
 
-if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-    std::cerr << "[Error] Failed to initialize GLAD!" << std::endl;
-    return 1;
-}
+	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+		std::cerr << "[Error] Failed to initialize GLAD!" << std::endl;
+		return 1;
+	}
 
-// ✅ Now it is safe to query OpenGL info
-std::cout << "[OpenGL Version] " << glGetString(GL_VERSION) << std::endl;
-std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
-
+	// ✅ Now it is safe to query OpenGL info
+	std::cout << "[OpenGL Version] " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
 
     SDL_SetRelativeMouseMode(SDL_TRUE);
     glViewport(0, 0, 1280, 720);
     glEnable(GL_DEPTH_TEST);
 
     FPSCamera camera;
-	Console console; // ✅ NEW
-	
-	// console.InitShader(); // ✅ Load console.vert/frag
-	// console.InitFont();   // ✅ Load font atlas and metadata
-	
+	HUD hud;
+	hud.Init();
+	Console console(&hud);
+
     LoadTestLevel_1();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -74,7 +73,6 @@ std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
         lastTime = currentTime;
 
         while (SDL_PollEvent(&event)) {
-        console.ProcessEvent(event);
             if (event.type == SDL_QUIT ||
                 (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
                 running = false;
@@ -86,8 +84,8 @@ std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
             }
 			
             console.ProcessEvent(event); // ✅ Pass all events to console
-            if (!console.IsActive()) {
 				
+            if (!console.IsActive()) {
 			// 🖱️ Mouse movement input for camera rotation
                 if (event.type == SDL_MOUSEMOTION) {
                     camera.ProcessMouseMovement((float)event.motion.xrel, (float)event.motion.yrel);
@@ -112,7 +110,6 @@ std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
 
         console.Render(1280, 720); // ✅ Draw console overlay
 
-        console.Render(1280, 720);
         SDL_GL_SwapWindow(window);
     }
 
