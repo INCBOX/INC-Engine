@@ -3,10 +3,10 @@
 
 #include "Math.h"
 #include "Camera/FPSCamera.h"
-#include "Levels/TestLevel_1.h"
 #include "Console/Console.h"
 #include "HUD/HUD.h"
 #include "Skybox/Skybox.h"
+#include "../Levels/LevelManager.h" // ✅ NEW
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -61,7 +61,9 @@ int main(int argc, char* argv[]) {
 	HUD hud;
 	hud.Init();
 	Console console(&hud);
-    LoadTestLevel_1();
+	
+    LevelManager::Init();
+    LevelManager::LoadLevelByName("mars"); // or "test"
     InitSkybox();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -111,7 +113,7 @@ int main(int argc, char* argv[]) {
         Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
 		
         RenderSkybox(view, projection);      // ✅ Skybox first (depth trick)
-        RenderTestLevel_1(view, projection); // ✅ Then scene
+        LevelManager::RenderActiveLevel(view.toGLMatrix(), projection.toGLMatrix()); // ✅ Then scene
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);
@@ -121,7 +123,7 @@ int main(int argc, char* argv[]) {
     }
 
     CleanupSkybox();      // ✅ Cleanup
-    UnloadTestLevel_1();  // ✅ Cleanup
+    LevelManager::UnloadActiveLevel();  // ✅ Cleanup
 
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);

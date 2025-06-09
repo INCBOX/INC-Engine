@@ -7,6 +7,9 @@
 #include <algorithm>
 #include "../Math.h"
 
+// Forward declaration of the external level command handler
+bool HandleLevelCommands(const std::string& command);
+
 // === Internal globals for shader & background ===
 static GLuint consoleVAO = 0;
 static GLuint consoleVBO = 0;
@@ -40,8 +43,8 @@ static GLuint CompileShader(GLenum type, const std::string& src) {
 }
 
 static GLuint LoadConsoleShader() {
-	std::string vs = LoadTextFile("bin/resources/shaders/console.vert");
-	std::string fs = LoadTextFile("bin/resources/shaders/console.frag");
+    std::string vs = LoadTextFile("bin/resources/shaders/console.vert");
+    std::string fs = LoadTextFile("bin/resources/shaders/console.frag");
 
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs);
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs);
@@ -62,6 +65,8 @@ static GLuint LoadConsoleShader() {
     glDeleteShader(frag);
     return program;
 }
+
+// === Console Class Implementation ===
 
 Console::Console() : active(false), inputBuffer(""), historyIndex(-1), hudRef(nullptr) {
     if (consoleShader == 0)
@@ -91,19 +96,20 @@ void Console::ProcessEvent(const SDL_Event& event) {
 
     if (event.type == SDL_TEXTINPUT) {
         inputBuffer += event.text.text;
-        std::cout << "TEXT: " << event.text.text << " -> Buffer: " << inputBuffer << std::endl;
+        // Removed spammy text logging
     } else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
             case SDLK_BACKSPACE:
                 if (!inputBuffer.empty()) inputBuffer.pop_back();
                 break;
-            case SDLK_RETURN:
-                std::cout << "RETURN key pressed, executing: " << inputBuffer << std::endl;
-                ExecuteCommand(inputBuffer);
-                commandHistory.push_back(inputBuffer);
-                inputBuffer.clear();
-                historyIndex = -1;
-                break;
+			case SDLK_RETURN:
+			case SDLK_KP_ENTER:
+				std::cout << "> " << inputBuffer << std::endl;
+				ExecuteCommand(inputBuffer);
+				commandHistory.push_back(inputBuffer);
+				inputBuffer.clear();
+				historyIndex = -1;
+				break;
             case SDLK_UP:
                 if (!commandHistory.empty()) {
                     if (historyIndex == -1) historyIndex = static_cast<int>(commandHistory.size()) - 1;
@@ -123,25 +129,29 @@ void Console::ProcessEvent(const SDL_Event& event) {
 }
 
 void Console::ExecuteCommand(const std::string& command) {
-    std::cout << "> " << command << std::endl;
+    // Local commands
     if (command == "quit") {
         exit(0);
     } else if (command.rfind("sensitivity ", 0) == 0) {
         std::string value = command.substr(12);
         std::cout << "Setting sensitivity to " << value << std::endl;
+
+    // External handlers (like level commands)
+    } else if (HandleLevelCommands(command)) {
+        // success
     } else {
         std::cout << "Unknown command: " << command << std::endl;
     }
 }
 
 void Console::Update(float deltaTime) {
-    // optional future behavior
+    // Optional future behavior
 }
 
 void Console::Render(int width, int height) {
     if (!active) return;
 
-    // Initialize VAO/VBO for background quad
+    // Quad background for the console
     float quadVerts[] = {
         0.0f,          0.0f,
         0.0f,          height * 0.25f,
@@ -166,7 +176,7 @@ void Console::Render(int width, int height) {
 
     glUseProgram(consoleShader);
 
-    // Blending and HUD overlay config
+    // Setup HUD projection
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
@@ -182,5 +192,6 @@ void Console::Render(int width, int height) {
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
-    font.RenderText("> " + inputBuffer, 10, height * 0.22f, width, height);
+    // Display the current input buffer
+    font.RenderText("> " + inputBuffer, 10, 40, width, height); // Y = 40px from top
 }
