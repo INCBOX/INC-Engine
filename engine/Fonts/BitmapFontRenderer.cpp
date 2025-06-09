@@ -1,3 +1,4 @@
+#include "Core/RuntimeDataPath.h"
 
 // PATCHED: BitmapFontRenderer.cpp — Format fix, scale, spacing
 #include "BitmapFontRenderer.h"
@@ -10,7 +11,7 @@
 #include "../Math.h"
 
 BitmapFontRenderer::BitmapFontRenderer() {
-    LoadFont("bin/resources/fonts/font_sfmono_rgba.png", "bin/resources/fonts/font_sfmono_metadata.json");
+    LoadFont(DataPath("fonts/font_sfmono_rgba.png"), DataPath("fonts/font_sfmono_metadata.json"));
 }
 
 using json = nlohmann::json;
@@ -52,8 +53,8 @@ static GLuint CompileShader(GLenum type, const std::string& source, const std::s
 // ... LoadTextFile and CompileShader unchanged ...
 
 static GLuint LoadFontShader() {
-    std::string vs = LoadTextFile("bin/resources/shaders/font.vert");
-    std::string fs = LoadTextFile("bin/resources/shaders/font.frag");
+    std::string vs = LoadTextFile(DataPath("shaders/font.vert"));
+    std::string fs = LoadTextFile(DataPath("shaders/font.frag"));
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs, "font.vert");
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs, "font.frag");
 

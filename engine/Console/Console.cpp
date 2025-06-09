@@ -1,3 +1,5 @@
+#include "Core/RuntimeDataPath.h"
+
 #include "Console.h"
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
@@ -43,8 +45,8 @@ static GLuint CompileShader(GLenum type, const std::string& src) {
 }
 
 static GLuint LoadConsoleShader() {
-    std::string vs = LoadTextFile("bin/resources/shaders/console.vert");
-    std::string fs = LoadTextFile("bin/resources/shaders/console.frag");
+	std::string vs = LoadTextFile(DataPath("shaders/console.vert").c_str());
+	std::string fs = LoadTextFile(DataPath("shaders/console.frag").c_str());
 
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs);
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs);

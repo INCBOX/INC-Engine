@@ -1,12 +1,14 @@
 #include <iostream>
 #include <chrono>
 
+#include "Core/RuntimeDataPath.h" // DataPath gamedata/
+
 #include "Math.h"
 #include "Camera/FPSCamera.h"
 #include "Console/Console.h"
 #include "HUD/HUD.h"
 #include "Skybox/Skybox.h"
-#include "../Levels/LevelManager.h"
+#include "../Levels/LevelManager.h" // ✅ NEW
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -16,9 +18,28 @@
 #include <filesystem>	// must come after
 #include <glad/glad.h>
 
+#include <fstream>
+#include <fstream>
 int main(int argc, char* argv[]) {
+    std::ofstream errorLog("engine_error.log", std::ios::out);
+    #define LOG_ERROR(msg) do { std::cerr << msg << std::endl; errorLog << msg << std::endl; } while(0)
+
+    try {
+        std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
+
+    // Redirect error output to a log file
+    std::ofstream errorLog("engine_error.log", std::ios::out);
+    #define LOG_ERROR(msg) do { std::cerr << msg << std::endl; errorLog << msg << std::endl; } while(0)
+
+    // Set working directory to executable's location
+    try {
+        std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
+    } catch (const std::exception& e) {
+        LOG_ERROR("Failed to set working directory: " << e.what());
+    }
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        LOG_ERROR("SDL_Init Error: " << SDL_GetError());
         return 1;
     }
 
@@ -27,7 +48,7 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    SDL_Window* window = SDL_CreateWindow("x64-INC-Engine",
+    SDL_Window* window = SDL_CreateWindow("INC-Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
     );
@@ -128,5 +149,9 @@ int main(int argc, char* argv[]) {
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    return 0;
+            return 0;
+    } catch (const std::exception& e) {
+        LOG_ERROR("Fatal error: " << e.what());
+        return 1;
+    }
 }

@@ -1,3 +1,4 @@
+#include "Core/RuntimeDataPath.h"
 #include "Skybox.h"
 #include <glad/glad.h>
 #include <vector>
@@ -100,12 +101,12 @@ void InitSkybox() {
 	LoadCloudTexture();
 	
     std::vector<std::string> faces = {
-        "bin/resources/textures/skybox/jettelly_space_common_black_RIGHT.png",
-        "bin/resources/textures/skybox/jettelly_space_common_black_LEFT.png",
-        "bin/resources/textures/skybox/jettelly_space_common_black_UP.png",
-        "bin/resources/textures/skybox/jettelly_space_common_black_DOWN.png",
-        "bin/resources/textures/skybox/jettelly_space_common_black_FRONT.png",
-        "bin/resources/textures/skybox/jettelly_space_common_black_BACK.png"
+        DataPath("textures/skybox/jettelly_space_common_black_RIGHT.png"),
+        DataPath("textures/skybox/jettelly_space_common_black_LEFT.png"),
+        DataPath("textures/skybox/jettelly_space_common_black_UP.png"),
+        DataPath("textures/skybox/jettelly_space_common_black_DOWN.png"),
+        DataPath("textures/skybox/jettelly_space_common_black_FRONT.png"),
+        DataPath("textures/skybox/jettelly_space_common_black_BACK.png")
     };
 
     cubemapTex = loadCubemap(faces);
