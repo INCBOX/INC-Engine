@@ -106,7 +106,7 @@ bool BitmapFontRenderer::LoadFont(const std::string& imagePath, const std::strin
     }
 
     int w, h, channels;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false); // flipped disabled to fix UV mapping
     unsigned char* data = stbi_load(imagePath.c_str(), &w, &h, &channels, 0);
     if (!data) {
         std::cerr << "[Font] Failed to load font atlas: " << imagePath << std::endl;
@@ -171,10 +171,17 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
     for (char c : text) {
         // Skip characters outside printable ASCII range
         if (c < 32 || c > 126) continue;
+
         auto it = glyphs.find(c);
         if (it == glyphs.end()) continue;
 
         const GlyphInfo& g = it->second;
+        std::cout << "[FontDebug] '" << c << "' UV @ (" << g.x << ", " << g.y << "), size: " << g.width << "x" << g.height << std::endl;
+
+        // Skip characters outside printable ASCII range
+        if (c < 32 || c > 126) continue;
+        if (it == glyphs.end()) continue;
+
 
         float xpos = (float)cursorX;
         float ypos = (float)y;
