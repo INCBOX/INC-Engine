@@ -76,6 +76,10 @@ Console::Console() : active(false), inputBuffer(""), historyIndex(-1), hudRef(nu
 Console::Console(HUD* hud) : active(false), inputBuffer(""), historyIndex(-1), hudRef(hud) {
     if (consoleShader == 0)
         consoleShader = LoadConsoleShader();
+	
+    // ✅ Initialize font system
+    font.LoadFont("bin/resources/fonts/font_atlas_rgba.png", "bin/resources/fonts/font_metadata_rgba.json");
+    std::cout << "[Console] Font loaded for console rendering.\n";
 }
 
 void Console::Toggle() {
@@ -189,9 +193,10 @@ void Console::Render(int width, int height) {
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
 
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
+    // ✅ Don't disable blending here anymore — text rendering needs it!
+    // glDisable(GL_BLEND);
+    // glEnable(GL_DEPTH_TEST);
 
-    // Display the current input buffer
-    font.RenderText("> " + inputBuffer, 10, 40, width, height); // Y = 40px from top
+    // ✅ Finally draw text over the background
+    font.RenderText("> " + inputBuffer, 10, 40, width, height);
 }

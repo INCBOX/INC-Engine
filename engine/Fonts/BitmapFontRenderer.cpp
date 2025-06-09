@@ -96,6 +96,7 @@ bool BitmapFontRenderer::LoadFont(const std::string& imagePath, const std::strin
     atlasHeight = j["image_height"];
 
     for (auto& [ch, info] : j["char_data"].items()) {
+        if (ch.empty()) continue;
         GlyphInfo glyph;
         glyph.x = info["x"];
         glyph.y = info["y"];
@@ -114,22 +115,11 @@ bool BitmapFontRenderer::LoadFont(const std::string& imagePath, const std::strin
 
     std::cout << "[Font] Font atlas loaded: " << imagePath << " (" << w << "x" << h << "), channels: " << channels << std::endl;
 
-    GLenum format = GL_RED;
-    if (channels == 3) format = GL_RGB;
-    if (channels == 4) format = GL_RGBA;
-
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    if (format == GL_RED) {
-        GLint swizzleMask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
-        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
-        std::cout << "[Font] Applied swizzle mask for GL_RED texture.\n";
-    }
-
     stbi_image_free(data);
 
     glGenVertexArrays(1, &vao);
@@ -167,6 +157,9 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
     glUniform1i(glGetUniformLocation(fontShader, "uFontAtlas"), 0);
     glUniform3f(glGetUniformLocation(fontShader, "uTextColor"), 1.0f, 1.0f, 1.0f);
 
+    float baseHeight = 720.0f;
+    float scale = windowH / baseHeight;
+
     Mat4 ortho = Mat4::orthographic(0, (float)windowW, (float)windowH, 0, -1.0f, 1.0f);
     GLint projLoc = glGetUniformLocation(fontShader, "uProjection");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, ortho.toGLMatrix());
@@ -176,6 +169,8 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
     int cursorX = x;
 
     for (char c : text) {
+        // Skip characters outside printable ASCII range
+        if (c < 32 || c > 126) continue;
         auto it = glyphs.find(c);
         if (it == glyphs.end()) continue;
 
@@ -183,8 +178,8 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
 
         float xpos = (float)cursorX;
         float ypos = (float)y;
-        float w = (float)g.width;
-        float h = (float)g.height;
+        float w = g.width * scale;
+        float h = g.height * scale;
 
         float u0 = (float)g.x / atlasWidth;
         float v0 = (float)g.y / atlasHeight;
@@ -195,7 +190,6 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
             { xpos,     ypos,     u0, v0 },
             { xpos + w, ypos,     u1, v0 },
             { xpos + w, ypos + h, u1, v1 },
-
             { xpos,     ypos,     u0, v0 },
             { xpos + w, ypos + h, u1, v1 },
             { xpos,     ypos + h, u0, v1 },
@@ -205,7 +199,7 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        cursorX += g.width;
+        cursorX += (int)(g.width * scale);
     }
 
     glBindVertexArray(0);
