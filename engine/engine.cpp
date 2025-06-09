@@ -6,7 +6,7 @@
 #include "Console/Console.h"
 #include "HUD/HUD.h"
 #include "Skybox/Skybox.h"
-#include "../Levels/LevelManager.h" // ✅ NEW
+#include "../Levels/LevelManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    SDL_Window* window = SDL_CreateWindow("INC-Engine",
+    SDL_Window* window = SDL_CreateWindow("x64-INC-Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
     );

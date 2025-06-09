@@ -1,14 +1,12 @@
 #version 330 core
-
-in vec2 TexCoord;
-out vec4 FragColor;
-
+in vec2 vTexCoord;
 uniform sampler2D uFontAtlas;
 uniform vec3 uTextColor;
+out vec4 FragColor;
 
 void main() {
-    float alpha = texture(uFontAtlas, TexCoord).a;
-    if (alpha < 0.1)
+    vec4 sampled = texture(uFontAtlas, vTexCoord);
+    if (sampled.a < 0.1)
         discard;
-    FragColor = vec4(uTextColor, alpha);
+    FragColor = vec4(uTextColor, sampled.a);
 }

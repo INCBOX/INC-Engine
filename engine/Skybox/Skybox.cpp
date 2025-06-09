@@ -5,9 +5,11 @@
 #include <iostream>
 #include <stb_image.h>
 #include "../Math/Math.h"
+#include "skybox_cloud.h"
+
 
 static GLuint skyboxVAO = 0, skyboxVBO = 0;
-static GLuint cubemapTex = 0;
+unsigned int cubemapTex = 0;
 static GLuint shader = 0;
 static bool skyboxVisible = true;
 
@@ -95,6 +97,8 @@ GLuint loadCubemap(const std::vector<std::string>& faces) {
 }
 
 void InitSkybox() {
+	LoadCloudTexture();
+	
     std::vector<std::string> faces = {
         "bin/resources/textures/skybox/jettelly_space_common_black_RIGHT.png",
         "bin/resources/textures/skybox/jettelly_space_common_black_LEFT.png",
@@ -154,6 +158,8 @@ void RenderSkybox(const Mat4& view, const Mat4& projection) {
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
+	
+	RenderCloudLayer(view, projection, 0.016f); // Use real deltaTime if passed in
 }
 
 void CleanupSkybox() {

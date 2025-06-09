@@ -73,13 +73,15 @@ Console::Console() : active(false), inputBuffer(""), historyIndex(-1), hudRef(nu
         consoleShader = LoadConsoleShader();
 }
 
-Console::Console(HUD* hud) : active(false), inputBuffer(""), historyIndex(-1), hudRef(hud) {
+Console::Console(HUD* hud)
+    : active(false), inputBuffer(""), historyIndex(-1), hudRef(hud), blinkTimer(0.0f), blinkVisible(true)
+{
+    // blinking cursor setup
     if (consoleShader == 0)
         consoleShader = LoadConsoleShader();
-	
-    // ✅ Initialize font system
-    font.LoadFont("bin/resources/fonts/font_atlas_rgba.png", "bin/resources/fonts/font_metadata_rgba.json");
-    std::cout << "[Console] Font loaded for console rendering.\n";
+
+// Font is now loaded by BitmapFontRenderer internally.
+
 }
 
 void Console::Toggle() {
@@ -148,9 +150,17 @@ void Console::ExecuteCommand(const std::string& command) {
     }
 }
 
+
 void Console::Update(float deltaTime) {
-    // Optional future behavior
+    // === Blinking cursor update ===
+    blinkTimer += deltaTime;
+    if (blinkTimer >= 0.5f) {
+        blinkVisible = !blinkVisible;
+        blinkTimer = 0.0f;
+    }
 }
+
+    // Optional future behavior
 
 void Console::Render(int width, int height) {
     if (!active) return;
@@ -198,5 +208,6 @@ void Console::Render(int width, int height) {
     // glEnable(GL_DEPTH_TEST);
 
     // ✅ Finally draw text over the background
-    font.RenderText("> " + inputBuffer, 10, 40, width, height);
+    // === Blinking prompt support ===
+	font.RenderConsoleText(inputBuffer, commandHistory, width, height, blinkVisible);
 }

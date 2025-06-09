@@ -1,7 +1,9 @@
+
 #ifndef INC_ENGINE_MATH_H
 #define INC_ENGINE_MATH_H
 
 #include <cmath>
+#include <cstring>
 
 struct Vec3 {
     float x, y, z;
@@ -69,6 +71,14 @@ struct Mat4 {
         return result;
     }
 
+    static Mat4 scale(float s) {
+        Mat4 result = identity();
+        result.m[0] = s;
+        result.m[5] = s;
+        result.m[10] = s;
+        return result;
+    }
+
     static Mat4 lookAt(const Vec3& eye, const Vec3& center, const Vec3& up) {
         Vec3 f = (center - eye).normalized();
         Vec3 s = f.cross(up).normalized();
@@ -104,7 +114,25 @@ struct Mat4 {
         result.m[15] = 1.0f;
         return result;
     }
+
+    static Mat4 fromArray(const float* arr) {
+        Mat4 result;
+        std::memcpy(result.m, arr, sizeof(float) * 16);
+        return result;
+    }
 };
+
+inline Mat4 operator*(const Mat4& a, const Mat4& b) {
+    Mat4 result;
+    for (int row = 0; row < 4; ++row)
+        for (int col = 0; col < 4; ++col)
+            result.m[col + row * 4] =
+                a.m[0 + row * 4] * b.m[col + 0] +
+                a.m[1 + row * 4] * b.m[col + 4] +
+                a.m[2 + row * 4] * b.m[col + 8] +
+                a.m[3 + row * 4] * b.m[col +12];
+    return result;
+}
 
 inline float radians(float degrees) {
     return degrees * 3.14159265359f / 180.0f;

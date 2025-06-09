@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <SDL2/SDL.h>
 #include <glad/glad.h> // ✅ Replaces <GL/gl.h>, works with your engine
@@ -11,6 +12,9 @@ struct GlyphInfo {
 
 class BitmapFontRenderer {
 public:
+    BitmapFontRenderer();
+    void RenderConsoleText(const std::string& inputBuffer, const std::vector<std::string>& history, int width, int height, bool blinkVisible);
+    void SetColor(float r, float g, float b);
     bool LoadFont(const std::string& imagePath, const std::string& metaPath);
     void RenderText(const std::string& text, int x, int y, int windowW, int windowH);
 

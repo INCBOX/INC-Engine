@@ -1,16 +1,15 @@
+
 #pragma once
 
 #include <string>
 #include <vector>
-#include <SDL2/SDL.h>
-#include "Fonts/BitmapFontRenderer.h"
-
-class HUD; // Forward declaration
+#include "HUD.h"
+#include "../Fonts/BitmapFontRenderer.h"
 
 class Console {
 public:
     Console();
-    Console(HUD* hud); // ✅ New constructor
+    Console(HUD* hud);
 
     void Toggle();
     bool IsActive() const;
@@ -26,6 +25,10 @@ private:
     std::vector<std::string> commandHistory;
     int historyIndex;
 
+    HUD* hudRef;
     BitmapFontRenderer font;
-    HUD* hudRef = nullptr; // ✅ Store pointer to HUD
+
+    // === Blinking cursor support ===
+    float blinkTimer = 0.0f;
+    bool blinkVisible = true;
 };
