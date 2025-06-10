@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 #include <stb_image.h>
-#include "../Math/Math.h"
+#include "math.h"
 #include "skybox_cloud.h"
 
 

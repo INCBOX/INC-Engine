@@ -3,12 +3,13 @@
 
 #include "runtime_gamedata_path.h"
 
-#include "Math.h"
+#include "math.h"
 #include "Camera/FPSCamera.h"
 #include "Console/Console.h"
 #include "HUD/HUD.h"
 #include "Skybox/Skybox.h"
-#include "../Levels/LevelManager.h"
+#include "Levels/Level_Space.h"
+#include "Levels/LevelManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -21,6 +22,10 @@
 
 bool gWireframeMode = false;
 
+// Global matrices for shader MVP
+Mat4 gViewMatrix;
+Mat4 gProjMatrix;
+
 int main(int argc, char* argv[]) {
 	// Redirect error output to a log file
     std::ofstream errorLog("engine_error.log", std::ios::out);
@@ -28,7 +33,8 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "Wireframe: " << (gWireframeMode ? "ON" : "OFF") << std::endl;
 	std::cout << "[RenderMode] " << (gWireframeMode ? "GL_LINE" : "GL_FILL") << std::endl;
-
+	
+	
     try {
         std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
     } catch (const std::exception& e) {
@@ -74,14 +80,25 @@ int main(int argc, char* argv[]) {
     glEnable(GL_DEPTH_TEST);
 
 	// CAMERA
-	FPSCamera camera(Vec3(0.0f, 0.0f, -300.0f + 100.0f + 300.0f)); // 300 units away from surface
+	FPSCamera camera(Vec3(0, 0, 500));
+	
+	std::cout << "Camera Pos: " << camera.Position.x << ", "
+							<< camera.Position.y << ", "
+							<< camera.Position.z << std::endl;
+	
+	Vec3 front = camera.GetFront();
+std::cout << "Camera Front: " << front.x << ", "
+          << front.y << ", "
+          << front.z << std::endl;
+
+	
 	
 	HUD hud;
 	hud.Init();
 	Console console(&hud);
 	
     // Initialize modular level system
-    LevelManager::Init(gamedata::Level("planets.json"));
+    LevelManager::SetLevel(std::make_unique<Level_Space>());
 
     InitSkybox();
 
@@ -122,6 +139,7 @@ int main(int argc, char* argv[]) {
         // ⌨️ Keyboard movement input
         camera.Update(deltaTime);
 
+		// --- CLEAR SCREEN ---
         glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
@@ -132,8 +150,13 @@ int main(int argc, char* argv[]) {
         Mat4 view = camera.GetViewMatrix();
         Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 50000.0f);
 		
+        gViewMatrix = view;
+        gProjMatrix = projection;
+		
         RenderSkybox(view, projection);      // Skybox first (depth trick)
-        LevelManager::Tick(deltaTime, view.toGLMatrix(), projection.toGLMatrix(), &camera.Position.x); // Then scene
+		LevelManager::Update(deltaTime);
+		LevelManager::Render();
+
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);

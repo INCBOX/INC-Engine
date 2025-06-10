@@ -53,7 +53,6 @@ SRC = engine/engine.cpp \
       $(wildcard engine/Camera/*.cpp) \
       $(wildcard engine/Levels/*.cpp) \
       $(wildcard engine/Skybox/*.cpp) \
-      $(wildcard engine/Math/*.cpp) \
       $(GLAD_SRC)
 
 # -------------------------------

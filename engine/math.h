@@ -78,7 +78,18 @@ struct Mat4 {
         result.m[10] = s;
         return result;
     }
-
+	
+    static Mat4 rotateY(float angleRadians) {
+        Mat4 result = identity();
+        float c = std::cos(angleRadians);
+        float s = std::sin(angleRadians);
+        result.m[0] = c;
+        result.m[2] = -s;
+        result.m[8] = s;
+        result.m[10] = c;
+        return result;
+	}
+	
     static Mat4 lookAt(const Vec3& eye, const Vec3& center, const Vec3& up) {
         Vec3 f = (center - eye).normalized();
         Vec3 s = f.cross(up).normalized();

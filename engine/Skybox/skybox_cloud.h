@@ -1,5 +1,5 @@
 #pragma once
-#include "../Math/Math.h"
+#include "math.h"
 
 void LoadCloudTexture();
 void RenderCloudLayer(const Mat4& view, const Mat4& projection, float deltaTime);
