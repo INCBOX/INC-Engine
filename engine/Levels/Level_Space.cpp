@@ -1,6 +1,6 @@
 #include "Level_Space.h"
-#include "../runtime_gamedata_path.h"
-#include "../math.h"
+#include "runtime_gamedata_path.h"
+#include "math.h"
 #include <nlohmann/json.hpp>
 #include <glad/glad.h>
 #include <fstream>

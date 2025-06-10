@@ -1,12 +1,14 @@
 #include "runtime_gamedata_path.h"
-#include "Console.h"
+#include "hud.h"
+#include "console.h"
+#include "math.h"
+
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "../Math.h"
 
 extern bool gWireframeMode;
 extern float gCameraSpeed;

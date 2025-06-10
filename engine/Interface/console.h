@@ -3,8 +3,9 @@
 
 #include <string>
 #include <vector>
-#include "HUD.h"
-#include "../Fonts/BitmapFontRenderer.h"
+#include "bitmap_font_renderer.h"
+
+class HUD;
 
 class Console {
 public:

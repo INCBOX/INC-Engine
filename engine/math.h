@@ -2,6 +2,8 @@
 #ifndef INC_ENGINE_MATH_H
 #define INC_ENGINE_MATH_H
 
+#include <iostream>
+
 #include <cmath>
 #include <cstring>
 
@@ -131,6 +133,16 @@ struct Mat4 {
         std::memcpy(result.m, arr, sizeof(float) * 16);
         return result;
     }
+	
+	static Mat4 scale(const Vec3& v) {
+		Mat4 result = identity();
+		result.m[0] = v.x;
+		result.m[5] = v.y;
+		result.m[10] = v.z;
+		return result;
+	}
+	
+	
 };
 
 inline Mat4 operator*(const Mat4& a, const Mat4& b) {
@@ -147,6 +159,21 @@ inline Mat4 operator*(const Mat4& a, const Mat4& b) {
 
 inline float radians(float degrees) {
     return degrees * 3.14159265359f / 180.0f;
+}
+
+// ---- Modular MVP Support ----
+extern Mat4 gViewMatrix;
+extern Mat4 gProjMatrix;
+
+inline Mat4 MakeMVP(const Mat4& model) {
+    return gProjMatrix * gViewMatrix * model;
+}
+
+inline void PrintMVP(const Mat4& mvp) {
+    std::cout << "[MVP] ";
+    for (int i = 0; i < 16; ++i)
+        std::cout << mvp.m[i] << ' ';
+    std::cout << std::endl;
 }
 
 #endif // INC_ENGINE_MATH_H

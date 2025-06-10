@@ -1,14 +1,14 @@
 #include "runtime_gamedata_path.h"
 
 // PATCHED: BitmapFontRenderer.cpp — Format fix, scale, spacing
-#include "BitmapFontRenderer.h"
+#include "bitmap_font_renderer.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <glad/glad.h>
 #include <stb_image.h>
 #include <nlohmann/json.hpp>
-#include "../Math.h"
+#include "math.h"
 
 BitmapFontRenderer::BitmapFontRenderer() {
     LoadFont(gamedata::Texture("font_sfmono_rgba.png"), gamedata::Script("font_sfmono_metadata.json"));

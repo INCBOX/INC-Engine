@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <SDL2/SDL.h>
-#include <glad/glad.h> // ✅ Replaces <GL/gl.h>, works with your engine
+#include <glad/glad.h> // Replaces <GL/gl.h>, works with your engine
 
 struct GlyphInfo {
     int x, y, width, height;
@@ -26,7 +26,7 @@ private:
     int cellHeight = 0;
     GLuint textureID = 0;
 
-    // ✅ Modern OpenGL data
+    // Modern OpenGL data
     GLuint vao = 0;
     GLuint vbo = 0;
 };

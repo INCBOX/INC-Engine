@@ -47,9 +47,7 @@ LDFLAGS = -mconsole -lmingw32 -L$(SDL2_LIB) -lSDL2main -lSDL2 -lopengl32
 # -------------------------------
 # Updated: Engine.cpp moved to root
 SRC = engine/engine.cpp \
-      $(wildcard engine/HUD/*.cpp) \
-      $(wildcard engine/Console/*.cpp) \
-      $(wildcard engine/Fonts/*.cpp) \
+      $(wildcard engine/Interface/*.cpp) \
       $(wildcard engine/Camera/*.cpp) \
       $(wildcard engine/Levels/*.cpp) \
       $(wildcard engine/Skybox/*.cpp) \

@@ -1,6 +1,6 @@
 #pragma once
 #include "Level.h"
-#include "../math.h"
+#include "math.h"
 #include <vector>
 #include <string>
 

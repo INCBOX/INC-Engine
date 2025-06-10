@@ -1,4 +1,4 @@
-#include "HUD.h"
+#include "hud.h"
 #include <SDL2/SDL.h>
 #include <fstream>
 #include <sstream>

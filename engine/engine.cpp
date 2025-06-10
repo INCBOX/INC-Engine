@@ -2,14 +2,15 @@
 #include <chrono>
 
 #include "runtime_gamedata_path.h"
-
 #include "math.h"
-#include "Camera/FPSCamera.h"
-#include "Console/Console.h"
-#include "HUD/HUD.h"
-#include "Skybox/Skybox.h"
-#include "Levels/Level_Space.h"
+
+#include "console.h"
+#include "hud.h"
+#include "FPSCamera.h"
+
 #include "Levels/LevelManager.h"
+#include "Levels/Level_TestScene.h"
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -80,7 +81,7 @@ int main(int argc, char* argv[]) {
     glEnable(GL_DEPTH_TEST);
 
 	// CAMERA
-	FPSCamera camera(Vec3(0, 0, 500));
+	FPSCamera camera(Vec3(1000, 0, -500 + 100));  // 100 units out
 	
 	std::cout << "Camera Pos: " << camera.Position.x << ", "
 							<< camera.Position.y << ", "
@@ -98,9 +99,9 @@ std::cout << "Camera Front: " << front.x << ", "
 	Console console(&hud);
 	
     // Initialize modular level system
-    LevelManager::SetLevel(std::make_unique<Level_Space>());
+    LevelManager::SetLevel(std::make_unique<Level_TestScene>());
 
-    InitSkybox();
+    // InitSkybox();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
     bool running = true;
@@ -140,8 +141,8 @@ std::cout << "Camera Front: " << front.x << ", "
         camera.Update(deltaTime);
 
 		// --- CLEAR SCREEN ---
-        glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.15f, 0.02f, 0.02f, 1.0f); // deep red-black, alien/Mars vibe
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		glPolygonMode(GL_FRONT_AND_BACK, gWireframeMode ? GL_LINE : GL_FILL);
 
@@ -153,7 +154,12 @@ std::cout << "Camera Front: " << front.x << ", "
         gViewMatrix = view;
         gProjMatrix = projection;
 		
-        RenderSkybox(view, projection);      // Skybox first (depth trick)
+		Vec3 camPos = camera.Position;
+		std::cout << "[Camera Pos] " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
+		std::cout << "[DEBUG] gViewMatrix[0]: " << gViewMatrix.m[0] << std::endl;
+		std::cout << "[DEBUG] gProjMatrix[0]: " << gProjMatrix.m[0] << std::endl;
+		
+        // RenderSkybox(view, projection);      // Skybox first (depth trick)
 		LevelManager::Update(deltaTime);
 		LevelManager::Render();
 
@@ -165,7 +171,7 @@ std::cout << "Camera Front: " << front.x << ", "
         SDL_GL_SwapWindow(window);
     }
 
-    CleanupSkybox();
+    // CleanupSkybox();
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();
