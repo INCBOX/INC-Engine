@@ -112,7 +112,7 @@ struct Mat4 {
 
         result.m[12] = -s.dot(eye);
         result.m[13] = -u.dot(eye);
-        result.m[14] = f.dot(eye);
+        result.m[14] = -f.dot(eye);
         return result;
     }
 
@@ -170,10 +170,14 @@ inline Mat4 MakeMVP(const Mat4& model) {
 }
 
 inline void PrintMVP(const Mat4& mvp) {
-    std::cout << "[MVP] ";
-    for (int i = 0; i < 16; ++i)
-        std::cout << mvp.m[i] << ' ';
-    std::cout << std::endl;
+    std::cout << "[MVP Matrix]\n";
+    for (int row = 0; row < 4; ++row) {
+        std::cout << "[ ";
+        for (int col = 0; col < 4; ++col) {
+            std::cout << mvp.m[col + row * 4] << " ";
+        }
+        std::cout << "]\n";
+    }
 }
 
 #endif // INC_ENGINE_MATH_H

@@ -2,10 +2,10 @@
 #include <cmath>
 #include <iostream>
 
-float gCameraSpeed = 100.0f; // 🚀 Default speed, adjustable from console
+float gCameraSpeed = 100.0f; // Default speed, adjustable from console
 
 FPSCamera::FPSCamera()
-    : Position{0.0f, 0.0f, -100.0f}, Yaw(-90.0f), Pitch(0.0f)
+    : Position{0.0f, 0.0f, 10.0f}, Yaw(-90.0f), Pitch(0.0f)
 {
     updateVectors();
 }

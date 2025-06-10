@@ -6,16 +6,15 @@
 
 #include "console.h"
 #include "hud.h"
-#include "FPSCamera.h"
+#include "Camera.h"
 
 #include "Levels/LevelManager.h"
 #include "Levels/Level_TestScene.h"
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define SDL_MAIN_HANDLED // WE ADD THIS TO AVOID MISSING WINMAIN REFERENCE
-#include <SDL2/SDL.h>	
+#include <SDL2/SDL.h> 
 #include <windows.h>
 #include <filesystem>	// must come after
 #include <glad/glad.h>
@@ -34,7 +33,8 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "Wireframe: " << (gWireframeMode ? "ON" : "OFF") << std::endl;
 	std::cout << "[RenderMode] " << (gWireframeMode ? "GL_LINE" : "GL_FILL") << std::endl;
-	
+	std::cerr << "[OpenGL] Shader compilation succeeded\n";
+	std::cerr << "[OpenGL] Program linking succeeded\n";
 	
     try {
         std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
@@ -81,18 +81,7 @@ int main(int argc, char* argv[]) {
     glEnable(GL_DEPTH_TEST);
 
 	// CAMERA
-	FPSCamera camera(Vec3(1000, 0, -500 + 100));  // 100 units out
-	
-	std::cout << "Camera Pos: " << camera.Position.x << ", "
-							<< camera.Position.y << ", "
-							<< camera.Position.z << std::endl;
-	
-	Vec3 front = camera.GetFront();
-std::cout << "Camera Front: " << front.x << ", "
-          << front.y << ", "
-          << front.z << std::endl;
-
-	
+	Camera camera(Vec3(0.0f, 0.0f, 10.0f));
 	
 	HUD hud;
 	hud.Init();
@@ -100,8 +89,6 @@ std::cout << "Camera Front: " << front.x << ", "
 	
     // Initialize modular level system
     LevelManager::SetLevel(std::make_unique<Level_TestScene>());
-
-    // InitSkybox();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
     bool running = true;
@@ -126,20 +113,22 @@ std::cout << "Camera Front: " << front.x << ", "
 			
 			console.ProcessEvent(event);
 
-
             if (!console.IsActive() && event.type == SDL_MOUSEMOTION) {
-                camera.ProcessMouseMovement((float)event.motion.xrel, (float)event.motion.yrel);
+                camera.ProcessMouse((float)event.motion.xrel, (float)-event.motion.yrel);
             }
         }
 		
         if (!console.IsActive()) {
-            const Uint8* keystate = SDL_GetKeyboardState(nullptr);
-            camera.ProcessInput(keystate, deltaTime);
+            const Uint8* keys = SDL_GetKeyboardState(nullptr);
+            Vec3 movement;
+			if (keys[SDL_SCANCODE_W]) movement += camera.GetFront();
+			if (keys[SDL_SCANCODE_S]) movement -= camera.GetFront();
+			if (keys[SDL_SCANCODE_A]) movement -= camera.GetRight();
+			if (keys[SDL_SCANCODE_D]) movement += camera.GetRight();
+            if (movement.length() > 0.0f)
+                camera.ProcessKeyboard(movement.normalized(), deltaTime);
         }
 		
-        // ⌨️ Keyboard movement input
-        camera.Update(deltaTime);
-
 		// --- CLEAR SCREEN ---
 		glClearColor(0.15f, 0.02f, 0.02f, 1.0f); // deep red-black, alien/Mars vibe
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,21 +137,18 @@ std::cout << "Camera Front: " << front.x << ", "
 
         // === 3D world ===
         glEnable(GL_DEPTH_TEST);
-        Mat4 view = camera.GetViewMatrix();
-        Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 50000.0f);
-		
-        gViewMatrix = view;
-        gProjMatrix = projection;
-		
+        gViewMatrix = camera.GetViewMatrix();
+        gProjMatrix = Mat4::perspective(radians(90.0f), 1280.0f / 720.0f, 0.1f, 50000.0f);
+
+		// DEBUG INFO
 		Vec3 camPos = camera.Position;
 		std::cout << "[Camera Pos] " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
 		std::cout << "[DEBUG] gViewMatrix[0]: " << gViewMatrix.m[0] << std::endl;
 		std::cout << "[DEBUG] gProjMatrix[0]: " << gProjMatrix.m[0] << std::endl;
 		
-        // RenderSkybox(view, projection);      // Skybox first (depth trick)
+		// === Scene ===
 		LevelManager::Update(deltaTime);
 		LevelManager::Render();
-
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);
@@ -171,7 +157,6 @@ std::cout << "Camera Front: " << front.x << ", "
         SDL_GL_SwapWindow(window);
     }
 
-    // CleanupSkybox();
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();

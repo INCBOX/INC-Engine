@@ -1,97 +1,142 @@
 #include "runtime_gamedata_path.h"
 #include "math.h"
-
 #include "Level_TestScene.h"
 #include <glad/glad.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
-static GLuint vao = 0, vbo = 0;
-static std::vector<Vec3> propPositions;
+// External camera matrices from the engine
+extern Mat4 gViewMatrix;
+extern Mat4 gProjMatrix;
 
+static GLuint vaoTriangle = 0, vboTriangle = 0;
+static GLuint vaoGround = 0, vboGround = 0;
 static GLuint shaderProgram = 0;
 
 void Level_TestScene::Init() {
-	
-	
-	
-		auto LoadShaderSource = [](const std::string& path) -> std::string {
-		std::ifstream file(path);
-		std::stringstream buffer;
-		buffer << file.rdbuf();
-		return buffer.str();
-	};
-	
-	auto CompileShader = [](GLenum type, const std::string& source) -> GLuint {
-		GLuint shader = glCreateShader(type);
-		const char* src = source.c_str();
-		glShaderSource(shader, 1, &src, nullptr);
-		glCompileShader(shader);
-		return shader;
-	};
-	
-	std::string vertexSrc = LoadShaderSource(gamedata::Shader("basic.vert"));
-	std::string fragmentSrc = LoadShaderSource(gamedata::Shader("basic.frag"));
-	
-	GLuint vs = CompileShader(GL_VERTEX_SHADER, vertexSrc);
-	GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fragmentSrc);
-	
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vs);
-	glAttachShader(shaderProgram, fs);
-	glLinkProgram(shaderProgram);
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-	
-	
-	
-    // Simple cube
-    float cubeVerts[] = {
-        -1,-1,-1,  1,-1,-1,  1, 1,-1,  -1, 1,-1,  // back
-        -1,-1, 1,  1,-1, 1,  1, 1, 1,  -1, 1, 1   // front
-        // (Add triangles if needed; for brevity, using just positions here)
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDisable(GL_CULL_FACE);  // Optional for testing
+
+    auto LoadShaderSource = [](const std::string& path) -> std::string {
+        std::ifstream file(path);
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        return buffer.str();
     };
 
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
-    glBindVertexArray(0);
+    auto CompileShader = [](GLenum type, const std::string& src) -> GLuint {
+        GLuint shader = glCreateShader(type);
+        const char* cstr = src.c_str();
+        glShaderSource(shader, 1, &cstr, nullptr);
+        glCompileShader(shader);
 
-    // Position 100 cubes in a grid
-    for (int x = -5; x <= 5; ++x) {
-        for (int z = -5; z <= 5; ++z) {
-            propPositions.push_back(Vec3(x * 10.0f, 0.0f, z * 10.0f));
+        GLint success = 0;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            GLint length = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+            std::string log(length, ' ');
+            glGetShaderInfoLog(shader, length, nullptr, &log[0]);
+            std::cerr << "[Shader compile error] " << log << std::endl;
         }
-    }
-}
+        return shader;
+    };
 
-void Level_TestScene::Update(float /*deltaTime*/) {
-    // No animation
+    std::string vertexSrc = LoadShaderSource(gamedata::Shader("basic.vert"));
+    std::string fragmentSrc = LoadShaderSource(gamedata::Shader("basic.frag"));
+
+    GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, vertexSrc);
+    GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentSrc);
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    GLint linked = 0;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        GLint length = 0;
+        glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
+        std::string log(length, ' ');
+        glGetProgramInfoLog(shaderProgram, length, nullptr, &log[0]);
+        std::cerr << "[Program link error] " << log << std::endl;
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // Triangle vertex data
+    float triangleVerts[] = {
+         0.0f,  1.0f, -0.5f,
+        -1.0f, -1.0f, -0.5f,
+         1.0f, -1.0f, -0.5f
+    };
+
+    // Ground plane vertices (two triangles forming a quad)
+    float groundVerts[] = {
+        -10.0f, -1.0f, -10.0f,
+         10.0f, -1.0f, -10.0f,
+         10.0f, -1.0f,  10.0f,
+
+        -10.0f, -1.0f, -10.0f,
+         10.0f, -1.0f,  10.0f,
+        -10.0f, -1.0f,  10.0f,
+    };
+
+    // Triangle setup
+    glGenVertexArrays(1, &vaoTriangle);
+    glGenBuffers(1, &vboTriangle);
+    glBindVertexArray(vaoTriangle);
+    glBindBuffer(GL_ARRAY_BUFFER, vboTriangle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVerts), triangleVerts, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+    // Ground setup
+    glGenVertexArrays(1, &vaoGround);
+    glGenBuffers(1, &vboGround);
+    glBindVertexArray(vaoGround);
+    glBindBuffer(GL_ARRAY_BUFFER, vboGround);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(groundVerts), groundVerts, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+    glBindVertexArray(0);
 }
 
 void Level_TestScene::Render() {
-	glUseProgram(shaderProgram);
-	
-    glBindVertexArray(vao);
-    for (const Vec3& pos : propPositions) {
-		Mat4 model = Mat4::translate(pos) * Mat4::scale(Vec3(1.0f, 1.0f, 1.0f));
-        Mat4 mvp = gProjMatrix * gViewMatrix * model;
-		GLint loc = glGetUniformLocation(shaderProgram, "uMVP");
-        glUniformMatrix4fv(loc, 1, GL_FALSE, mvp.toGLMatrix());
-        glDrawArrays(GL_LINE_LOOP, 0, 8);  // basic debug cube, adjust for triangles
-		glUseProgram(0);
-    }
+    std::cout << "[Render] Level_TestScene::Render called\n";
+
+    glUseProgram(shaderProgram);
+
+    GLint loc = glGetUniformLocation(shaderProgram, "uMVP");
+
+    // === Ground ===
+    Mat4 modelGround = Mat4::identity();
+    Mat4 mvpGround = gProjMatrix * gViewMatrix * modelGround;
+    glUniformMatrix4fv(loc, 1, GL_FALSE, mvpGround.toGLMatrix());
+    glBindVertexArray(vaoGround);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // === Triangle ===
+    Mat4 modelTriangle = Mat4::identity();
+    Mat4 mvpTriangle = gProjMatrix * gViewMatrix * modelTriangle;
+    glUniformMatrix4fv(loc, 1, GL_FALSE, mvpTriangle.toGLMatrix());
+    glBindVertexArray(vaoTriangle);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     glBindVertexArray(0);
+    glUseProgram(0);
+}
+
+void Level_TestScene::Update(float) {
+    // Add per-frame logic here if needed
 }
 
 void Level_TestScene::Unload() {
-    // Clean up if needed
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
-    propPositions.clear();
+    // Optional: glDeleteBuffers, glDeleteVertexArrays if needed
 }
