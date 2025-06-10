@@ -1,4 +1,5 @@
-#include "Core/RuntimeDataPath.h"
+#include "runtime_gamedata_path.h"
+
 #include "Skybox.h"
 #include <glad/glad.h>
 #include <vector>
@@ -100,14 +101,14 @@ GLuint loadCubemap(const std::vector<std::string>& faces) {
 void InitSkybox() {
 	LoadCloudTexture();
 	
-    std::vector<std::string> faces = {
-        DataPath("textures/skybox/jettelly_space_common_black_RIGHT.png"),
-        DataPath("textures/skybox/jettelly_space_common_black_LEFT.png"),
-        DataPath("textures/skybox/jettelly_space_common_black_UP.png"),
-        DataPath("textures/skybox/jettelly_space_common_black_DOWN.png"),
-        DataPath("textures/skybox/jettelly_space_common_black_FRONT.png"),
-        DataPath("textures/skybox/jettelly_space_common_black_BACK.png")
-    };
+	std::vector<std::string> faces = {
+		gamedata::Texture("skybox/jettelly_space_common_black_RIGHT.png"),
+		gamedata::Texture("skybox/jettelly_space_common_black_LEFT.png"),
+		gamedata::Texture("skybox/jettelly_space_common_black_UP.png"),
+		gamedata::Texture("skybox/jettelly_space_common_black_DOWN.png"),
+		gamedata::Texture("skybox/jettelly_space_common_black_FRONT.png"),
+		gamedata::Texture("skybox/jettelly_space_common_black_BACK.png")
+	};
 
     cubemapTex = loadCubemap(faces);
 

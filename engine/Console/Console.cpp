@@ -1,5 +1,4 @@
-#include "Core/RuntimeDataPath.h"
-
+#include "runtime_gamedata_path.h"
 #include "Console.h"
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
@@ -9,13 +8,22 @@
 #include <algorithm>
 #include "../Math.h"
 
-// Forward declaration of the external level command handler
-bool HandleLevelCommands(const std::string& command);
+extern bool gWireframeMode;
+extern float gCameraSpeed;
 
 // === Internal globals for shader & background ===
 static GLuint consoleVAO = 0;
 static GLuint consoleVBO = 0;
 static GLuint consoleShader = 0;
+
+void Console::Toggle() {
+    active = !active;
+    std::cout << (active ? "Console Activated" : "Console Deactivated") << std::endl;
+}
+
+bool Console::IsActive() const {
+    return active;
+}
 
 // === Shader loading helpers ===
 static std::string LoadTextFile(const char* path) {
@@ -45,8 +53,8 @@ static GLuint CompileShader(GLenum type, const std::string& src) {
 }
 
 static GLuint LoadConsoleShader() {
-	std::string vs = LoadTextFile(DataPath("shaders/console.vert").c_str());
-	std::string fs = LoadTextFile(DataPath("shaders/console.frag").c_str());
+    std::string vs = LoadTextFile(gamedata::Shader("console.vert").c_str());
+    std::string fs = LoadTextFile(gamedata::Shader("console.frag").c_str());
 
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs);
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs);
@@ -86,83 +94,59 @@ Console::Console(HUD* hud)
 
 }
 
-void Console::Toggle() {
-    active = !active;
-    if (active) {
-        SDL_StartTextInput();
-    } else {
-        SDL_StopTextInput();
-    }
-}
-
-bool Console::IsActive() const {
-    return active;
-}
-
 void Console::ProcessEvent(const SDL_Event& event) {
     if (!active) return;
 
     if (event.type == SDL_TEXTINPUT) {
-        inputBuffer += event.text.text;
-        // Removed spammy text logging
+        // Filter out accidental backtick insert from toggle key
+        if (std::string(event.text.text) != "`") {
+            inputBuffer += event.text.text;
+        }
     } else if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-            case SDLK_BACKSPACE:
-                if (!inputBuffer.empty()) inputBuffer.pop_back();
-                break;
-			case SDLK_RETURN:
-			case SDLK_KP_ENTER:
-				std::cout << "> " << inputBuffer << std::endl;
-				ExecuteCommand(inputBuffer);
-				commandHistory.push_back(inputBuffer);
-				inputBuffer.clear();
-				historyIndex = -1;
-				break;
-            case SDLK_UP:
-                if (!commandHistory.empty()) {
-                    if (historyIndex == -1) historyIndex = static_cast<int>(commandHistory.size()) - 1;
-                    else if (historyIndex > 0) --historyIndex;
-                    inputBuffer = commandHistory[historyIndex];
-                }
-                break;
-            case SDLK_DOWN:
-                if (!commandHistory.empty()) {
-                    if (historyIndex != -1 && historyIndex < static_cast<int>(commandHistory.size()) - 1)
-                        ++historyIndex;
-                    inputBuffer = commandHistory[historyIndex];
-                }
-                break;
+        if (event.key.keysym.sym == SDLK_BACKSPACE && !inputBuffer.empty()) {
+            inputBuffer.pop_back();
+        } else if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER) {
+            ExecuteCommand(inputBuffer);
+            inputBuffer.clear();
         }
     }
 }
 
+
 void Console::ExecuteCommand(const std::string& command) {
-    // Local commands
+    std::cout << "> " << command << std::endl;
+
     if (command == "quit") {
         exit(0);
     } else if (command.rfind("sensitivity ", 0) == 0) {
         std::string value = command.substr(12);
         std::cout << "Setting sensitivity to " << value << std::endl;
 
-    // External handlers (like level commands)
-    } else if (HandleLevelCommands(command)) {
-        // success
+    } else if (command == "wireframe on") {
+        gWireframeMode = true;
+        std::cout << "Wireframe: ON" << std::endl;
+
+    } else if (command == "wireframe off") {
+        gWireframeMode = false;
+        std::cout << "Wireframe: OFF" << std::endl;
+
+
+	} else if (command.rfind("speed ", 0) == 0) {
+		std::string value = command.substr(6);
+		try {
+			gCameraSpeed = std::stof(value);
+			std::cout << "Camera speed set to " << gCameraSpeed << std::endl;
+		} catch (...) {
+			std::cout << "Invalid speed value." << std::endl;
+		}
+		
+
     } else {
         std::cout << "Unknown command: " << command << std::endl;
     }
 }
 
-
-void Console::Update(float deltaTime) {
-    // === Blinking cursor update ===
-    blinkTimer += deltaTime;
-    if (blinkTimer >= 0.5f) {
-        blinkVisible = !blinkVisible;
-        blinkTimer = 0.0f;
-    }
-}
-
-    // Optional future behavior
+void Console::Update(float deltaTime) {}
 
 void Console::Render(int width, int height) {
     if (!active) return;
@@ -205,11 +189,5 @@ void Console::Render(int width, int height) {
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
 
-    // ✅ Don't disable blending here anymore — text rendering needs it!
-    // glDisable(GL_BLEND);
-    // glEnable(GL_DEPTH_TEST);
-
-    // ✅ Finally draw text over the background
-    // === Blinking prompt support ===
 	font.RenderConsoleText(inputBuffer, commandHistory, width, height, blinkVisible);
 }

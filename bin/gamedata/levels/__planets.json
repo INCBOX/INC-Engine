@@ -1,0 +1,16 @@
+[
+  {
+	"name": "Mars",
+	"position": [0.0, 0.0, -300.0],
+	"radius": 10.0,
+	"color": [1.0, 0.2, 0.2],
+	"level": "Mars"
+  },
+  {
+    "name": "Earth",
+    "position": [-50000.0, 0.0, 0.0],
+    "radius": 6371.0,
+    "color": [0.3, 0.6, 1.0],
+    "level": "Earth"
+  }
+]

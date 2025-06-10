@@ -1,20 +1,20 @@
-#ifndef LEVEL_MANAGER_H
-#define LEVEL_MANAGER_H
-
+#pragma once
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <memory>
+
+class LevelBase;
 
 class LevelManager {
 public:
-    static void Init();
-    static bool LoadLevelByName(const std::string& name);
-    static void RenderActiveLevel(const float* view, const float* projection);
-    static void UnloadActiveLevel();
-    static std::vector<std::string> GetAvailableLevels();
+    static void Init(const std::string& jsonPath);
+    static void Tick(float deltaTime, const float* view, const float* projection, const float* playerPos);
 
-private:
-    static void DiscoverLevels(); // new
+    static void RegisterLevel(std::unique_ptr<LevelBase> level);
+    static void RegisterAllLevels();
+    static void LoadLevelByName(const std::string& name);
+    static void UnloadLevelByName(const std::string& name);
+    static bool IsLevelActive(const std::string& name);
+    static std::vector<std::string> GetActiveLevelNames();
 };
-
-#endif // LEVEL_MANAGER_H

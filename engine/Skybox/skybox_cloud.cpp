@@ -1,4 +1,4 @@
-#include "Core/RuntimeDataPath.h"
+#include "runtime_gamedata_path.h"
 
 #include <glad/glad.h>
 #include <stb_image.h>
@@ -55,7 +55,7 @@ void main()
 void LoadCloudTexture() {
     int w, h, ch;
     stbi_set_flip_vertically_on_load(1);
-    unsigned char* data = stbi_load(DataPath("textures/skybox/cloud_layer.png").c_str(), &w, &h, &ch, STBI_rgb_alpha);
+    unsigned char* data = stbi_load(gamedata::Texture("skybox/cloud_layer.png").c_str(), &w, &h, &ch, STBI_rgb_alpha);
 
     if (!data) {
         std::cerr << "[SkyboxCloud] Failed to load cloud_layer.png\n";

@@ -82,11 +82,6 @@ postbuild:
 	@if [ ! -f bin/libgcc_s_seh-1.dll ]; then cp W64lib/stb/bin/libgcc_s_seh-1.dll bin/; fi
 	@if [ ! -f bin/libwinpthread-1.dll ]; then cp W64lib/stb/bin/libwinpthread-1.dll bin/; fi
 	@echo Build complete.
-	@echo Copying shader files to runtime directory...
-	@mkdir -p bin/resources/shaders
-	@cp -r engine/Shaders/* bin/resources/shaders/
-	@echo Launching...
-	@./bin/INC-Engine.exe
 
 # -------------------------------
 # Clean Target

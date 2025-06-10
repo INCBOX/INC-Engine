@@ -1,14 +1,14 @@
 #include <iostream>
 #include <chrono>
 
-#include "Core/RuntimeDataPath.h" // DataPath gamedata/
+#include "runtime_gamedata_path.h"
 
 #include "Math.h"
 #include "Camera/FPSCamera.h"
 #include "Console/Console.h"
 #include "HUD/HUD.h"
 #include "Skybox/Skybox.h"
-#include "../Levels/LevelManager.h" // ✅ NEW
+#include "../Levels/LevelManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -17,21 +17,18 @@
 #include <windows.h>
 #include <filesystem>	// must come after
 #include <glad/glad.h>
+#include <fstream>
 
-#include <fstream>
-#include <fstream>
+bool gWireframeMode = false;
+
 int main(int argc, char* argv[]) {
+	// Redirect error output to a log file
     std::ofstream errorLog("engine_error.log", std::ios::out);
     #define LOG_ERROR(msg) do { std::cerr << msg << std::endl; errorLog << msg << std::endl; } while(0)
 
-    try {
-        std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
+	std::cout << "Wireframe: " << (gWireframeMode ? "ON" : "OFF") << std::endl;
+	std::cout << "[RenderMode] " << (gWireframeMode ? "GL_LINE" : "GL_FILL") << std::endl;
 
-    // Redirect error output to a log file
-    std::ofstream errorLog("engine_error.log", std::ios::out);
-    #define LOG_ERROR(msg) do { std::cerr << msg << std::endl; errorLog << msg << std::endl; } while(0)
-
-    // Set working directory to executable's location
     try {
         std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
     } catch (const std::exception& e) {
@@ -50,27 +47,25 @@ int main(int argc, char* argv[]) {
 
     SDL_Window* window = SDL_CreateWindow("INC-Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-    );
+        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
     if (!window) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+        LOG_ERROR("SDL_CreateWindow Error: " << SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
-	if (!glContext) {
-		std::cerr << "[Error] Failed to create OpenGL context!" << std::endl;
-		return 1;
-	}
+    if (!glContext) {
+        LOG_ERROR("Failed to create OpenGL context!");
+        return 1;
+    }
 
-	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-		std::cerr << "[Error] Failed to initialize GLAD!" << std::endl;
-		return 1;
-	}
-
-	// ✅ Now it is safe to query OpenGL info
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        LOG_ERROR("Failed to initialize GLAD!");
+        return 1;
+    }
+	// Now it is safe to query OpenGL info
 	std::cout << "[OpenGL Version] " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
 
@@ -78,13 +73,16 @@ int main(int argc, char* argv[]) {
     glViewport(0, 0, 1280, 720);
     glEnable(GL_DEPTH_TEST);
 
-    FPSCamera camera;
+	// CAMERA
+	FPSCamera camera(Vec3(0.0f, 0.0f, -300.0f + 100.0f + 300.0f)); // 300 units away from surface
+	
 	HUD hud;
 	hud.Init();
 	Console console(&hud);
 	
-    LevelManager::Init();
-    LevelManager::LoadLevelByName("mars"); // or "test"
+    // Initialize modular level system
+    LevelManager::Init(gamedata::Level("planets.json"));
+
     InitSkybox();
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -103,17 +101,16 @@ int main(int argc, char* argv[]) {
             }
 
 			// CONSOLE
-            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE) {
-                console.Toggle(); // ✅ Toggle console with ~
-            }
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE) {
+				console.Toggle(); // Toggle console with ~
+				continue; // ✅ Skip processing the backtick
+			}
 			
-            console.ProcessEvent(event); // ✅ Pass all events to console
-				
-            if (!console.IsActive()) {
-			// 🖱️ Mouse movement input for camera rotation
-                if (event.type == SDL_MOUSEMOTION) {
-                    camera.ProcessMouseMovement((float)event.motion.xrel, (float)event.motion.yrel);
-                }
+			console.ProcessEvent(event);
+
+
+            if (!console.IsActive() && event.type == SDL_MOUSEMOTION) {
+                camera.ProcessMouseMovement((float)event.motion.xrel, (float)event.motion.yrel);
             }
         }
 		
@@ -127,14 +124,16 @@ int main(int argc, char* argv[]) {
 
         glClearColor(0.1f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		glPolygonMode(GL_FRONT_AND_BACK, gWireframeMode ? GL_LINE : GL_FILL);
 
         // === 3D world ===
         glEnable(GL_DEPTH_TEST);
         Mat4 view = camera.GetViewMatrix();
-        Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+        Mat4 projection = Mat4::perspective(radians(70.0f), 1280.0f / 720.0f, 0.1f, 50000.0f);
 		
-        RenderSkybox(view, projection);      // ✅ Skybox first (depth trick)
-        LevelManager::RenderActiveLevel(view.toGLMatrix(), projection.toGLMatrix()); // ✅ Then scene
+        RenderSkybox(view, projection);      // Skybox first (depth trick)
+        LevelManager::Tick(deltaTime, view.toGLMatrix(), projection.toGLMatrix(), &camera.Position.x); // Then scene
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);
@@ -143,15 +142,9 @@ int main(int argc, char* argv[]) {
         SDL_GL_SwapWindow(window);
     }
 
-    CleanupSkybox();      // ✅ Cleanup
-    LevelManager::UnloadActiveLevel();  // ✅ Cleanup
-
+    CleanupSkybox();
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
     SDL_Quit();
-            return 0;
-    } catch (const std::exception& e) {
-        LOG_ERROR("Fatal error: " << e.what());
-        return 1;
-    }
+    return 0;
 }
