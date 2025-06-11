@@ -1,9 +1,10 @@
 #include "LevelManager.h"
+#include "Level_Debug3D.h"
 #include "Level.h"
 
 std::unique_ptr<Level> LevelManager::currentLevel = nullptr;
 
-void LevelManager::SetLevel(std::make_unique<Level_Debug3D>());
+void LevelManager::SetLevel(std::unique_ptr<Level> newLevel) {
     if (currentLevel) currentLevel->Unload();
     currentLevel = std::move(newLevel);
     currentLevel->Init();

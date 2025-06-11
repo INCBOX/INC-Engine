@@ -7,9 +7,11 @@ using namespace mathlib;
 float gCameraSpeed = 5.0f;
 
 FPSController::FPSController()
-    : position(0.0f, 0.0f, 0.0f), velocity(0.0f, 0.0f, 0.0f), pitch(0.0f), yaw(0.0f),
+    : position(0.0f, 0.0f, 3.0f),  // ← move back 3 units so you can see forward
+      velocity(0.0f, 0.0f, 0.0f), pitch(0.0f), yaw(0.0f),
       moveSpeed(6.4f), mouseSensitivity(0.1f), airAcceleration(2.0f), groundAcceleration(10.0f),
       onGround(true) {}
+
 
 FPSController::FPSController(const Vec3& startPosition)
     : position(startPosition), velocity(0.0f, 0.0f, 0.0f), pitch(0.0f), yaw(0.0f),

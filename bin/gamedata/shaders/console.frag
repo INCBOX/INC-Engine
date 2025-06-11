@@ -2,5 +2,5 @@
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4(0.0, 0.0, 0.0, 0.75); // semi-transparent background
+    FragColor = vec4(0.0, 0.0, 0.0, 0.6); // semi-transparent black
 }

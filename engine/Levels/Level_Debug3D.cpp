@@ -1,93 +1,50 @@
-// Level_Debug3D.cpp
 #include "Level_Debug3D.h"
 #include "engine_globals.h"
 #include <glad/glad.h>
-#include <SDL.h>
-
+#include <SDL2/SDL.h>
+#include <iostream>
 #include "mathlib/Mat4.h"
+
 using namespace mathlib;
 
-static GLuint vao = 0;
-static GLuint vbo = 0;
-static int lineCount = 0;
-
 void Level_Debug3D::Init() {
-    float gridSpacing = 1.0f;
-    int gridLines = 20; // 10 in each direction
+    std::cout << "[Level_Debug3D] Init()\n";
+}
 
-    std::vector<float> vertices;
+void Level_Debug3D::Update(float dt) {
+    // No logic needed for now
+}
 
-    // Ground grid on XZ plane
-    for (int i = -gridLines / 2; i <= gridLines / 2; ++i) {
-        // Lines parallel to X axis
-        vertices.push_back(-gridLines / 2 * gridSpacing);
-        vertices.push_back(0.0f);
-        vertices.push_back(i * gridSpacing);
-        vertices.push_back(gridLines / 2 * gridSpacing);
-        vertices.push_back(0.0f);
-        vertices.push_back(i * gridSpacing);
+void Level_Debug3D::Render() {
+    std::cout << "[Debug3D] Rendering large triangle\n";
 
-        // Lines parallel to Z axis
-        vertices.push_back(i * gridSpacing);
-        vertices.push_back(0.0f);
-        vertices.push_back(-gridLines / 2 * gridSpacing);
-        vertices.push_back(i * gridSpacing);
-        vertices.push_back(0.0f);
-        vertices.push_back(gridLines / 2 * gridSpacing);
-    }
+    Mat4 model = Mat4::Identity();
+    gBasicShader.SetUniformMat4("uModel", model.Data());
 
-    // Cube at origin (wireframe lines)
-    const float hs = 0.5f;
-    const float cube[] = {
-        -hs,-hs,-hs,  hs,-hs,-hs,
-         hs,-hs,-hs,  hs, hs,-hs,
-         hs, hs,-hs, -hs, hs,-hs,
-        -hs, hs,-hs, -hs,-hs,-hs,
-
-        -hs,-hs, hs,  hs,-hs, hs,
-         hs,-hs, hs,  hs, hs, hs,
-         hs, hs, hs, -hs, hs, hs,
-        -hs, hs, hs, -hs,-hs, hs,
-
-        -hs,-hs,-hs, -hs,-hs, hs,
-         hs,-hs,-hs,  hs,-hs, hs,
-         hs, hs,-hs,  hs, hs, hs,
-        -hs, hs,-hs, -hs, hs, hs
+    float verts[] = {
+        -10.0f, -10.0f, -20.0f,
+         10.0f, -10.0f, -20.0f,
+         0.0f,   10.0f, -20.0f
     };
-    vertices.insert(vertices.end(), cube, cube + sizeof(cube) / sizeof(float));
-    lineCount = vertices.size() / 3;
 
-    // Upload to GPU
+    GLuint vao, vbo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
     glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
 }
 
-void Level_Debug3D::Update(float dt) {
-    // No-op for debug
-}
-
-void Level_Debug3D::Render() {
-    gBasicShader.Bind();
-    Mat4 mvp = gProjMatrix * gViewMatrix;
-    gBasicShader.SetUniformMat4("u_MVP", mvp.Data());
-
-    glBindVertexArray(vao);
-    glDrawArrays(GL_LINES, 0, lineCount);
-    glBindVertexArray(0);
-
-    gBasicShader.Unbind();
-}
 
 void Level_Debug3D::Unload() {
-    if (vao) glDeleteVertexArrays(1, &vao);
-    if (vbo) glDeleteBuffers(1, &vbo);
-    vao = 0;
-    vbo = 0;
+    // No resources to release for now
 }

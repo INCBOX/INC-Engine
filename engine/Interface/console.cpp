@@ -155,7 +155,7 @@ void Console::Update(float deltaTime) {}
 void Console::Render(int width, int height) {
     if (!active) return;
 
-    // Quad background for the console
+    // Setup quad vertices
     float quadVerts[] = {
         0.0f,          0.0f,
         0.0f,          height * 0.25f,
@@ -166,21 +166,22 @@ void Console::Render(int width, int height) {
     if (consoleVAO == 0) {
         glGenVertexArrays(1, &consoleVAO);
         glGenBuffers(1, &consoleVBO);
+
         glBindVertexArray(consoleVAO);
         glBindBuffer(GL_ARRAY_BUFFER, consoleVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     } else {
         glBindBuffer(GL_ARRAY_BUFFER, consoleVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVerts), quadVerts);
     }
 
+    // Use proper shader
     glUseProgram(consoleShader);
 
-    // Setup HUD projection
+    // Setup orthographic projection
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
@@ -192,6 +193,7 @@ void Console::Render(int width, int height) {
     glBindVertexArray(consoleVAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
+    glUseProgram(0);
 
-	font.RenderConsoleText(inputBuffer, commandHistory, width, height, blinkVisible);
+    font.RenderConsoleText(inputBuffer, commandHistory, width, height, blinkVisible);
 }

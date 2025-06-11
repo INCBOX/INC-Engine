@@ -2,5 +2,5 @@
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4(1.0, 0.7, 0.2, 1.0); // simple orange-ish color
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red triangle
 }
