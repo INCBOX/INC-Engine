@@ -1,4 +1,5 @@
 #include "runtime_gamedata_path.h"
+#include "mathlib/Mat4.h"
 
 // PATCHED: BitmapFontRenderer.cpp — Format fix, scale, spacing
 #include "bitmap_font_renderer.h"
@@ -9,6 +10,8 @@
 #include <stb_image.h>
 #include <nlohmann/json.hpp>
 #include "math.h"
+
+using namespace mathlib;
 
 BitmapFontRenderer::BitmapFontRenderer() {
     LoadFont(gamedata::Texture("font_sfmono_rgba.png"), gamedata::Script("font_sfmono_metadata.json"));
@@ -137,8 +140,8 @@ void BitmapFontRenderer::RenderText(const std::string& text, int x, int y, int w
     float baseHeight = 720.0f;
     float scale = (windowH / baseHeight) * 0.85f;
 
-    Mat4 ortho = Mat4::orthographic(0, (float)windowW, (float)windowH, 0, -1.0f, 1.0f);
-    glUniformMatrix4fv(glGetUniformLocation(fontShader, "uProjection"), 1, GL_FALSE, ortho.toGLMatrix());
+    Mat4 ortho = Mat4::Orthographic(0, (float)windowW, (float)windowH, 0, -1.0f, 1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(fontShader, "uProjection"), 1, GL_FALSE, ortho.Data());
 
     glBindVertexArray(vao);
     int cursorX = x;

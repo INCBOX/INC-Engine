@@ -1,5 +1,6 @@
 #include "runtime_gamedata_path.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "Skybox.h"
 #include <glad/glad.h>
 #include <vector>

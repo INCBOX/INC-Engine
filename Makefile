@@ -56,10 +56,12 @@ LDFLAGS = -mconsole -lmingw32 -L$(SDL2_LIB) -lSDL2main -lSDL2 -lopengl32 \
 # Source Files
 # -------------------------------
 SRC_CPP = engine/engine.cpp \
+      engine/shader.cpp \
+      engine/engine_stb_wrapper.cpp \
       $(wildcard engine/Interface/*.cpp) \
+      $(wildcard engine/mathlib/*.cpp) \
       $(wildcard engine/Camera/*.cpp) \
-      $(wildcard engine/Levels/*.cpp) \
-      $(wildcard engine/Skybox/*.cpp)
+      $(wildcard engine/Levels/*.cpp)
 
 SRC_C = $(GLAD_SRC)
 	  

@@ -1,12 +1,12 @@
 #pragma once
 #include "Level.h"
-#include "math.h"
+#include "mathlib/Vec3.h"
 #include <vector>
 #include <string>
 
 struct Planet {
     std::string name;
-    Vec3 position;
+    mathlib::Vec3 position;
     float radius;
     std::string texturePath;
 };

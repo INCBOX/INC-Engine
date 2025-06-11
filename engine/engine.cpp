@@ -1,30 +1,31 @@
 #include <iostream>
 #include <chrono>
+#include <fstream>
 
-#include "runtime_gamedata_path.h"
-#include "math.h"
 
-#include "console.h"
-#include "hud.h"
-#include "Camera.h"
-
-#include "Levels/LevelManager.h"
-#include "Levels/Level_TestScene.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #define SDL_MAIN_HANDLED // WE ADD THIS TO AVOID MISSING WINMAIN REFERENCE
 #include <SDL2/SDL.h> 
 #include <windows.h>
 #include <filesystem>	// must come after
 #include <glad/glad.h>
-#include <fstream>
 
+#include "runtime_gamedata_path.h"
+#include "engine_globals.h"
+
+#include "mathlib/Mat4.h"
+#include "console.h"
+#include "hud.h"
+#include "Shader.h"
+#include "FPS_controller.h"
+#include "Levels/LevelManager.h"
+#include "Levels/Level_TestScene.h"
+
+using namespace mathlib;
+
+Shader gBasicShader;
+mathlib::Mat4 gProjMatrix;
+mathlib::Mat4 gViewMatrix;
 bool gWireframeMode = false;
-
-// Global matrices for shader MVP
-Mat4 gViewMatrix;
-Mat4 gProjMatrix;
 
 int main(int argc, char* argv[]) {
 	// Redirect error output to a log file
@@ -72,22 +73,31 @@ int main(int argc, char* argv[]) {
         LOG_ERROR("Failed to initialize GLAD!");
         return 1;
     }
+	
 	// Now it is safe to query OpenGL info
 	std::cout << "[OpenGL Version] " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
+	
+	// --- Load and compile shader ---
+	using namespace gamedata;
+	if (!gBasicShader.Load(gamedata::Shader("basic.vert"), gamedata::Shader("basic.frag"))) {
+        LOG_ERROR("Failed to load basic shader");
+        return 1;
+    }
 
     SDL_SetRelativeMouseMode(SDL_TRUE);
     glViewport(0, 0, 1280, 720);
     glEnable(GL_DEPTH_TEST);
 
-	// CAMERA
-	Camera camera(Vec3(0.0f, 0.0f, 10.0f));
-	
-	HUD hud;
-	hud.Init();
-	Console console(&hud);
-	
-    // Initialize modular level system
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    float aspectRatio = (float)w / (float)h;
+
+	FPSController player(Vec3(0.0f, 2.0f, 5.0f));
+    HUD hud;
+    hud.Init();
+    Console console(&hud);
+
     LevelManager::SetLevel(std::make_unique<Level_TestScene>());
 
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -108,51 +118,51 @@ int main(int argc, char* argv[]) {
 			// CONSOLE
 			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE) {
 				console.Toggle(); // Toggle console with ~
-				continue; // ✅ Skip processing the backtick
+				continue; // Skip processing the backtick
 			}
 			
 			console.ProcessEvent(event);
 
             if (!console.IsActive() && event.type == SDL_MOUSEMOTION) {
-                camera.ProcessMouse((float)event.motion.xrel, (float)-event.motion.yrel);
+                player.HandleMouseMotion((float)event.motion.xrel, (float)-event.motion.yrel);
             }
         }
 		
         if (!console.IsActive()) {
             const Uint8* keys = SDL_GetKeyboardState(nullptr);
-            Vec3 movement;
-			if (keys[SDL_SCANCODE_W]) movement += camera.GetFront();
-			if (keys[SDL_SCANCODE_S]) movement -= camera.GetFront();
-			if (keys[SDL_SCANCODE_A]) movement -= camera.GetRight();
-			if (keys[SDL_SCANCODE_D]) movement += camera.GetRight();
-            if (movement.length() > 0.0f)
-                camera.ProcessKeyboard(movement.normalized(), deltaTime);
+            player.Update(deltaTime, keys);
         }
 		
-		// --- CLEAR SCREEN ---
-		glClearColor(0.15f, 0.02f, 0.02f, 1.0f); // deep red-black, alien/Mars vibe
+		glClearColor(0.15f, 0.02f, 0.02f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		glPolygonMode(GL_FRONT_AND_BACK, gWireframeMode ? GL_LINE : GL_FILL);
-
-        // === 3D world ===
         glEnable(GL_DEPTH_TEST);
-        gViewMatrix = camera.GetViewMatrix();
-        gProjMatrix = Mat4::perspective(radians(90.0f), 1280.0f / 720.0f, 0.1f, 50000.0f);
+		
+        gViewMatrix = player.GetViewMatrix();
+        gProjMatrix = player.GetProjectionMatrix(aspectRatio);
 
-		// DEBUG INFO
-		Vec3 camPos = camera.Position;
-		std::cout << "[Camera Pos] " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
-		std::cout << "[DEBUG] gViewMatrix[0]: " << gViewMatrix.m[0] << std::endl;
-		std::cout << "[DEBUG] gProjMatrix[0]: " << gProjMatrix.m[0] << std::endl;
+        // Bind shader and set common uniforms
+        gBasicShader.Bind();
+		gBasicShader.SetUniformMat4("uView", gViewMatrix.Data());
+		gBasicShader.SetUniformMat4("uProjection", gProjMatrix.Data());
+		
+        Mat4 modelMatrix = Mat4::Identity();
+        gBasicShader.SetUniformMat4("uModel", modelMatrix.Data());
+
+        // Debug output (optional)
+        Vec3 camPos = player.GetPosition();
+        std::cout << "[Camera Pos] " << camPos.x << ", " << camPos.y << ", " << camPos.z << std::endl;
 		
 		// === Scene ===
 		LevelManager::Update(deltaTime);
 		LevelManager::Render();
+		
+        gBasicShader.Unbind();
 
         // === HUD / Console ===
         glDisable(GL_DEPTH_TEST);
-        console.Render(1280, 720);
+        console.Render(w, h);
 
         SDL_GL_SwapWindow(window);
     }

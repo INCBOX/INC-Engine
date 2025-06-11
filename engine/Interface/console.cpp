@@ -1,7 +1,7 @@
 #include "runtime_gamedata_path.h"
+#include "mathlib/Mat4.h"
 #include "hud.h"
 #include "console.h"
-#include "math.h"
 
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+
+using namespace mathlib;
 
 extern bool gWireframeMode;
 extern float gCameraSpeed;
@@ -183,9 +185,9 @@ void Console::Render(int width, int height) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
-    Mat4 ortho = Mat4::orthographic(0, (float)width, (float)height, 0, -1.0f, 1.0f);
+    Mat4 ortho = Mat4::Orthographic(0, (float)width, (float)height, 0, -1.0f, 1.0f);
     GLint loc = glGetUniformLocation(consoleShader, "uProjection");
-    glUniformMatrix4fv(loc, 1, GL_FALSE, ortho.toGLMatrix());
+    glUniformMatrix4fv(loc, 1, GL_FALSE, ortho.Data());
 
     glBindVertexArray(consoleVAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);

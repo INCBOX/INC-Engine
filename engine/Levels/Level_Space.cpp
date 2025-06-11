@@ -1,6 +1,8 @@
 #include "Level_Space.h"
 #include "runtime_gamedata_path.h"
-#include "math.h"
+#include "mathlib/Vec3.h"
+#include "mathlib/Mat4.h"
+
 #include <nlohmann/json.hpp>
 #include <glad/glad.h>
 #include <fstream>
@@ -9,6 +11,7 @@
 #include <vector>
 #include <cmath>
 
+using namespace mathlib;
 using json = nlohmann::json;
 
 extern Mat4 gViewMatrix;
@@ -161,10 +164,11 @@ void Level_Space::Update(float deltaTime) {}
 void Level_Space::Render() {
     glUseProgram(shaderID);
     for (const auto& planet : planets) {
-        float scale = planet.radius * 0.005f;
-        Mat4 model = Mat4::translate(planet.position) * Mat4::scale(scale);
+        float s = planet.radius * 0.005f;
+        Vec3 scale(s, s, s);
+        Mat4 model = Mat4::Translation(planet.position) * Mat4::Scale(scale);
         Mat4 mvp = gProjMatrix * gViewMatrix * model;
-        glUniformMatrix4fv(glGetUniformLocation(shaderID, "u_MVP"), 1, GL_FALSE, mvp.toGLMatrix());
+        glUniformMatrix4fv(glGetUniformLocation(shaderID, "u_MVP"), 1, GL_FALSE, mvp.Data());
         sphereMesh.Render();
     }
     glUseProgram(0);
