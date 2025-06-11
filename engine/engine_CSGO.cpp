@@ -6,11 +6,10 @@
 #include <SDL2/SDL_messagebox.h>
 
 #include "CSGOPlayer.h"
-#include "Level_TestRoom.h"
 #include "engine_Render.h"
 #include "mathlib/Mat4.h"
 
-std::ofstream logFile("log.txt");
+std::ofstream logFile("engine_log.txt");
 
 int main(int argc, char* argv[]) {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "BOOT", "main() started", nullptr);
@@ -39,7 +38,7 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	// ✅ REQUIRED FOR ANYTHING TO RENDER!
+	// REQUIRED FOR ANYTHING TO RENDER!
 	Render_CreateCubeFloor();
 
 	Level_TestRoom level;
