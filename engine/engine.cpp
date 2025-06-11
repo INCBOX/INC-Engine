@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
     hud.Init();
     Console console(&hud);
 
-    LevelManager::SetLevel(std::make_unique<Level_TestScene>());
+    LevelManager::SetLevel(std::make_unique<Level_Debug3D>());
 
     auto lastTime = std::chrono::high_resolution_clock::now();
     bool running = true;
