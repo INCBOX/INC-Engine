@@ -1,0 +1,67 @@
+{
+  "level_name": "Test Room",
+  "objects": [
+    {
+      "type": "box",
+      "name": "floor",
+      "position": [0, 0, 0],
+      "size": [20, 1, 20],
+      "color": [1.0, 0.5, 0.0],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "wall1",
+      "position": [0, 5, -10.5],
+      "size": [20, 10, 1],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "wall2",
+      "position": [0, 5, 10.5],
+      "size": [20, 10, 1],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "wall3",
+      "position": [-10.5, 5, 0],
+      "size": [1, 10, 20],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "wall4",
+      "position": [10.5, 5, 0],
+      "size": [1, 10, 20],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "ceiling",
+      "position": [0, 10.5, 0],
+      "size": [20, 1, 20],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "ramp",
+      "position": [-5, 0.5, -5],
+      "size": [4, 1, 6],
+      "rotation": [20, 0, 0],
+      "texture": "dev_orange.png"
+    },
+    {
+      "type": "box",
+      "name": "platform",
+      "position": [0, 3, 0],
+      "size": [4, 0.5, 4],
+      "texture": "dev_orange.png"
+    }
+  ],
+  "player_spawn": {
+    "position": [0, 2, -8],
+    "rotation": [0, 0, 0]
+  }
+}

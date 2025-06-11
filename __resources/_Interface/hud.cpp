@@ -1,3 +1,5 @@
+#include "runtime_gamedata_path.h"
+#include "engine_globals.h"
 #include "hud.h"
 #include <SDL2/SDL.h>
 #include <fstream>

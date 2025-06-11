@@ -1,15 +1,10 @@
 #pragma once
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
 
-#include "engine_Globals.h"
 #include "mathlib/Mat4.h"
-#include "engine_Shaders.h"
+#include "Shader.h"
 
 // Global shader used across levels
 extern Shader gBasicShader;
-
-extern float gCameraSpeed; // Only declare
 
 // Global projection and view matrices
 extern mathlib::Mat4 gProjMatrix;

@@ -55,13 +55,15 @@ LDFLAGS = -mconsole -lmingw32 -L$(SDL2_LIB) -lSDL2main -lSDL2 -lopengl32 \
 # -------------------------------
 # Source Files
 # -------------------------------
-SRC_CPP = engine/engine.cpp \
-      engine/shader.cpp \
-      engine/engine_stb_wrapper.cpp \
-      $(wildcard engine/Interface/*.cpp) \
+SRC_CPP = engine/engine_CSGO.cpp \
+      engine/engine_Globals.cpp \
+      engine/engine_Render.cpp \
+      engine/engine_Render_Debug.cpp \
+      engine/engine_Shaders.cpp \
+      engine/engine_STB_Wrapper.cpp \
       $(wildcard engine/mathlib/*.cpp) \
-      $(wildcard engine/Camera/*.cpp) \
-      $(wildcard engine/Levels/*.cpp)
+      $(wildcard engine/camera/*.cpp) \
+      $(wildcard engine/levels/*.cpp)
 
 SRC_C = $(GLAD_SRC)
 	  

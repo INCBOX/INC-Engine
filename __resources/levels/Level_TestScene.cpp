@@ -1,9 +1,11 @@
-#include "Level_TestScene.h"
+#include "runtime_gamedata_path.h"
 #include "engine_globals.h"
 #include "mathlib/Mat4.h"
 #include "mathlib/Vec3.h"
 #include <glad/glad.h>
 #include <iostream>
+
+#include "Level_TestScene.h"
 
 using namespace mathlib;
 

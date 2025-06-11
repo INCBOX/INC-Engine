@@ -115,4 +115,8 @@ struct Ray {
     }
 };
 
+inline float ToRadians(float degrees) {
+    return degrees * 3.14159265f / 180.0f;
+}
+
 } // namespace mathlib

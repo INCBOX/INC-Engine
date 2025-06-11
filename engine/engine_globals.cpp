@@ -1,9 +1,9 @@
-#pragma once
-#include "mathlib/Mat4.h"
-class Shader;
+#include "engine_Globals.h"
 
-extern bool gWireframeMode;
+Shader gBasicShader;
 float gCameraSpeed = 5.0f;
-extern Shader gBasicShader;
-extern mathlib::Mat4 gViewMatrix;
-extern mathlib::Mat4 gProjMatrix;
+
+mathlib::Mat4 gProjMatrix;
+mathlib::Mat4 gViewMatrix;
+
+bool gWireframeMode = false;

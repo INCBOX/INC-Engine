@@ -1,5 +1,6 @@
 #include "Level_Space.h"
 #include "runtime_gamedata_path.h"
+#include "engine_globals.h"
 #include "mathlib/Vec3.h"
 #include "mathlib/Mat4.h"
 

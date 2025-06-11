@@ -23,7 +23,7 @@ public:
     void SetUniformInt(const std::string& name, int value);
     void SetUniformFloat(const std::string& name, float value);
 
-private:
+public:
     GLuint programID;
     std::unordered_map<std::string, GLint> uniformLocationCache;
 

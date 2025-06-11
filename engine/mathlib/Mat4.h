@@ -1,4 +1,3 @@
-
 #pragma once
 #include <cmath>
 #include "Vec3.h"
@@ -17,6 +16,10 @@ struct Mat4 {
 
     static Mat4 Identity() {
         return Mat4();
+    }
+
+    static Mat4 Translate(const Vec3& v) { // Alias for Translation
+        return Translation(v);
     }
 
     static Mat4 Translation(const Vec3& v) {
@@ -87,18 +90,18 @@ struct Mat4 {
         result.m[2][3] = f.Dot(eye);
         return result;
     }
-	
+
 	static Mat4 Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ) {
 		Mat4 result{};
 		result.m[0][0] = 2.0f / (right - left);
 		result.m[1][1] = 2.0f / (top - bottom);
 		result.m[2][2] = -2.0f / (farZ - nearZ);
 		result.m[3][3] = 1.0f;
-	
+
 		result.m[0][3] = -(right + left) / (right - left);
 		result.m[1][3] = -(top + bottom) / (top - bottom);
 		result.m[2][3] = -(farZ + nearZ) / (farZ - nearZ);
-	
+
 		return result;
 	}
 
@@ -152,9 +155,3 @@ inline Mat4 Mat4::RotationQuaternion(const Quaternion& q) {
 }
 
 } // namespace mathlib
-
-
-// ===== engine.cpp change snippet (minimal) =====
-// Replace matrix upload lines with:
-
-using namespace mathlib;

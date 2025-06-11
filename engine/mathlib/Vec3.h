@@ -8,7 +8,12 @@ struct Vec3 {
     float x, y, z;
 
     Vec3() : x(0), y(0), z(0) {}
+	
     Vec3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+	
+	float LengthSq() const { return x*x + y*y + z*z; }
+	
+	Vec3(float scalar) : x(scalar), y(scalar), z(scalar) {}
 
     float Length() const {
         return std::sqrt(x*x + y*y + z*z);

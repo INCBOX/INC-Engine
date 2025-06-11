@@ -1,15 +1,16 @@
-#include "runtime_gamedata_path.h"
-#include "mathlib/Mat4.h"
+#include <glad/glad.h>   // MUST come first before using OpenGL types
+#include <stb_image.h>
+#include <nlohmann/json.hpp>
 
-// PATCHED: BitmapFontRenderer.cpp — Format fix, scale, spacing
+#include "runtime_gamedata_path.h"
+#include "engine_globals.h"
+#include "mathlib/Mat4.h"
 #include "bitmap_font_renderer.h"
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <glad/glad.h>
-#include <stb_image.h>
-#include <nlohmann/json.hpp>
-#include "math.h"
+#include <map>
 
 using namespace mathlib;
 
@@ -17,63 +18,70 @@ BitmapFontRenderer::BitmapFontRenderer() {
     LoadFont(gamedata::Texture("font_sfmono_rgba.png"), gamedata::Script("font_sfmono_metadata.json"));
 }
 
-using json = nlohmann::json;
-
 static GLuint fontShader = 0;
 
-// === Utility: Load shader source code from file ===
-static std::string LoadTextFile(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        std::cerr << "[Font] Failed to load shader: " << path << std::endl;
-        return "";
-    }
-    std::stringstream s;
-    s << file.rdbuf();
-    return s.str();
-}
+// === Embedded shader ===
+static GLuint LoadFontShader() {
+    const char* vs = R"(
+        #version 330 core
+        layout (location = 0) in vec2 aPos;
+        layout (location = 1) in vec2 aTexCoord;
+        uniform mat4 uProjection;
+        out vec2 TexCoord;
+        void main() {
+            gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
+            TexCoord = aTexCoord;
+        }
+    )";
 
-// === Utility: Compile a single shader ===
-static GLuint CompileShader(GLenum type, const std::string& source, const std::string& name) {
-    GLuint shader = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(shader, 1, &src, nullptr);
-    glCompileShader(shader);
+    const char* fs = R"(
+        #version 330 core
+        in vec2 TexCoord;
+        uniform sampler2D uFontAtlas;
+        uniform vec3 uTextColor;
+        out vec4 FragColor;
+        void main() {
+            vec4 sampled = texture(uFontAtlas, TexCoord);
+            FragColor = vec4(uTextColor, sampled.r); // Grayscale font
+        }
+    )";
 
+    GLuint vert = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vert, 1, &vs, nullptr);
+    glCompileShader(vert);
     GLint success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(vert, GL_COMPILE_STATUS, &success);
     if (!success) {
         char log[512];
-        glGetShaderInfoLog(shader, 512, nullptr, log);
-        std::cerr << "[Font] Shader compile error (" << name << "): " << log << std::endl;
-        return 0;
+        glGetShaderInfoLog(vert, 512, nullptr, log);
+        std::cerr << "[Font] Vertex Shader compile error: " << log << std::endl;
     }
 
-    return shader;
-}
-
-
-// ... LoadTextFile and CompileShader unchanged ...
-
-static GLuint LoadFontShader() {
-    std::string vs = LoadTextFile(gamedata::Shader("font.vert"));
-    std::string fs = LoadTextFile(gamedata::Shader("font.frag"));
-    GLuint vert = CompileShader(GL_VERTEX_SHADER, vs, "font.vert");
-    GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs, "font.frag");
-
-    if (vert == 0 || frag == 0) return 0;
+    GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(frag, 1, &fs, nullptr);
+    glCompileShader(frag);
+    glGetShaderiv(frag, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetShaderInfoLog(frag, 512, nullptr, log);
+        std::cerr << "[Font] Fragment Shader compile error: " << log << std::endl;
+    }
 
     GLuint program = glCreateProgram();
     glAttachShader(program, vert);
     glAttachShader(program, frag);
     glLinkProgram(program);
 
-    GLint success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) return 0;
-
     glDeleteShader(vert);
     glDeleteShader(frag);
+
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetProgramInfoLog(program, 512, nullptr, log);
+        std::cerr << "[Font] Shader link error: " << log << std::endl;
+    }
+
     return program;
 }
 
@@ -81,9 +89,8 @@ bool BitmapFontRenderer::LoadFont(const std::string& imagePath, const std::strin
     std::ifstream metaFile(metaPath);
     if (!metaFile.is_open()) return false;
 
-    std::stringstream buffer;
-    buffer << metaFile.rdbuf();
-    json j = json::parse(buffer.str());
+    nlohmann::json j;
+    metaFile >> j;
 
     cellWidth = j["cell_width"];
     cellHeight = j["cell_height"];

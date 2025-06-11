@@ -1,4 +1,5 @@
 #include "runtime_gamedata_path.h"
+#include "engine_globals.h"
 #include "mathlib/Mat4.h"
 #include "hud.h"
 #include "console.h"
@@ -30,21 +31,9 @@ bool Console::IsActive() const {
 }
 
 // === Shader loading helpers ===
-static std::string LoadTextFile(const char* path) {
-    std::ifstream f(path);
-    if (!f.is_open()) {
-        std::cerr << "[ShaderLoader] Failed to load: " << path << std::endl;
-        return "";
-    }
-    std::stringstream s;
-    s << f.rdbuf();
-    return s.str();
-}
-
-static GLuint CompileShader(GLenum type, const std::string& src) {
+static GLuint CompileShader(GLenum type, const char* src) {
     GLuint shader = glCreateShader(type);
-    const char* cstr = src.c_str();
-    glShaderSource(shader, 1, &cstr, nullptr);
+    glShaderSource(shader, 1, &src, nullptr);
     glCompileShader(shader);
     GLint success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -57,8 +46,22 @@ static GLuint CompileShader(GLenum type, const std::string& src) {
 }
 
 static GLuint LoadConsoleShader() {
-    std::string vs = LoadTextFile(gamedata::Shader("console.vert").c_str());
-    std::string fs = LoadTextFile(gamedata::Shader("console.frag").c_str());
+    const char* vs = R"(
+        #version 330 core
+        layout (location = 0) in vec2 aPos;
+        uniform mat4 uProjection;
+        void main() {
+            gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
+        }
+    )";
+
+    const char* fs = R"(
+        #version 330 core
+        out vec4 FragColor;
+        void main() {
+            FragColor = vec4(0.0, 0.0, 0.0, 0.65); // semi-transparent black
+        }
+    )";
 
     GLuint vert = CompileShader(GL_VERTEX_SHADER, vs);
     GLuint frag = CompileShader(GL_FRAGMENT_SHADER, fs);
@@ -72,7 +75,7 @@ static GLuint LoadConsoleShader() {
     if (!success) {
         char log[512];
         glGetProgramInfoLog(program, 512, nullptr, log);
-        std::cerr << "Shader link error: " << log << std::endl;
+        std::cerr << "Console Shader link error: " << log << std::endl;
     }
 
     glDeleteShader(vert);
@@ -90,19 +93,14 @@ Console::Console() : active(false), inputBuffer(""), historyIndex(-1), hudRef(nu
 Console::Console(HUD* hud)
     : active(false), inputBuffer(""), historyIndex(-1), hudRef(hud), blinkTimer(0.0f), blinkVisible(true)
 {
-    // blinking cursor setup
     if (consoleShader == 0)
         consoleShader = LoadConsoleShader();
-
-// Font is now loaded by BitmapFontRenderer internally.
-
 }
 
 void Console::ProcessEvent(const SDL_Event& event) {
     if (!active) return;
 
     if (event.type == SDL_TEXTINPUT) {
-        // Filter out accidental backtick insert from toggle key
         if (std::string(event.text.text) != "`") {
             inputBuffer += event.text.text;
         }
@@ -116,15 +114,11 @@ void Console::ProcessEvent(const SDL_Event& event) {
     }
 }
 
-
 void Console::ExecuteCommand(const std::string& command) {
     std::cout << "> " << command << std::endl;
 
     if (command == "quit") {
         exit(0);
-    } else if (command.rfind("sensitivity ", 0) == 0) {
-        std::string value = command.substr(12);
-        std::cout << "Setting sensitivity to " << value << std::endl;
 
     } else if (command == "wireframe on") {
         gWireframeMode = true;
@@ -134,17 +128,14 @@ void Console::ExecuteCommand(const std::string& command) {
         gWireframeMode = false;
         std::cout << "Wireframe: OFF" << std::endl;
 
-
-	} else if (command.rfind("speed ", 0) == 0) {
-		std::string value = command.substr(6);
-		try {
-			gCameraSpeed = std::stof(value);
-			std::cout << "Camera speed set to " << gCameraSpeed << std::endl;
-		} catch (...) {
-			std::cout << "Invalid speed value." << std::endl;
-		}
-		
-
+    } else if (command.rfind("speed ", 0) == 0) {
+        std::string value = command.substr(6);
+        try {
+            gCameraSpeed = std::stof(value);
+            std::cout << "Camera speed set to " << gCameraSpeed << std::endl;
+        } catch (...) {
+            std::cout << "Invalid speed value." << std::endl;
+        }
     } else {
         std::cout << "Unknown command: " << command << std::endl;
     }
@@ -154,6 +145,9 @@ void Console::Update(float deltaTime) {}
 
 void Console::Render(int width, int height) {
     if (!active) return;
+
+    // Prevent any external VAO/VBO states from interfering
+    glBindVertexArray(0);
 
     // Setup quad vertices
     float quadVerts[] = {
@@ -166,32 +160,27 @@ void Console::Render(int width, int height) {
     if (consoleVAO == 0) {
         glGenVertexArrays(1, &consoleVAO);
         glGenBuffers(1, &consoleVBO);
-
-        glBindVertexArray(consoleVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, consoleVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_DYNAMIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        glBindVertexArray(0);
-    } else {
-        glBindBuffer(GL_ARRAY_BUFFER, consoleVBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVerts), quadVerts);
     }
 
-    // Use proper shader
-    glUseProgram(consoleShader);
+    glBindVertexArray(consoleVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, consoleVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
-    // Setup orthographic projection
+    // Use shader
+    glUseProgram(consoleShader);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
+    // Projection matrix
     Mat4 ortho = Mat4::Orthographic(0, (float)width, (float)height, 0, -1.0f, 1.0f);
     GLint loc = glGetUniformLocation(consoleShader, "uProjection");
     glUniformMatrix4fv(loc, 1, GL_FALSE, ortho.Data());
 
-    glBindVertexArray(consoleVAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
     glBindVertexArray(0);
     glUseProgram(0);
 

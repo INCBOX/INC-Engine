@@ -1,8 +1,9 @@
-#include "shader.h"
+#include "engine_Shaders.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <glad/glad.h>
+#include <SDL2/SDL_messagebox.h>
 
 // Helper to check and log OpenGL errors
 void CheckGLError(const std::string& label) {
@@ -26,11 +27,15 @@ bool Shader::Load(const std::string& vertexPath, const std::string& fragmentPath
     std::cout << "[Loading Vertex Shader] " << vertexPath << std::endl;
     std::cout << "[Loading Fragment Shader] " << fragmentPath << std::endl;
 
-    std::string vertexCode, fragmentCode;
-    if (!ReadFile(vertexPath, vertexCode) || !ReadFile(fragmentPath, fragmentCode)) {
-        std::cerr << "Failed to load shader files.\n";
-        return false;
-    }
+	std::string vertexCode, fragmentCode;
+	if (!ReadFile(vertexPath, vertexCode) || !ReadFile(fragmentPath, fragmentCode)) {
+		std::cerr << "Failed to load shader files:\n";
+		std::cerr << "  Vertex: " << vertexPath << "\n";
+		std::cerr << "  Fragment: " << fragmentPath << "\n";
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Shader Load Failed",
+			("Vertex: " + vertexPath + "\nFragment: " + fragmentPath).c_str(), nullptr);
+		return false;
+	}
 
     // Print shader sources (useful for debugging)
     std::cout << "\n--- Vertex Shader Source ---\n" << vertexCode << "\n";
