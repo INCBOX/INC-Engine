@@ -7,10 +7,11 @@
 [Engine] FileSystem loaded and linked
 [Engine] Attempting to load map: maps/start.json
 [FS] Resolving: maps/start.json
-[FS] Checking: "D:\\git\\INC-Engine\\GION\\.\\maps/start.json"
-[FS] Found: "D:\\git\\INC-Engine\\GION\\.\\maps/start.json"
-[Engine] FS_ResolvePath returned: D:\git\INC-Engine\GION\.\maps/start.json
-[Engine] Successfully loaded map file: D:\git\INC-Engine\GION\.\maps/start.json
+[FS] Checking: "D:\\git\\INC\\hl2\\.\\maps/start.json"
+[FS] Found: "D:\\git\\INC\\hl2\\.\\maps/start.json"
+[Engine] FS_ResolvePath returned: D:\git\INC\hl2\.\maps/start.json
+[Engine] Successfully loaded map file: D:\git\INC\hl2\.\maps/start.json
 [Entity] info_player_start at (0, 0, 0)
 [Entity] light_environment at (128, 64, 256)
 [Entity] prop_static at (64, 0, 0)
+[Engine] SDL_QUIT received, exiting

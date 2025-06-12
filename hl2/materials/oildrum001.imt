@@ -1,0 +1,7 @@
+"INC_Material" "1.0"
+{
+    "shader"        "VertexLit"
+    "basetexture"   "models/props_c17/oildrum001"
+    "phong"         "1"
+    "roughness"     "0.25"
+}
