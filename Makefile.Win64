@@ -14,15 +14,19 @@ FILESYSTEM_INCLUDES = $(GLOBAL_INCLUDES)
 BIN_DIR = bin
 $(shell mkdir -p $(BIN_DIR))
 
+
 # Auto-discover sources
 FILESYSTEM_SRC = $(wildcard src/filesystem/*.cpp)
-ENGINE_SRC = $(wildcard src/engine/*.cpp src/thirdparty/glad/src/*.c)
+ENGINE_SRC = $(shell find src/engine -name "*.cpp") \
+             $(shell find src/thirdparty/glad/src -name "*.c")
+
 LAUNCHER_SRC = src/launcher/launcher.cpp
 
 FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem_%.o, $(FILESYSTEM_SRC))
 ENGINE_OBJ = $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine_%.o, $(filter %.cpp, $(ENGINE_SRC))) \
              $(patsubst src/thirdparty/glad/src/%.c, $(BIN_DIR)/glad_%.o, $(filter %.c, $(ENGINE_SRC)))
 LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher_%.o, $(LAUNCHER_SRC))
+
 
 # Generic compile rules
 $(BIN_DIR)/launcher_%.o: src/launcher/%.cpp

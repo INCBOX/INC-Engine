@@ -13,6 +13,8 @@
 #include <string>
 #include "nlohmann/json.hpp"
 
+#include "engine/render/render_main.h" 	 // RENDERER
+
 // std::vector<IMDLModel> g_Models; // BUT WHY WE ADDED THIS??
 using json = nlohmann::json;
 
@@ -130,6 +132,10 @@ DLL_EXPORT void STDCALL Engine_RunFrame() {
         }
     }
 
+    int width, height;
+    SDL_GetWindowSize(g_Window, &width, &height);
+    RenderFrame(width, height); // <<<<<<<<<<<<<<<<<<<
+	
     glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     SDL_GL_SwapWindow(g_Window);

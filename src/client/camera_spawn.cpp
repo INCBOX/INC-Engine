@@ -4,6 +4,8 @@
 #include "mathlib.h"
 #include <nlohmann/json.hpp>
 
+#include "mathlib/matrix.h"
+
 using json = nlohmann::json;
 
 Vec3 g_CameraOrigin;
@@ -41,4 +43,15 @@ Vec3 GetCameraForward() {
         cos(pitch) * sin(yaw),
         -sin(pitch)
     );
+}
+
+Mat4 GetViewMatrix() {
+    Vec3 eye = g_CameraOrigin;
+    Vec3 target = g_CameraOrigin + GetCameraForward();
+    Vec3 up = Vec3(0, 0, 1);
+    return Mat4::LookAt(eye, target, up);
+}
+
+Mat4 GetProjectionMatrix(float fovDeg, float aspect, float nearZ, float farZ) {
+    return Mat4::Perspective(fovDeg, aspect, nearZ, farZ);
 }
