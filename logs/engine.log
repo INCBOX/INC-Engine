@@ -2,8 +2,8 @@
 [Engine] Engine_Run started
 [Engine] Engine_Init called
 [Engine] Initialized SDL + OpenGL successfully
-[Engine] FS_GetGameDir ptr: 0x7ffd27211ac7
-[Engine] FS_ResolvePath ptr: 0x7ffd27211ae1
+[Engine] FS_GetGameDir ptr: 0x7ffd27551ac7
+[Engine] FS_ResolvePath ptr: 0x7ffd27551ae1
 [Engine] FileSystem loaded and linked
 [Engine] Attempting to load map: maps/start.json
 [FS] Resolving: maps/start.json
@@ -11,7 +11,7 @@
 [FS] Found: "D:\\git\\INC\\hl2\\.\\maps/start.json"
 [Engine] FS_ResolvePath returned: D:\git\INC\hl2\.\maps/start.json
 [Engine] Successfully loaded map file: D:\git\INC\hl2\.\maps/start.json
-[Entity] info_player_start at (0, 0, 0)
+[Entity] info_player_start at (0, 0, 64)
 [Entity] light_environment at (128, 64, 256)
-[Entity] prop_static at (64, 0, 0)
+[Entity] prop_static at (128, 0, 0)
 [Engine] SDL_QUIT received, exiting
