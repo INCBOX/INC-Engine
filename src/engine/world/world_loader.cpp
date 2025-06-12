@@ -37,8 +37,8 @@ bool World_LoadFromJSON(const std::string& mapName) {
     for (auto& ent : data["entities"]) {
         std::string classname = ent.value("classname", "");
         if (classname == "prop_static") {
-            auto origin = ent.value("origin", std::vector<float>{0,0,0});
-            auto mat = ent.value("material", "models/props_c17/oildrum001.imt");
+			auto model = ent.value("model", "models/testcube.imdl");
+			LoadIMDL(model, prop.model);
 
             PropStatic prop;
             prop.position = Vec3(origin[0], origin[1], origin[2]);

@@ -7,4 +7,3 @@
 [Entity] info_player_start at (0, 0, 64)
 [Entity] light_environment at (128, 64, 256)
 [Entity] prop_static at (128, 0, 0)
-[Engine] SDL_QUIT received

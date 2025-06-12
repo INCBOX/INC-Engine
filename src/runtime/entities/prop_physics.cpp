@@ -1,0 +1,1 @@
+// Fully physical — thrown, rolled, simulated (e.g. gravity gun)
