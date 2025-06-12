@@ -1,86 +1,51 @@
-// imdl_loader.cpp - Loads and renders static .imdl files
+// Loads and renders static .imdl files
 
-#include "imdl_loader.h"
+#include "imdl_geometry_loader.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <glad/glad.h>
-#include <vector>
 #include <iostream>
 
-struct IMDLModel {
-    GLuint vao = 0;
-    GLuint vbo = 0;
-    GLuint ebo = 0;
-    GLsizei indexCount = 0;
-    std::string material;
-};
-
-bool LoadIMDL(const std::string& path, IMDLModel& outModel) {
+bool ParseIMDLFile(const std::string& path, IMDLGeometry& out) {
     std::ifstream file(path);
     if (!file.is_open()) {
-        std::cerr << "[IMDL] Failed to open " << path << std::endl;
+        std::cerr << "[IMDL Loader] Failed to open " << path << "\n";
         return false;
     }
 
     nlohmann::json json;
-    file >> json;
-
-    if (!json.contains("vertices") || !json.contains("indices")) {
-        std::cerr << "[IMDL] Missing vertices or indices in " << path << std::endl;
+    try {
+        file >> json;
+    } catch (const std::exception& e) {
+        std::cerr << "[IMDL Loader] JSON parse error: " << e.what() << "\n";
         return false;
     }
 
-    const auto& verts = json["vertices"];
-    const auto& norms = json["normals"];
-    const auto& uvs = json["uvs"];
-    const auto& indices = json["indices"];
+    out.material = json.value("material", "");
 
-    std::vector<float> vertexData;
-    for (size_t i = 0; i < verts.size(); ++i) {
-        auto v = verts[i];
-        auto n = norms[i];
-        auto uv = uvs[i];
-        vertexData.insert(vertexData.end(), {v[0], v[1], v[2], n[0], n[1], n[2], uv[0], uv[1]});
+    auto vertices = json["vertices"];
+    auto normals = json["normals"];
+    auto uvs = json["uvs"];
+    auto indices = json["indices"];
+
+    if (vertices.size() != normals.size() || vertices.size() / 3 != uvs.size() / 2) {
+        std::cerr << "[IMDL Loader] Vertex attribute size mismatch\n";
+        return false;
     }
 
-    std::vector<unsigned int> indexData(indices.begin(), indices.end());
+    size_t vertexCount = vertices.size() / 3;
+    out.vertexData.resize(vertexCount * 8);
 
-    GLuint vao, vbo, ebo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
+    for (size_t i = 0; i < vertexCount; ++i) {
+        out.vertexData[i * 8 + 0] = vertices[i * 3 + 0];
+        out.vertexData[i * 8 + 1] = vertices[i * 3 + 1];
+        out.vertexData[i * 8 + 2] = vertices[i * 3 + 2];
+        out.vertexData[i * 8 + 3] = normals[i * 3 + 0];
+        out.vertexData[i * 8 + 4] = normals[i * 3 + 1];
+        out.vertexData[i * 8 + 5] = normals[i * 3 + 2];
+        out.vertexData[i * 8 + 6] = uvs[i * 2 + 0];
+        out.vertexData[i * 8 + 7] = uvs[i * 2 + 1];
+    }
 
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(unsigned int), indexData.data(), GL_STATIC_DRAW);
-
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // UV
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-
-    outModel.vao = vao;
-    outModel.vbo = vbo;
-    outModel.ebo = ebo;
-    outModel.indexCount = static_cast<GLsizei>(indexData.size());
-    outModel.material = json.value("material", "");
-
-    std::cout << "[IMDL] Loaded model: " << path << " with " << outModel.indexCount << " indices." << std::endl;
+    out.indexData.assign(indices.begin(), indices.end());
     return true;
-}
-
-void DrawIMDL(const IMDLModel& model) {
-    glBindVertexArray(model.vao);
-    glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
 }

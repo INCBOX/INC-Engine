@@ -4,6 +4,3 @@
 [FS] Resolving: maps/start.json
 [FS] Checking: "D:\\git\\INC\\hl2\\.\\maps/start.json"
 [FS] Found: "D:\\git\\INC\\hl2\\.\\maps/start.json"
-[Entity] info_player_start at (0, 0, 64)
-[Entity] light_environment at (128, 64, 256)
-[Entity] prop_static at (128, 0, 0)

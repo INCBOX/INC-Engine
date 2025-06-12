@@ -1,14 +1,14 @@
+// --- filesystem/imdl_geometry_loader.h ---
 #pragma once
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
-struct IMDLModel {
-    unsigned int vao = 0;
-    unsigned int vbo = 0;
-    unsigned int ebo = 0;
-    int indexCount = 0;
+struct IMDLGeometry {
     std::string material;
+    std::vector<float> vertexData; // xyz, normal, uv (8 floats per vertex)
+    std::vector<uint32_t> indexData;
 };
 
-bool LoadIMDL(const std::string& path, IMDLModel& outModel);
-void DrawIMDL(const IMDLModel& model);
+bool ParseIMDLFile(const std::string& path, IMDLGeometry& out);

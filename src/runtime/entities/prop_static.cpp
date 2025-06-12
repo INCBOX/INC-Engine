@@ -17,7 +17,9 @@ bool PropStatic::LoadFromEntity(const nlohmann::json& ent) {
     return true;
 }
 
-void PropStatic::Draw() {
-    // Optional: apply transform matrix later
-    DrawIMDL(model);
+void PropStatic::Draw(const Mat4& view, const Mat4& proj) {
+    Mat4 model = Mat4::Translation(origin);
+    Mat4 mvp = proj * view * model;
+    DrawIMDL(modelData, mvp);  // new overload
 }
+

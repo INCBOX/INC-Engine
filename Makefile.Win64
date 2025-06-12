@@ -1,56 +1,54 @@
-
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -g
 LINKFLAGS = -static-libstdc++ -static-libgcc
 
-# Split includes
-LAUNCHER_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include
-ENGINE_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include -Isrc/thirdparty/sdl2/include/SDL2 -Isrc/thirdparty/glad/include
+# Shared global includes
+GLOBAL_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include
 
-SDL_LIBS = -Lsrc/thirdparty/sdl2/lib -lSDL2
-GL_LIBS = -lopengl32
+# Per-module includes
+LAUNCHER_INCLUDES = $(GLOBAL_INCLUDES)
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/thirdparty/sdl2/include/SDL2 -Isrc/thirdparty/glad/include
+FILESYSTEM_INCLUDES = $(GLOBAL_INCLUDES)
 
+# Output directory
 BIN_DIR = bin
 $(shell mkdir -p $(BIN_DIR))
 
-all: INC.exe $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll
-
-# ---------------- Filesystem DLL --------------------
+# Auto-discover sources
 FILESYSTEM_SRC = $(wildcard src/filesystem/*.cpp)
-FILESYSTEM_OBJ = $(FILESYSTEM_SRC:.cpp=.o)
+ENGINE_SRC = $(wildcard src/engine/*.cpp src/thirdparty/glad/src/*.c)
+LAUNCHER_SRC = src/launcher/launcher.cpp
 
-$(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
-	$(CXX) -shared -o $@ $(FILESYSTEM_OBJ) $(ENGINE_INCLUDES) $(LINKFLAGS)
+FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem_%.o, $(FILESYSTEM_SRC))
+ENGINE_OBJ = $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine_%.o, $(filter %.cpp, $(ENGINE_SRC))) \
+             $(patsubst src/thirdparty/glad/src/%.c, $(BIN_DIR)/glad_%.o, $(filter %.c, $(ENGINE_SRC)))
+LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher_%.o, $(LAUNCHER_SRC))
 
-# -------------------- Launcher ----------------------
-src/launcher/launcher.o: src/launcher/launcher.cpp
+# Generic compile rules
+$(BIN_DIR)/launcher_%.o: src/launcher/%.cpp
+	$(CXX) $(CXXFLAGS) $(LAUNCHER_INCLUDES) -c $< -o $@
 	$(CXX) $(CXXFLAGS) $(LAUNCHER_INCLUDES) -c $< -o $@
 
-INC.exe: src/launcher/launcher.o
-	$(CXX) $^ -o $@ $(LINKFLAGS)
+$(BIN_DIR)/filesystem_%.o: src/filesystem/%.cpp
+	$(CXX) $(CXXFLAGS) $(FILESYSTEM_INCLUDES) -c $< -o $@
 
-# -------------------- Engine ------------------------
-ENGINE_SRC = \
-	src/engine/console.cpp \
-	src/engine/engine.cpp \
-	src/thirdparty/glad/src/glad.c
+$(BIN_DIR)/engine_%.o: src/engine/%.cpp
+	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
 
-ENGINE_OBJ = $(ENGINE_SRC:.cpp=.o)
-ENGINE_OBJ := $(ENGINE_OBJ:.c=.o)
+$(BIN_DIR)/glad_%.o: src/thirdparty/glad/src/%.c
+	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
+
+# Targets
+all: INC.exe $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll
 
 $(BIN_DIR)/engine.dll: $(ENGINE_OBJ)
-	$(CXX) -shared -o $@ $(ENGINE_OBJ) $(ENGINE_INCLUDES) $(SDL_LIBS) $(GL_LIBS) $(LINKFLAGS)
+	$(CXX) -shared -o $@ $^ $(ENGINE_INCLUDES) $(LINKFLAGS) -lopengl32 -Lsrc/thirdparty/sdl2/lib -lSDL2
 
-src/engine/console.o: src/engine/console.cpp
-	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
+$(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
+	$(CXX) -shared -o $@ $^ $(FILESYSTEM_INCLUDES) $(LINKFLAGS)
 
-src/engine/engine.o: src/engine/engine.cpp
-	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
-
-src/thirdparty/glad/src/glad.o: src/thirdparty/glad/src/glad.c
-	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
+INC.exe: $(LAUNCHER_OBJ)
+	$(CXX) -o $@ $^ $(LAUNCHER_INCLUDES) $(LINKFLAGS)
 
 clean:
-	find src -name "*.o" -type f -delete
-	rm -f bin/*.dll bin/*.def
-	rm -f INC.exe
+	rm -f $(BIN_DIR)/*.o $(BIN_DIR)/*.dll INC.exe
