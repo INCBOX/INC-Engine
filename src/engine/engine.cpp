@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <string>
 #include "nlohmann/json.hpp"
+
+// std::vector<IMDLModel> g_Models; // BUT WHY WE ADDED THIS??
 using json = nlohmann::json;
 
 static HMODULE g_FileSystemDLL = nullptr;

@@ -8,7 +8,7 @@
   "entities": [
     {
       "classname": "info_player_start",
-      "origin": [0, 0, 64],
+      "origin": [0, 0, 128],
       "angles": [0, 90, 0]
     },
     {
@@ -17,5 +17,11 @@
       "angles": [45, 45, 0],
       "light": "255 255 255 200"
     },
+    {
+      "classname": "prop_static",
+      "model": "dev/testcube.imdl",
+      "origin": [0, 0, 0],
+      "angles": [0, 0, 0]
+    }
   ]
 }

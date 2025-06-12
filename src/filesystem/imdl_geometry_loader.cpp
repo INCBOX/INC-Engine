@@ -22,30 +22,38 @@ bool ParseIMDLFile(const std::string& path, IMDLGeometry& out) {
 
     out.material = json.value("material", "");
 
-    auto vertices = json["vertices"];
-    auto normals = json["normals"];
-    auto uvs = json["uvs"];
-    auto indices = json["indices"];
-
-    if (vertices.size() != normals.size() || vertices.size() / 3 != uvs.size() / 2) {
-        std::cerr << "[IMDL Loader] Vertex attribute size mismatch\n";
+    if (!json.contains("vertices") || !json.contains("triangles")) {
+        std::cerr << "[IMDL Loader] Missing required fields\n";
         return false;
     }
 
-    size_t vertexCount = vertices.size() / 3;
-    out.vertexData.resize(vertexCount * 8);
+    auto& verts = json["vertices"];
+    auto& tris = json["triangles"];
 
-    for (size_t i = 0; i < vertexCount; ++i) {
-        out.vertexData[i * 8 + 0] = vertices[i * 3 + 0];
-        out.vertexData[i * 8 + 1] = vertices[i * 3 + 1];
-        out.vertexData[i * 8 + 2] = vertices[i * 3 + 2];
-        out.vertexData[i * 8 + 3] = normals[i * 3 + 0];
-        out.vertexData[i * 8 + 4] = normals[i * 3 + 1];
-        out.vertexData[i * 8 + 5] = normals[i * 3 + 2];
-        out.vertexData[i * 8 + 6] = uvs[i * 2 + 0];
-        out.vertexData[i * 8 + 7] = uvs[i * 2 + 1];
+    if (!verts.is_array() || !tris.is_array()) {
+        std::cerr << "[IMDL Loader] Invalid data format\n";
+        return false;
     }
 
-    out.indexData.assign(indices.begin(), indices.end());
+    out.vertexData.clear();
+    for (const auto& v : verts) {
+        if (v.size() != 8) {
+            std::cerr << "[IMDL Loader] Invalid vertex entry (must have 8 floats)\n";
+            return false;
+        }
+        for (int i = 0; i < 8; ++i)
+            out.vertexData.push_back(v[i]);
+    }
+
+    out.indexData.clear();
+    for (const auto& tri : tris) {
+        if (tri.size() != 3) {
+            std::cerr << "[IMDL Loader] Invalid triangle entry (must have 3 indices)\n";
+            return false;
+        }
+        for (int i = 0; i < 3; ++i)
+            out.indexData.push_back(tri[i]);
+    }
+
     return true;
 }
