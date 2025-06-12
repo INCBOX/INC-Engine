@@ -1,0 +1,44 @@
+# === Makefile.linux ===
+CXX := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra -g -fPIC
+
+SRC_DIR := src
+BIN_DIR := bin_linux
+SDL_FLAGS := $(shell sdl2-config --cflags --libs)
+GLAD_SRC := $(SRC_DIR)/thirdparty/glad/src/glad.c
+GLAD_OBJ := $(GLAD_SRC:.c=.o)
+
+LAUNCHER_EXE := $(BIN_DIR)/launcher
+ENGINE_SO := $(BIN_DIR)/engine.so
+FS_SO := $(BIN_DIR)/filesystem_stdio.so
+
+INCLUDES := -I$(SRC_DIR) -I$(SRC_DIR)/thirdparty/glad/include
+LIBS := -lGL -ldl
+
+LAUNCHER_SRC := $(SRC_DIR)/launcher/launcher.cpp
+ENGINE_SRC := $(SRC_DIR)/engine/engine.cpp
+FS_SRC := $(SRC_DIR)/filesystem/filesystem_stdio.cpp
+
+LAUNCHER_OBJ := $(LAUNCHER_SRC:.cpp=.o)
+ENGINE_OBJ := $(ENGINE_SRC:.cpp=.o)
+FS_OBJ := $(FS_SRC:.cpp=.o)
+
+all: $(LAUNCHER_EXE) $(ENGINE_SO) $(FS_SO)
+
+$(LAUNCHER_EXE): $(LAUNCHER_OBJ)
+	$(CXX) -o $@ $^ $(LIBS) $(SDL_FLAGS)
+
+$(ENGINE_SO): $(ENGINE_OBJ) $(GLAD_OBJ)
+	$(CXX) -shared -o $@ $^ $(LIBS) $(SDL_FLAGS)
+
+$(FS_SO): $(FS_OBJ)
+	$(CXX) -shared -o $@ $^ $(LIBS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(GLAD_OBJ): $(GLAD_SRC)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(LAUNCHER_OBJ) $(ENGINE_OBJ) $(FS_OBJ) $(GLAD_OBJ) $(LAUNCHER_EXE) $(ENGINE_SO) $(FS_SO)

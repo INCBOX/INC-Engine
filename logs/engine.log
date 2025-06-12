@@ -1,0 +1,16 @@
+[Engine] Log started
+[Engine] Engine_Run started
+[Engine] Engine_Init called
+[Engine] Initialized SDL + OpenGL successfully
+[Engine] FS_GetGameDir ptr: 0x7ffd27211ac7
+[Engine] FS_ResolvePath ptr: 0x7ffd27211ae1
+[Engine] FileSystem loaded and linked
+[Engine] Attempting to load map: maps/start.json
+[FS] Resolving: maps/start.json
+[FS] Checking: "D:\\git\\INC-Engine\\GION\\.\\maps/start.json"
+[FS] Found: "D:\\git\\INC-Engine\\GION\\.\\maps/start.json"
+[Engine] FS_ResolvePath returned: D:\git\INC-Engine\GION\.\maps/start.json
+[Engine] Successfully loaded map file: D:\git\INC-Engine\GION\.\maps/start.json
+[Entity] info_player_start at (0, 0, 0)
+[Entity] light_environment at (128, 64, 256)
+[Entity] prop_static at (64, 0, 0)

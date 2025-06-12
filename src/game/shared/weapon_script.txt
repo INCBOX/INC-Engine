@@ -1,0 +1,7 @@
+
+WeaponData {
+    "printname"    "Pistol"
+    "damage"       "25"
+    "firerate"     "0.15"
+    "clip_size"    "12"
+}

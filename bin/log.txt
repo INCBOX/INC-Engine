@@ -1,2 +1,0 @@
-[INFO] Logging started.
-Logging test line 2

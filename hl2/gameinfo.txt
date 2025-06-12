@@ -1,0 +1,16 @@
+"GameInfo"
+{
+    game    "HL2"
+
+    FileSystem
+    {
+        SteamAppId        243750
+        ToolsAppId        211
+
+        SearchPaths
+        {
+            game            "."           // current mod folder (hl2)
+            game            "platform"   // shared resources
+        }
+    }
+}

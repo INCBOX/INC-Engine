@@ -1,0 +1,25 @@
+{
+  "name": "start",
+  "worldspawn": {
+    "classname": "worldspawn",
+    "skyname": "sky_day01_01",
+    "gravity": 800
+  },
+  "entities": [
+    {
+      "classname": "info_player_start",
+      "origin": [0, 0, 0]
+    },
+    {
+      "classname": "light_environment",
+      "origin": [128, 64, 256],
+      "angles": [45, 0, 0],
+      "light": "255 255 255 200"
+    },
+    {
+      "classname": "prop_static",
+      "origin": [64, 0, 0],
+      "model": "models/props_c17/oildrum001.mdl"
+    }
+  ]
+}
