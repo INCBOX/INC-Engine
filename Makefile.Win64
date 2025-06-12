@@ -13,7 +13,14 @@ GL_LIBS = -lopengl32
 BIN_DIR = bin
 $(shell mkdir -p $(BIN_DIR))
 
-all: INC.exe $(BIN_DIR)/engine.dll
+all: INC.exe $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll
+
+# ---------------- Filesystem DLL --------------------
+FILESYSTEM_SRC = $(wildcard src/filesystem/*.cpp)
+FILESYSTEM_OBJ = $(FILESYSTEM_SRC:.cpp=.o)
+
+$(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
+	$(CXX) -shared -o $@ $(FILESYSTEM_OBJ) $(ENGINE_INCLUDES) $(LINKFLAGS)
 
 # -------------------- Launcher ----------------------
 src/launcher/launcher.o: src/launcher/launcher.cpp
