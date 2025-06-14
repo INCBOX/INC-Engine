@@ -1,0 +1,73 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
+LINKFLAGS = -static-libstdc++ -static-libgcc
+
+# Shared global includes
+GLOBAL_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include -Isrc/public
+
+# Per-module includes
+LAUNCHER_INCLUDES = $(GLOBAL_INCLUDES)
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/thirdparty/sdl2/include/SDL2 -Isrc/thirdparty/glad/include -Isrc/thirdparty/stb
+FILESYSTEM_INCLUDES = $(GLOBAL_INCLUDES)
+GAME_INCLUDES = $(GLOBAL_INCLUDES)  # Added game includes same as global
+
+# Output directory
+BIN_DIR = bin
+$(shell mkdir -p $(BIN_DIR))
+
+# Auto-discover sources
+FILESYSTEM_SRC = $(shell find src/filesystem -name "*.cpp")
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/thirdparty/sdl2/include/SDL2 -Isrc/thirdparty/glad/include -Isrc/thirdparty/stb
+LAUNCHER_SRC = $(shell find src/launcher -name "*.cpp")
+GAME_SRC = $(shell find src/game -name "*.cpp")  # Added game sources
+
+# Preserve directory structure inside bin/ for all modules
+
+FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem/%.o, $(FILESYSTEM_SRC))
+ENGINE_OBJ = $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine/%.o, $(filter %.cpp, $(ENGINE_SRC))) \
+             $(patsubst src/thirdparty/glad/src/%.c, $(BIN_DIR)/glad_%.o, $(filter %.c, $(ENGINE_SRC)))
+LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher/%.o, $(LAUNCHER_SRC))
+GAME_OBJ = $(patsubst src/game/%.cpp, $(BIN_DIR)/game/%.o, $(GAME_SRC))  # Added game objects
+
+# Create directories for all .o files before compiling
+$(shell mkdir -p $(sort $(dir $(FILESYSTEM_OBJ))))
+$(shell mkdir -p $(sort $(dir $(ENGINE_OBJ))))
+$(shell mkdir -p $(sort $(dir $(LAUNCHER_OBJ))))
+$(shell mkdir -p $(sort $(dir $(GAME_OBJ))))  # Added game dirs
+$(shell mkdir -p $(BIN_DIR))
+
+# Generic compile rules
+
+$(BIN_DIR)/launcher/%.o: src/launcher/%.cpp
+	$(CXX) $(CXXFLAGS) $(LAUNCHER_INCLUDES) -c $< -o $@
+
+$(BIN_DIR)/filesystem/%.o: src/filesystem/%.cpp
+	$(CXX) $(CXXFLAGS) $(FILESYSTEM_INCLUDES) -c $< -o $@
+
+$(BIN_DIR)/engine/%.o: src/engine/%.cpp
+	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
+
+$(BIN_DIR)/glad_%.o: src/thirdparty/glad/src/%.c
+	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
+
+$(BIN_DIR)/game/%.o: src/game/%.cpp   # Added compile rule for game
+	$(CXX) $(CXXFLAGS) $(GAME_INCLUDES) -c $< -o $@
+
+# Targets
+all: INC.exe $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll $(BIN_DIR)/game.dll  # Added game.dll to all
+
+$(BIN_DIR)/engine.dll: $(ENGINE_OBJ)
+	$(CXX) -shared -o $@ $^ $(ENGINE_INCLUDES) $(LINKFLAGS) -lopengl32 -Lsrc/thirdparty/sdl2/lib -lSDL2
+
+$(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
+	$(CXX) -shared -o $@ $^ $(FILESYSTEM_INCLUDES) $(LINKFLAGS)
+
+$(BIN_DIR)/game.dll: $(GAME_OBJ)  # Added game.dll target
+	$(CXX) -shared -o $@ $^ $(GAME_INCLUDES) $(LINKFLAGS)
+
+INC.exe: $(LAUNCHER_OBJ)
+	$(CXX) -o $@ $^ $(LAUNCHER_INCLUDES) $(LINKFLAGS)
+
+clean:
+	find $(BIN_DIR) -name '*.o' -delete
+	rm -f $(BIN_DIR)/*.dll INC.exe

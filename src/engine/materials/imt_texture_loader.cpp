@@ -1,39 +1,34 @@
-// texture_loader.cpp - Load base texture from .imt using stb_image
-#include <string>
+// imt_texture_loader.cpp - Load base texture from .imt using modular filesystem and DDS loader
+
+#include "imt_texture_loader.h"
+#include "shaderapi.h"
+#include "filesystem.h"        // <-- Now using IFileSystem interface
+#include "dds_loader.h"        // Custom DDS file loading logic
 #include <iostream>
-#include <glad/glad.h>
-#include "stb_image.h"
-#include "filesystem_stdio.h"
+#include <vector>
 
-unsigned int LoadTextureFromIMT(const std::string& basetexturePath) {
-    std::string resolved = FS_ResolvePath("materials/" + basetexturePath + ".png");
+// External global pointer to the loaded filesystem interface (set by engine.cpp)
+extern IFileSystem* g_pFileSystem;
+
+uint32_t LoadTextureFromIMT(const std::string& basetexturePath) {
+    // Resolve the full path using the Source-style virtual path (materials/<path>.dds)
+    std::string resolved = g_pFileSystem->ResolvePath("materials/" + basetexturePath + ".dds");
     if (resolved.empty()) {
-        std::cerr << "[TextureLoader] Failed to resolve: " << basetexturePath << ".png\n";
+        std::cerr << "[TextureLoader] Failed to resolve: " << basetexturePath << ".dds\n";
         return 0;
     }
 
-    int width, height, channels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(resolved.c_str(), &width, &height, &channels, 4);
+    // Variables to receive DDS texture metadata
+    std::vector<uint8_t> texData;
+    int width = 0, height = 0;
+    uint32_t format = 0;
 
-    if (!data) {
-        std::cerr << "[TextureLoader] Failed to load image: " << resolved << "\n";
+    // Load and decompress DDS texture into texData
+    if (!LoadDDS(resolved.c_str(), width, height, format, texData)) {
+        std::cerr << "[TextureLoader] Failed to load .dds texture: " << resolved << "\n";
         return 0;
     }
 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-
-    std::cout << "[TextureLoader] Loaded texture: " << resolved << " (" << width << "x" << height << ")\n";
-    return textureID;
+    // Upload the texture to the GPU via the active ShaderAPI
+    return INC::g_pShaderAPI->LoadDDSTexture(texData.data(), texData.size(), width, height, format);
 }

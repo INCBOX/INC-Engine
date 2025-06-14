@@ -1,0 +1,8 @@
+win_filesystem=bin/filesystem_stdio.dll
+win_engine=bin/engine.dll
+
+linux_filesystem=bin/libfilesystem_stdio.so
+linux_engine=bin/libengine.so
+
+mac_filesystem=bin/libfilesystem_stdio.dylib
+mac_engine=bin/libengine.dylib

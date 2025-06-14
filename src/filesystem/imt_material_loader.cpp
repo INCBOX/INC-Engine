@@ -1,15 +1,25 @@
 // imt_material_loader.cpp - loads .imt (INC Material Format v1.0)
 // Pure file loader. No engine or rendering dependencies here.
+
 #include <string>
 #include <fstream>
 #include <unordered_map>
 #include <iostream>
 #include <filesystem>
-#include "imt_material_loader.h"
-#include "filesystem_stdio.h"
+#include "imt_material.h"
+
+// Declare FS_ResolvePath function pointer from filesystem_stdio.dll
+using FS_ResolvePathFn = std::string(*)(const std::string&);
+extern FS_ResolvePathFn FS_ResolvePath;
 
 Material LoadIMT(const std::string& relativePath) {
     Material mat;
+
+    if (!FS_ResolvePath) {
+        std::cerr << "[MaterialLoader] FS_ResolvePath is null!\n";
+        return mat;
+    }
+
     std::string fullPath = FS_ResolvePath("materials/" + relativePath + ".imt");
 
     std::ifstream file(fullPath);
@@ -54,16 +64,13 @@ Material LoadIMT(const std::string& relativePath) {
             } else if (key == "$bumpmap") {
                 mat.parameters[key] = val;
                 std::cout << "[MaterialLoader] Recognized future bumpmap: " << val << "\n";
-                // NOTE: Not used yet — reserved for future normal mapping
             } else if (key == "$roughness" || key == "$metallic") {
                 mat.parameters[key] = val;
                 std::cout << "[MaterialLoader] Recognized future PBR key: " << key << " = " << val << "\n";
-                // NOTE: Reserved for future PBR support — do not implement yet!
             } else if (key == "$translucent" || key == "$alpha") {
                 mat.parameters[key] = val;
             } else if (key == "$surfaceprop") {
                 mat.parameters[key] = val;
-                // NOTE: For physics/sound materials — Source 1/2 style
             } else {
                 std::cout << "[MaterialLoader] Unrecognized material key: " << key << " = " << val << "\n";
                 mat.parameters[key] = val;

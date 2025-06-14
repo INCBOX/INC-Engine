@@ -1,6 +1,9 @@
+
 #pragma once
 
 #include <string>
+#include <cstdint>
 
-// Loads a texture from "materials/<name>.png" and returns OpenGL texture ID
-unsigned int LoadTextureFromIMT(const std::string& basetexturePath);
+// Loads a DDS texture from "materials/<name>.dds" and returns a GPU texture ID.
+// Uses IFileSystem and ShaderAPI interfaces behind the scenes.
+uint32_t LoadTextureFromIMT(const std::string& basetexturePath);
