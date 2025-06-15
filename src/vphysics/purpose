@@ -1,8 +1,0 @@
-Physics DLL (vphysics.dll)
-Contains the physics system abstraction.
-
-Manages physics simulation, collision detection, rigid body dynamics.
-
-Exposes interfaces for physics props like prop_physics.
-
-Game DLL entities interact with this DLL for physical behaviors.

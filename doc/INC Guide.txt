@@ -1,0 +1,9 @@
+// inc_engine_rules.h
+
+// Rule #1: Always compile and launch after any change.
+// Rule #2: Don't add more than one new system at a time.
+// Rule #3: Use names that YOU understand.
+// Rule #4: If it breaks, comment it out — not give up.
+// Rule #5: Trust the plan. Build in layers.
+
+#define INC_ENGINE_RULE_1 "Never go without compiling and seeing engine launching!"

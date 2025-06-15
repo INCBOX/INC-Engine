@@ -1,1 +1,0 @@
-// Can animate, move, parented to things, etc. Used for doors, levers

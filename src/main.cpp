@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <thread>  // For std::this_thread::sleep_for
+#include <chrono>  // For std::chrono::milliseconds
 
 #if defined(_WIN32)
     #include <Windows.h>
@@ -138,10 +140,13 @@ int main() {
     Engine_Init();
 
     // Main loop - runs until externally terminated (e.g., user closes window or engine signals exit)
-    while (true) {
-        Engine_RunFrame();
-        // TODO: Add sleep/yield here or frame timing logic to avoid busy loop and high CPU usage
-    }
+	while (true) {
+		Engine_RunFrame();
+
+		// Sleep roughly 16ms per frame to cap at ~60 FPS and prevent 100% CPU usage.
+		// This is a simple frame pacing method; can be refined with precise timing if needed.
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	}
 
     // This point is never reached in current design
     Engine_Shutdown();

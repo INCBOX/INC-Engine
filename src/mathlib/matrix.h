@@ -1,3 +1,5 @@
+// Wire up MVP logic
+
 #pragma once
 
 #include "vec3.h"
@@ -15,3 +17,12 @@ struct Mat4 {
 
     const float* Data() const { return &m[0][0]; }
 };
+
+inline Mat4 operator*(const Mat4& a, const Mat4& b) {
+    Mat4 result = {};
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            for (int k = 0; k < 4; ++k)
+                result.m[i][j] += a.m[i][k] * b.m[k][j];
+    return result;
+}

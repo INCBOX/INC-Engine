@@ -1,6 +1,5 @@
-// filesystem_stdio.cpp - updated for Source-style directory structure
+// ✅ filesystem_stdio.cpp - updated for Source-style directory structure
 #include "filesystem_stdio.h"
-#include "filesystem.h"
 
 #include <fstream>
 #include <sstream>
@@ -18,29 +17,6 @@ static std::string Trim(const std::string& str) {
     size_t first = str.find_first_not_of(" \t\n\r");
     size_t last = str.find_last_not_of(" \t\n\r");
     return (first == std::string::npos) ? "" : str.substr(first, last - first + 1);
-}
-
-class CFileSystem_Stdio : public IFileSystem {
-public:
-    std::string ResolvePath(const std::string& relativePath) override {
-        std::cout << "[FS] Resolving: " << relativePath << "\n";
-        for (const auto& base : g_searchPaths) {
-            fs::path full = fs::path(g_gameDir) / base / relativePath;
-            std::cout << "[FS] Checking: " << full << "\n";
-            if (fs::exists(full)) {
-                std::cout << "[FS] Found: " << full << "\n";
-                return full.string();
-            }
-        }
-        std::cout << "[FS] Failed to resolve: " << relativePath << "\n";
-        return "";
-    }
-};
-
-static CFileSystem_Stdio g_StaticFS;
-
-extern "C" DLL_EXPORT IFileSystem* GetFileSystemInterface() {
-    return &g_StaticFS;
 }
 
 DLL_EXPORT bool FS_Init(const std::string& gameinfo_path) {

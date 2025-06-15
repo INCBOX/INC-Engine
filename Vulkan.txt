@@ -1,7 +1,0 @@
-Required defines
-Add -DUSE_VULKAN to your build flags when compiling Vulkan parts.
-
-
-CPPFLAGS += -DUSE_VULKAN
-
-to ensure Vulkan-specific members are only included when Vulkan is in use (avoiding conflicts when only building OpenGL or DX versions).
