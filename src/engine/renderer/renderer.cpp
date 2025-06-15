@@ -1,128 +1,77 @@
+// src/engine/renderer/renderer.cpp
 #include "renderer/renderer.h"
-#include <glad/glad.h>
+#include "shaders/gl_rendersystem.h" // For now, we directly create GL system
 #include <iostream>
+#include <SDL.h> // Include SDL for SDL_GL_CreateContext and SDL_GL_SwapWindow (though not directly used here now)
 
-// Shader sources (hardcoded minimal shaders)
-static const char* vertexShaderSrc = R"glsl(
-#version 330 core
-layout(location = 0) in vec3 aPos;
-void main() {
-    gl_Position = vec4(aPos, 1.0);
+// No more Shader sources or RendererInternal OpenGL-specific state here!
+
+Renderer::Renderer() : m_activeRenderSystem(nullptr) {}
+
+Renderer::~Renderer() {
+    // Shutdown is responsible for deleting m_activeRenderSystem
 }
-)glsl";
 
-static const char* fragmentShaderSrc = R"glsl(
-#version 330 core
-out vec4 FragColor;
-void main() {
-    FragColor = vec4(0.3, 0.7, 1.0, 1.0); // light blue color
-}
-)glsl";
+bool Renderer::Init(SDL_Window* window) {
+    // This is where you would potentially load a DLL for DX/Vulkan/OpenGL
+    // For now, we directly instantiate RenderSystemGL
+    m_activeRenderSystem = new RenderSystemGL(); // <--- Instantiate the OpenGL implementation
 
-class RendererInternal {
-public:
-    GLuint shaderProgram = 0;
-    GLuint VAO = 0;
-
-    bool CompileShader(GLuint& shader, GLenum type, const char* src) {
-        shader = glCreateShader(type);
-        glShaderSource(shader, 1, &src, nullptr);
-        glCompileShader(shader);
-        GLint success;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            char log[512];
-            glGetShaderInfoLog(shader, 512, nullptr, log);
-            std::cerr << "[Renderer] Shader compile error: " << log << "\n";
-            return false;
-        }
-        return true;
-    }
-
-    bool CreateShaderProgram() {
-        GLuint vertexShader, fragmentShader;
-        if (!CompileShader(vertexShader, GL_VERTEX_SHADER, vertexShaderSrc)) return false;
-        if (!CompileShader(fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderSrc)) return false;
-
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-
-        GLint success;
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
-            char log[512];
-            glGetProgramInfoLog(shaderProgram, 512, nullptr, log);
-            std::cerr << "[Renderer] Shader link error: " << log << "\n";
-            return false;
-        }
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-        return true;
-    }
-
-    void SetupTriangle() {
-        float vertices[] = {
-             0.0f,  0.5f, 0.0f,  // top
-            -0.5f, -0.5f, 0.0f,  // bottom left
-             0.5f, -0.5f, 0.0f   // bottom right
-        };
-
-        GLuint VBO;
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        // Unbind to avoid accidental modification
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-};
-
-static RendererInternal rendererInternal;
-
-bool Renderer::Init() {
-    if (!gladLoadGL()) {
-        std::cerr << "[Renderer] Failed to initialize GLAD\n";
+    if (!m_activeRenderSystem) {
+        std::cerr << "[Renderer] Failed to create a render system instance.\n";
         return false;
     }
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glEnable(GL_DEPTH_TEST);
+    // Pass the SDL window handle to the specific render system for context creation
+    // The width and height could be queried from the window or passed from engine.cpp
+    int width, height;
+    SDL_GetWindowSize(window, &width, &height);
 
-    if (!rendererInternal.CreateShaderProgram()) {
-        std::cerr << "[Renderer] Failed to create shader program\n";
+    if (!m_activeRenderSystem->Init(window, width, height)) {
+        std::cerr << "[Renderer] Active render system initialization failed.\n";
+        delete m_activeRenderSystem;
+        m_activeRenderSystem = nullptr;
         return false;
     }
 
-    rendererInternal.SetupTriangle();
-
-    std::cout << "[Renderer] Init successful\n";
+    std::cout << "[Renderer] Init successful, using active render system.\n";
     return true;
 }
 
+void Renderer::BeginFrame() {
+    if (m_activeRenderSystem) {
+        m_activeRenderSystem->BeginFrame();
+    }
+}
+
 void Renderer::RenderFrame(int width, int height) {
-    glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (m_activeRenderSystem) {
+        // No triangle or vertex submission here!
 
-    glUseProgram(rendererInternal.shaderProgram);
-    glBindVertexArray(rendererInternal.VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
-    glUseProgram(0);
+        // The render system just renders whatever was submitted earlier by the game or scene.
 
-    // You need to call SDL_GL_SwapWindow(g_Window) somewhere in engine.cpp after this!
+        m_activeRenderSystem->RenderFrame(width, height);
+    }
+}
+
+void Renderer::EndFrame() { // <--- REMOVED SDL_Window* parameter
+    if (m_activeRenderSystem) {
+        m_activeRenderSystem->EndFrame();
+        // SDL_GL_SwapWindow is now handled by the specific RenderSystemGL::EndFrame()
+        // No direct SDL_GL_SwapWindow call here.
+    }
 }
 
 void Renderer::Shutdown() {
-    std::cout << "[Renderer] Shutdown complete\n";
+    if (m_activeRenderSystem) {
+        m_activeRenderSystem->Shutdown(); // Call shutdown on the active render system
+        delete m_activeRenderSystem; // Delete the instance
+        m_activeRenderSystem = nullptr;
+    }
+    std::cout << "[Renderer] Shutdown complete.\n";
+}
+
+void Renderer::DrawTriangle() {
+    // This is a placeholder for how game logic might request drawing.
+    // It would ultimately call SubmitObject on the active render system.
 }

@@ -16,9 +16,8 @@
 
 #include "engine.h"
 
-// Modular renderer interface and OpenGL backend
-#include "shaders/irendersystem.h"
-#include "shaders/gl_rendersystem.h" // TEMP - until modular ShaderAPI is built
+// Modular renderer interface
+#include "renderer/renderer.h" // <--- CHANGED: Include the main Renderer interface
 
 using json = nlohmann::json;
 
@@ -42,7 +41,7 @@ static FS_ResolvePathFn FS_ResolvePath = nullptr;
 // SDL Window and rendering handles
 //-----------------------------------------------------------------------------
 static SDL_Window* g_Window = nullptr;
-static IRenderSystem* g_Renderer = nullptr; // Replaces OpenGL context
+static Renderer* g_Renderer = nullptr; // <--- CHANGED: Now points to the main Renderer class
 
 //-----------------------------------------------------------------------------
 // Platform-dependent export and calling conventions for DLL interface
@@ -63,9 +62,14 @@ static IRenderSystem* g_Renderer = nullptr; // Replaces OpenGL context
 //-----------------------------------------------------------------------------
 void InitEngineLog() {
     std::filesystem::create_directories("logs");
-    FILE* logFile;
-    freopen_s(&logFile, "logs/engine.log", "w", stdout);
-    freopen_s(&logFile, "logs/engine.log", "w", stderr);
+    FILE* logFile = nullptr;
+    freopen_s(&logFile, "logs/engine.log", "w", stdout); // Added missing semicolon
+    if (logFile) {
+        freopen_s(&logFile, "logs/engine.log", "a", stderr);
+    } else {
+        std::cerr << "[Engine] Failed to open stdout log file.\n";
+    }
+
     setvbuf(stdout, nullptr, _IONBF, 0);
     setvbuf(stderr, nullptr, _IONBF, 0);
     std::cout << "[Engine] Log started\n";
@@ -88,6 +92,8 @@ bool LoadFileSystem() {
 
     if (!FS_GetGameDir || !FS_ResolvePath) {
         std::cerr << "[Engine] Failed to resolve FileSystem exports\n";
+        FreeLibrary(g_FileSystemDLL); // Clean up if exports fail
+        g_FileSystemDLL = nullptr;
         return false;
     }
 
@@ -133,7 +139,7 @@ bool LoadMap(const std::string& mapName) {
     }
 
     // Forward map to renderer (future work)
-    // Render_LoadMap(mapData);
+    // g_Renderer->LoadMap(mapData); // Example of forwarding to the main renderer
     return true;
 }
 
@@ -153,19 +159,19 @@ DLL_EXPORT void STDCALL Engine_Init() {
 
     g_Window = SDL_CreateWindow("INC Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN); // Keep SDL_WINDOW_OPENGL for now as Renderer still relies on GL context
     if (!g_Window) {
         std::cerr << "[Engine] SDL_CreateWindow failed: " << SDL_GetError() << "\n";
         return;
     }
 
-    g_Renderer = new RenderSystemGL(); // Platform-specific renderer
-    if (!g_Renderer->Init(g_Window, 1280, 720)) {
+    g_Renderer = new Renderer(); // <--- CHANGED: Instantiate the main Renderer class
+    if (!g_Renderer->Init(g_Window)) { // <--- CHANGED: Pass window handle
         std::cerr << "[Engine] Renderer init failed\n";
         return;
     }
 
-    std::cout << "[Engine] SDL + ShaderAPI initialized\n";
+    std::cout << "[Engine] SDL + Renderer initialized\n"; // <--- CHANGED: Reflects the new structure
 }
 
 //-----------------------------------------------------------------------------
@@ -177,24 +183,27 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            std::cout << "[Engine] SDL_QUIT event received\n";
-            return false;  // quit signal
+            std::cout << "[Engine] Quit event received.\n";
+            return false; // Signal main loop to exit
         }
-        std::cout << "[Engine] SDL Event type: " << event.type << "\n";
+        // Optionally add keyboard/mouse input here
     }
 
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
-    std::cout << "[Engine] Window size: " << width << "x" << height << "\n";
 
     if (!g_Renderer) {
         std::cerr << "[Engine] Renderer is null!\n";
         return false;
     }
 
+    std::cout << "[Engine] Calling BeginFrame...\n";
     g_Renderer->BeginFrame();
-    g_Renderer->Renderer_Frame(width, height);
-    g_Renderer->EndFrame();
+    std::cout << "[Engine] BeginFrame complete. Calling RenderFrame...\n";
+    g_Renderer->RenderFrame(width, height);
+    std::cout << "[Engine] RenderFrame complete. Calling EndFrame...\n";
+    g_Renderer->EndFrame(); // No window param here
+    std::cout << "[Engine] EndFrame complete.\n";
 
     return true;
 }
@@ -206,6 +215,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
     if (g_Renderer) {
+        g_Renderer->Shutdown(); // <--- CHANGED: Call Renderer's Shutdown
         delete g_Renderer;
         g_Renderer = nullptr;
     }
@@ -236,11 +246,17 @@ DLL_EXPORT void STDCALL Engine_Run() {
 
     if (!LoadFileSystem()) {
         std::cerr << "[Engine] Failed to load filesystem\n";
+        Engine_Shutdown(); // Ensure proper shutdown if filesystem fails
         return;
     }
 
+    // Example of using the loaded filesystem
+    std::cout << "[Engine] Game directory: " << FS_GetGameDir() << "\n";
+
+
     if (!LoadMap("start")) {
         std::cerr << "[Engine] Failed to load start map\n";
+        Engine_Shutdown(); // Ensure proper shutdown if map fails
         return;
     }
 

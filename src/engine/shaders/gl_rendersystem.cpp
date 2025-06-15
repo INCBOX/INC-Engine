@@ -1,10 +1,12 @@
+// src/engine/gl_rendersystem.cpp
 #include "shaders/gl_rendersystem.h"
 #include <glad/glad.h>
 #include <iostream>
+#include <vector> // Required for std::vector in m_renderQueue
 #include "mathlib/matrix.h"
 #include "mathlib/vector.h"
 
-// === Shader sources ===
+// === Shader sources === (Your existing shaders with colors)
 static const char* vertexShaderSrc = R"glsl(
     #version 330 core
     layout(location = 0) in vec3 aPos;
@@ -40,20 +42,13 @@ bool RenderSystemGL::ShaderProgram::Compile(const char* vertexSrc, const char* f
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSrc, nullptr);
     glCompileShader(fragmentShader);
-    if (!CheckCompileErrors(fragmentShader, "FRAGMENT")) {
-        glDeleteShader(vertexShader);
-        return false;
-    }
+    if (!CheckCompileErrors(fragmentShader, "FRAGMENT")) return false;
 
     ID = glCreateProgram();
     glAttachShader(ID, vertexShader);
     glAttachShader(ID, fragmentShader);
     glLinkProgram(ID);
-    if (!CheckLinkErrors(ID)) {
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-        return false;
-    }
+    if (!CheckLinkErrors(ID)) return false;
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -73,11 +68,11 @@ void RenderSystemGL::ShaderProgram::Delete() {
 
 bool RenderSystemGL::ShaderProgram::CheckCompileErrors(unsigned int shader, const char* type) {
     int success;
-    char infoLog[512];
+    char infoLog[1024];
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "[GL] Shader compile error (" << type << "): " << infoLog << "\n";
+        glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+        std::cerr << "[GL::Shader] ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\\n" << infoLog << "\\n -- --------------------------------------------------- -- \\n";
         return false;
     }
     return true;
@@ -85,11 +80,11 @@ bool RenderSystemGL::ShaderProgram::CheckCompileErrors(unsigned int shader, cons
 
 bool RenderSystemGL::ShaderProgram::CheckLinkErrors(unsigned int program) {
     int success;
-    char infoLog[512];
+    char infoLog[1024];
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(program, 512, nullptr, infoLog);
-        std::cerr << "[GL] Program link error: " << infoLog << "\n";
+        glGetProgramInfoLog(program, 1024, nullptr, infoLog);
+        std::cerr << "[GL::Program] ERROR::PROGRAM_LINKING_ERROR\\n" << infoLog << "\\n -- --------------------------------------------------- -- \\n";
         return false;
     }
     return true;
@@ -101,7 +96,10 @@ RenderSystemGL::VertexBuffer::VertexBuffer() {
 }
 
 RenderSystemGL::VertexBuffer::~VertexBuffer() {
-    if (ID) glDeleteBuffers(1, &ID);
+    if (ID) {
+        glDeleteBuffers(1, &ID);
+        ID = 0;
+    }
 }
 
 void RenderSystemGL::VertexBuffer::Bind() const {
@@ -113,8 +111,9 @@ void RenderSystemGL::VertexBuffer::Unbind() const {
 }
 
 void RenderSystemGL::VertexBuffer::SetData(const void* data, size_t size) const {
-    glBindBuffer(GL_ARRAY_BUFFER, ID);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, ID); // Ensure bound before setting data
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW); // <--- CHANGED THIS LINE
+    // No unbind here as VAO will bind/unbind VBO.
 }
 
 // === VertexArray methods ===
@@ -123,7 +122,10 @@ RenderSystemGL::VertexArray::VertexArray() {
 }
 
 RenderSystemGL::VertexArray::~VertexArray() {
-    if (ID) glDeleteVertexArrays(1, &ID);
+    if (ID) {
+        glDeleteVertexArrays(1, &ID);
+        ID = 0;
+    }
 }
 
 void RenderSystemGL::VertexArray::Bind() const {
@@ -135,63 +137,90 @@ void RenderSystemGL::VertexArray::Unbind() const {
 }
 
 void RenderSystemGL::VertexArray::AddVertexAttribute(unsigned int index, int size, unsigned int type, bool normalized, size_t stride, const void* pointer) const {
-    glVertexAttribPointer(index, size, type, normalized ? GL_TRUE : GL_FALSE, stride, pointer);
+    // Note: VAO must be bound BEFORE calling this for it to record the attribute setup
+    glVertexAttribPointer(index, size, type, normalized, (GLsizei)stride, pointer);
     glEnableVertexAttribArray(index);
 }
 
 // === RenderSystemGL methods ===
+RenderSystemGL::RenderSystemGL() {}
+
+RenderSystemGL::~RenderSystemGL() {}
+
 bool RenderSystemGL::Init(void* windowHandle, int width, int height) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     m_GLContext = SDL_GL_CreateContext(m_Window);
     if (!m_GLContext) {
-        std::cerr << "[GL] Failed to create GL context\n";
-        return false;
-    }
-    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-        std::cerr << "[GL] Failed to load GL functions\n";
+        std::cerr << "[GL] Failed to create OpenGL context: " << SDL_GetError() << "\\n";
         return false;
     }
 
-    SDL_GL_SetSwapInterval(1);
-    std::cout << "[GL] OpenGL initialized\n";
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        std::cerr << "[GL] Failed to initialize GLAD\\n";
+        return false;
+    }
+
+    std::cout << "[GL] OpenGL context created successfully.\\n";
+    std::cout << "[GL] Vendor: " << glGetString(GL_VENDOR) << "\\n";
+    std::cout << "[GL] Renderer: " << glGetString(GL_RENDERER) << "\\n";
+    std::cout << "[GL] Version: " << glGetString(GL_VERSION) << "\\n";
 
     glEnable(GL_DEPTH_TEST);
 
     m_Shader = new ShaderProgram();
     if (!m_Shader->Compile(vertexShaderSrc, fragmentShaderSrc)) {
-        std::cerr << "[GL] Shader compilation failed\n";
+        std::cerr << "[GL] Failed to compile shaders\\n";
         return false;
     }
-
-    float vertices[] = {
-        -0.5f, -0.5f, 0.f,  1.f, 0.f, 0.f,
-         0.5f, -0.5f, 0.f,  0.f, 1.f, 0.f,
-         0.0f,  0.5f, 0.f,  0.f, 0.f, 1.f
-    };
 
     m_VAO = new VertexArray();
     m_VBO = new VertexBuffer();
 
-    m_VAO->Bind();
-    m_VBO->SetData(vertices, sizeof(vertices));
-    m_VAO->AddVertexAttribute(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0);
-    m_VAO->AddVertexAttribute(1, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    m_VAO->Unbind();
-    m_VBO->Unbind();
+    // --- CORRECTED: Setup VAO and VBO attributes ONCE here ---
+    m_VAO->Bind(); // Bind VAO first to record state
+    m_VBO->Bind(); // Bind VBO
 
-    // 🔍 Print which vertex attributes are enabled
+    // Define vertex attributes ONCE: Position (location 0) and Color (location 1)
+    // Stride is 6 floats (3 pos + 3 color)
+    m_VAO->AddVertexAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    m_VAO->AddVertexAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    m_VBO->Unbind(); // Unbind VBO
+    m_VAO->Unbind(); // Unbind VAO (important: unbind VAO last)
+    // ----------------------------------------------------------
+
+    // Debug output
     GLint maxAttribs;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttribs);
+    std::cout << "[GL] Max vertex attributes: " << maxAttribs << "\\n";
     for (int i = 0; i < maxAttribs; ++i) {
         GLint enabled = 0;
         glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
-        if (enabled) std::cout << "[GL] Vertex attribute " << i << " is enabled\n";
+        if (enabled) std::cout << "[GL] Vertex attribute " << i << " is enabled\\n";
     }
 
     return true;
 }
 
-void RenderSystemGL::Renderer_Frame(int width, int height) {
+void RenderSystemGL::BeginFrame() {
+    // Clear the render queue at the beginning of the frame
+    m_renderQueue.clear();
+}
+
+void RenderSystemGL::SubmitObject(const RenderableObjectData& object) {
+    // In a more complex engine, you'd manage batched rendering here,
+    // or store unique VAOs/VBOs per object. For now, just queue the data.
+    m_renderQueue.push_back(object);
+}
+
+void RenderSystemGL::RenderFrame(int width, int height) {
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -205,11 +234,34 @@ void RenderSystemGL::Renderer_Frame(int width, int height) {
     int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
 
-    m_VAO->Bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    m_VAO->Unbind();
+    // --- CORRECTED: Iterate and draw, but DO NOT re-setup attributes ---
+    // For simplicity, we are still using a single VAO/VBO for all objects.
+    // This means all objects must conform to the same vertex format.
+    // If objects have different formats, they need their own VAOs/VBOs,
+    // or you need a more advanced rendering system.
+
+    m_VAO->Bind(); // Bind the VAO once for all draws in this frame
+
+    for (const auto& obj : m_renderQueue) {
+        // Upload data for the current object.
+        // NOTE: This re-uploads data to the *same* VBO every time.
+        // For multiple objects, this is inefficient. Consider
+        // instancing, batching, or separate VBOs for performance.
+        m_VBO->Bind(); // Re-bind VBO if it was unbound
+        m_VBO->SetData(obj.vertices, obj.vertexCount * sizeof(float));
+        m_VBO->Unbind(); // Unbind VBO
+
+
+        glDrawArrays(GL_TRIANGLES, 0, obj.vertexCount / 6); // Draw using submitted object's vertex count
+    }
+    m_VAO->Unbind(); // Unbind VAO after drawing all objects
+    // -----------------------------------------------------------------
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // make sure it's solid
+}
+
+void RenderSystemGL::EndFrame() {
+    SDL_GL_SwapWindow(m_Window);
 }
 
 void RenderSystemGL::Shutdown() {
@@ -226,17 +278,11 @@ void RenderSystemGL::Shutdown() {
         delete m_VAO;
         m_VAO = nullptr;
     }
-
     if (m_GLContext) {
         SDL_GL_DeleteContext(m_GLContext);
         m_GLContext = nullptr;
     }
-}
-
-void RenderSystemGL::BeginFrame() {}
-
-void RenderSystemGL::EndFrame() {
-    SDL_GL_SwapWindow(m_Window);
+    std::cout << "[GL] Shutdown complete\\n";
 }
 
 void RenderSystemGL::OnResize(int width, int height) {

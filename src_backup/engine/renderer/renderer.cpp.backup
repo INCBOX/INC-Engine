@@ -1,0 +1,22 @@
+// renderer.cpp — Basic OpenGL renderer implementation
+
+#include "renderer/renderer.h"
+#include <glad/glad.h>
+#include <iostream>
+
+bool Renderer::Init() {
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    std::cout << "[Renderer] Init successful\n";
+    return true;
+}
+
+void Renderer::RenderFrame(int width, int height) {
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Temporary: Draw nothing. Extend here for world/models later.
+}
+
+void Renderer::Shutdown() {
+    std::cout << "[Renderer] Shutdown complete\n";
+}
