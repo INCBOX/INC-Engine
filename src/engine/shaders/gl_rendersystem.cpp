@@ -1,27 +1,30 @@
 #include "shaders/gl_rendersystem.h"
 #include <glad/glad.h>
 #include <iostream>
+#include "mathlib/matrix.h"
+#include "mathlib/vector.h"
 
 // === Shader sources ===
 static const char* vertexShaderSrc = R"glsl(
-	#version 330 core
-	layout(location = 0) in vec3 aPos;
-	layout(location = 1) in vec3 aColor;
-	
-	uniform mat4 u_MVP;
-	
-	out vec3 vColor;
-	
-	void main() {
-		gl_Position = u_MVP * vec4(aPos, 1.0);
-		vColor = aColor;
-	}
+    #version 330 core
+    layout(location = 0) in vec3 aPos;
+    layout(location = 1) in vec3 aColor;
+
+    uniform mat4 u_MVP;
+
+    out vec3 vColor;
+
+    void main() {
+        gl_Position = u_MVP * vec4(aPos, 1.0);
+        vColor = aColor;
+    }
 )glsl";
 
 static const char* fragmentShaderSrc = R"glsl(
     #version 330 core
     in vec3 vColor;
     out vec4 FragColor;
+
     void main() {
         FragColor = vec4(vColor, 1.0);
     }
@@ -144,33 +147,28 @@ bool RenderSystemGL::Init(void* windowHandle, int width, int height) {
         std::cerr << "[GL] Failed to create GL context\n";
         return false;
     }
-	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-		std::cerr << "[GL] Failed to load GL functions\n";
-		return false;
-	}
-	
-	SDL_GL_SetSwapInterval(1); // ✅ Enable vsync after GLAD is loaded
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        std::cerr << "[GL] Failed to load GL functions\n";
+        return false;
+    }
 
-
+    SDL_GL_SetSwapInterval(1);
     std::cout << "[GL] OpenGL initialized\n";
 
     glEnable(GL_DEPTH_TEST);
 
-    // Create and compile shader
     m_Shader = new ShaderProgram();
     if (!m_Shader->Compile(vertexShaderSrc, fragmentShaderSrc)) {
         std::cerr << "[GL] Shader compilation failed\n";
         return false;
     }
 
-    // Triangle vertices: pos (x,y,z), color (r,g,b)
     float vertices[] = {
         -0.5f, -0.5f, 0.f,  1.f, 0.f, 0.f,
          0.5f, -0.5f, 0.f,  0.f, 1.f, 0.f,
          0.0f,  0.5f, 0.f,  0.f, 0.f, 1.f
     };
 
-    // Setup VAO and VBO
     m_VAO = new VertexArray();
     m_VBO = new VertexBuffer();
 
@@ -181,6 +179,15 @@ bool RenderSystemGL::Init(void* windowHandle, int width, int height) {
     m_VAO->Unbind();
     m_VBO->Unbind();
 
+    // 🔍 Print which vertex attributes are enabled
+    GLint maxAttribs;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttribs);
+    for (int i = 0; i < maxAttribs; ++i) {
+        GLint enabled = 0;
+        glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
+        if (enabled) std::cout << "[GL] Vertex attribute " << i << " is enabled\n";
+    }
+
     return true;
 }
 
@@ -189,21 +196,20 @@ void RenderSystemGL::Renderer_Frame(int width, int height) {
     glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glDisable(GL_CULL_FACE); // optional, just for now
+
     m_Shader->Use();
 
-    // Send MVP matrix uniform (identity matrix here)
+    Matrix mvp = Matrix::Identity(); // still flat 2D for now
+
     int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
-    float mvp[16] = {
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1
-    };
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp);
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
 
     m_VAO->Bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
     m_VAO->Unbind();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // make sure it's solid
 }
 
 void RenderSystemGL::Shutdown() {
@@ -227,9 +233,7 @@ void RenderSystemGL::Shutdown() {
     }
 }
 
-void RenderSystemGL::BeginFrame() {
-    // Empty - clearing done in Renderer_Frame
-}
+void RenderSystemGL::BeginFrame() {}
 
 void RenderSystemGL::EndFrame() {
     SDL_GL_SwapWindow(m_Window);

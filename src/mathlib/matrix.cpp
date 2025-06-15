@@ -1,14 +1,12 @@
 #include <cmath>
+#include "mathlib/matrix.h"
 
-static Mat4 LookAt(const Vec3& eye, const Vec3& center, const Vec3& up);
-static Mat4 Perspective(float fovYDeg, float aspect, float nearZ, float farZ);
+Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up) {
+    Vector f = (center - eye).Normalize();
+    Vector s = f.Cross(up).Normalize();
+    Vector u = s.Cross(f);
 
-Mat4 Mat4::LookAt(const Vec3& eye, const Vec3& center, const Vec3& up) {
-    Vec3 f = (center - eye).Normalize();
-    Vec3 s = f.Cross(up).Normalize();
-    Vec3 u = s.Cross(f);
-
-    Mat4 result = Mat4::Identity();
+    Matrix result = Matrix::Identity();
     result[0][0] = s.x;
     result[1][0] = s.y;
     result[2][0] = s.z;
@@ -27,15 +25,22 @@ Mat4 Mat4::LookAt(const Vec3& eye, const Vec3& center, const Vec3& up) {
     return result;
 }
 
-Mat4 Mat4::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
+Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
     float fovRad = fovYDegrees * 3.14159265f / 180.0f;
     float f = 1.0f / tan(fovRad / 2.0f);
 
-    Mat4 result = {};
+    Matrix result = {};
     result[0][0] = f / aspect;
     result[1][1] = f;
     result[2][2] = (farZ + nearZ) / (nearZ - farZ);
     result[2][3] = -1.0f;
     result[3][2] = (2 * farZ * nearZ) / (nearZ - farZ);
+    return result;
+}
+
+Matrix Matrix::Identity() {
+    Matrix result = {};
+    for (int i = 0; i < 4; i++)
+        result[i][i] = 1.0f;
     return result;
 }

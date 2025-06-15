@@ -1,7 +1,7 @@
 // VertexArray.h
 #pragma once
 #include <glad/glad.h>
-#include "VertexBuffer.h"
+#include "renderer/VertexBuffer.h"
 
 class VertexArray {
 private:

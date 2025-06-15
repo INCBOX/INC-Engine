@@ -14,6 +14,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include "engine.h"
+
 #if defined(_WIN32)
     #include <Windows.h>
     typedef void (__stdcall *EngineRunFn)();

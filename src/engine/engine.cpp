@@ -14,6 +14,8 @@
 #include <string>
 #include "nlohmann/json.hpp"
 
+#include "engine.h"
+
 // Modular renderer interface and OpenGL backend
 #include "shaders/irendersystem.h"
 #include "shaders/gl_rendersystem.h" // TEMP - until modular ShaderAPI is built
@@ -149,7 +151,7 @@ DLL_EXPORT void STDCALL Engine_Init() {
         return;
     }
 
-    g_Window = SDL_CreateWindow("SourceClone Engine",
+    g_Window = SDL_CreateWindow("INC Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!g_Window) {
@@ -171,27 +173,30 @@ DLL_EXPORT void STDCALL Engine_Init() {
 // Polls SDL events, handles quit requests,
 // invokes renderer frame logic, and swaps buffers.
 //-----------------------------------------------------------------------------
-DLL_EXPORT void STDCALL Engine_RunFrame() {
+DLL_EXPORT bool STDCALL Engine_RunFrame() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            std::cout << "[Engine] SDL_QUIT received\n";
-            exit(0);
+            std::cout << "[Engine] SDL_QUIT event received\n";
+            return false;  // quit signal
         }
+        std::cout << "[Engine] SDL Event type: " << event.type << "\n";
     }
 
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
+    std::cout << "[Engine] Window size: " << width << "x" << height << "\n";
+
+    if (!g_Renderer) {
+        std::cerr << "[Engine] Renderer is null!\n";
+        return false;
+    }
 
     g_Renderer->BeginFrame();
-
-    // Add actual draw call here:
-    g_Renderer->Renderer_Frame(width, height); // <- This should draw your triangle
-
+    g_Renderer->Renderer_Frame(width, height);
     g_Renderer->EndFrame();
 
-    // Make sure buffers swap after rendering
-    // SDL_GL_SwapWindow(g_Window); // Removed: already done by g_Renderer->EndFrame() in renderer.cpp
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -200,16 +205,22 @@ DLL_EXPORT void STDCALL Engine_RunFrame() {
 // unloads filesystem DLL.
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
-    std::cout << "[Engine] Engine_Shutdown called\n";
-
     if (g_Renderer) {
-        g_Renderer->Shutdown();
         delete g_Renderer;
         g_Renderer = nullptr;
     }
-
-    if (g_Window) SDL_DestroyWindow(g_Window);
+    if (g_Window) {
+        SDL_DestroyWindow(g_Window);
+        g_Window = nullptr;
+    }
     SDL_Quit();
+
+    if (g_FileSystemDLL) {
+        FreeLibrary(g_FileSystemDLL);
+        g_FileSystemDLL = nullptr;
+    }
+
+    std::cout << "[Engine] Shutdown complete\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -219,6 +230,8 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Run() {
     InitEngineLog();
+    std::cout << "[Engine] Starting Engine_Run\n";
+
     Engine_Init();
 
     if (!LoadFileSystem()) {
@@ -231,10 +244,18 @@ DLL_EXPORT void STDCALL Engine_Run() {
         return;
     }
 
+    std::cout << "[Engine] Entering main loop\n";
+
     while (true) {
-        Engine_RunFrame();
-        SDL_Delay(16); // Basic ~60 FPS cap
+        bool keepRunning = Engine_RunFrame();
+        if (!keepRunning) {
+            std::cout << "[Engine] Engine_RunFrame returned false, exiting loop\n";
+            break;
+        }
+        SDL_Delay(16); // ~60 FPS cap
     }
 
     Engine_Shutdown();
+
+    std::cout << "[Engine] Engine_Run exiting\n";
 }

@@ -1,4 +1,4 @@
-#include "mesh.h"
+#include "renderer/Mesh.h"
 #include <iostream>
 
 Mesh::Mesh() = default;

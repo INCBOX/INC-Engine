@@ -1,5 +1,5 @@
 // VertexArray.cpp
-#include "VertexArray.h"
+#include "renderer/VertexArray.h"
 
 VertexArray::VertexArray() {
     glGenVertexArrays(1, &m_RendererID);

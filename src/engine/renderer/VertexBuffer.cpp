@@ -1,5 +1,5 @@
 // VertexBuffer.cpp
-#include "VertexBuffer.h"
+#include "renderer/VertexBuffer.h"
 
 VertexBuffer::~VertexBuffer() {
     if (m_RendererID) glDeleteBuffers(1, &m_RendererID);
