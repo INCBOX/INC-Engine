@@ -1,15 +1,15 @@
 "GameInfo"
 {
-    "gametitle"    "Half-Life 3"
+    "gametitle"    "Half Life 3"
 
     FileSystem
     {
-        SteamAppId        243750
+        SteamAppId        66300
         ToolsAppId        211
 
         SearchPaths
         {
-            game            "."           // current mod folder (hl3)
+            game            "."           // current folder
             game            "platform"   // shared resources
         }
     }
