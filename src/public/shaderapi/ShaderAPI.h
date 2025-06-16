@@ -1,7 +1,7 @@
 // src/engine/shaderapi/shaderapi.h
 #pragma once
 
-#include "shaderapi/shaderapi_core.h"
+#include "shaderapi/ishaderapi.h"
 
 ShaderAPICore* CreateShaderAPI();
 void DestroyShaderAPI();
