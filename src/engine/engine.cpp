@@ -16,8 +16,10 @@
 #include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
 #include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
+#include "mathlib/camera.h"
 
 using json = nlohmann::json;
+static Camera g_Camera;
 
 //-----------------------------------------------------------------------------
 // FileSystem DLL dynamic loading
@@ -141,9 +143,9 @@ DLL_EXPORT void STDCALL Engine_Init() {
     }
 
     // ** SDL MOUSE GRAB **
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-    SDL_SetWindowGrab(g_Window, SDL_TRUE);
-    SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);   // Grab mouse, hide cursor, get relative motion
+	SDL_SetWindowGrab(g_Window, SDL_TRUE);
+	SDL_ShowCursor(SDL_DISABLE);
 
     g_Renderer = CreateShaderAPI(); // Modular backend creation
     if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
@@ -160,13 +162,28 @@ DLL_EXPORT void STDCALL Engine_Init() {
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame() {
     SDL_Event event;
+    int mouseDeltaX = 0;
+    int mouseDeltaY = 0;
+	
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cout << "[Engine] SDL_QUIT event received\n";
             return false;
         }
+        else if (event.type == SDL_MOUSEMOTION) {
+            mouseDeltaX += event.motion.xrel;
+            mouseDeltaY += event.motion.yrel;
+        }
     }
+	
+	
+	const Uint8* keystate = SDL_GetKeyboardState(NULL);
+	
+	// Update camera with inputs, deltaTime ~ 1/60
+    g_Camera.Update(1.0f / 60.0f, keystate, mouseDeltaX, mouseDeltaY);
 
+
+    // Get current window size
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
 
@@ -177,6 +194,10 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
 
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
+	
+    // **PASS CAMERA VIEW MATRIX TO RENDERER**
+    Matrix view = g_Camera.GetViewMatrix();
+    g_Renderer->SetViewMatrix(view);
 	
     // Render static geometry from loaded map
     for (const auto& instance : GetStaticGeometry()) {

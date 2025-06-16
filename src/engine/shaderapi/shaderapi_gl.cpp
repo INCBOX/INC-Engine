@@ -65,12 +65,14 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glDisable(GL_CULL_FACE); // optional
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // solid fill
 
-    // Setup camera
-    Vector cameraPos = Vector(0.0f, 2.0f, 5.0f);       // Position of camera
-    Vector cameraTarget = Vector(0.0f, 0.0f, 0.0f);    // Look at origin
-    Vector up = Vector(0.0f, 1.0f, 0.0f);              // World up
-
-    m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
+    // 	Setup camera
+    //	Vector cameraPos = Vector(0.0f, 2.0f, 5.0f);       // Position of camera
+    //	Vector cameraTarget = Vector(0.0f, 0.0f, 0.0f);    // Look at origin
+    //	Vector up = Vector(0.0f, 1.0f, 0.0f);              // World up
+	//	
+    //	m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
+	
+	
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     m_ProjMatrix = Matrix::Perspective(60.0f, aspect, 0.1f, 100.0f);
 
@@ -110,4 +112,10 @@ void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
     mesh.Bind();
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
     mesh.Unbind();
+}
+
+// CAMERA STUFF
+void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix)
+{
+    m_ViewMatrix = viewMatrix;
 }

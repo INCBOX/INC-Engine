@@ -20,7 +20,7 @@ public:
     void PrepareFrame(int width, int height) override;
     void EndFrame() override;
     void OnResize(int width, int height) override;
-
+	void SetViewMatrix(const Matrix& viewMatrix) override;
     // Draw a mesh with a given model matrix transform
     void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix);
 

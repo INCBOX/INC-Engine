@@ -30,4 +30,7 @@ public:
 	
 	// JSON GEOMETRY Draw a mesh with a transform
 	virtual void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) = 0;
+	
+	// CAMERA STUFF Set the current camera view matrix (view transform)
+	virtual void SetViewMatrix(const Matrix& viewMatrix) = 0;
 };
