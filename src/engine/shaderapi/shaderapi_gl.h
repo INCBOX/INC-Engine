@@ -9,6 +9,9 @@
 #include "shaderapi_gl_buffer.h"
 #include "shaderapi_gl_vao.h"
 
+// Forward declare Mesh class
+class Mesh;
+
 class ShaderAPI_GL : public ShaderAPICore {
 public:
     bool Init(void* windowHandle, int width, int height) override;
@@ -18,15 +21,16 @@ public:
     void EndFrame() override;
     void OnResize(int width, int height) override;
 
+    // Draw a mesh with a given model matrix transform
+    void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix);
+
 private:
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
 
-    void SetupTriangleGeometry();
+    // Removed triangle-specific methods
+
     void SetMVP(const Matrix& mvp);
-    void DrawTriangle();
 
     std::unique_ptr<class ShaderProgram> m_Shader;
-    std::unique_ptr<class VertexArray> m_VAO;
-    std::unique_ptr<class VertexBuffer> m_VBO;
 };

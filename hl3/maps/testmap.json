@@ -1,0 +1,20 @@
+{
+  "geometry": [
+    {
+      "type": "quad",
+      "position": [0, 0, 0],
+      "size": [10, 0.1, 10]
+    },
+    {
+      "type": "quad",
+      "position": [0, 0, -5],
+      "size": [4, 2, 0.1]
+    }
+  ],
+  "entities": [
+    {
+      "classname": "player_start",
+      "origin": [0, 1, 0]
+    }
+  ]
+}

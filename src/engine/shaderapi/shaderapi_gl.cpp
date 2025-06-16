@@ -2,9 +2,14 @@
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/shaderapi_gl_buffer.h"
 #include "shaderapi/shaderapi_gl_vao.h"
+#include "shaderapi/mesh.h"
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix.h"
+
+
+
+
 
 bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
@@ -43,6 +48,17 @@ bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
     return true;
 }
 
+
+void ShaderAPI_GL::BeginFrame() {
+    // Optional: any per-frame setup before rendering
+}
+
+void ShaderAPI_GL::EndFrame() {
+    SDL_GL_SwapWindow(m_Window);
+}
+
+
+
 void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
     int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
@@ -68,8 +84,8 @@ void ShaderAPI_GL::Shutdown() {
         m_Shader->Delete();
         m_Shader.reset();
     }
-    m_VBO.reset();
-    m_VAO.reset();
+
+    // m_VBO and m_VAO no longer members, so do NOT reset here
 
     if (m_GLContext) {
         SDL_GL_DeleteContext(m_GLContext);
@@ -77,12 +93,24 @@ void ShaderAPI_GL::Shutdown() {
     }
 }
 
-void ShaderAPI_GL::BeginFrame() {}
-
-void ShaderAPI_GL::EndFrame() {
-    SDL_GL_SwapWindow(m_Window);
-}
 
 void ShaderAPI_GL::OnResize(int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+
+// MESH
+void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
+    m_Shader->Use();
+
+    // Compute final MVP matrix (viewProjection * model)
+    // For now, assume identity viewProjection; you can expand this later
+    Matrix mvp = Matrix::Identity(); 
+    mvp = mvp * modelMatrix;
+
+    SetMVP(mvp);
+
+    mesh.Bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+    mesh.Unbind();
 }

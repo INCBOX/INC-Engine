@@ -4,8 +4,8 @@
 [Engine] SDL + ShaderAPI initialized
 [Engine] FileSystem loaded
 [FS] Resolving: maps/start.json
-[FS] Checking: "D:\\git\\INC\\GION\\.\\maps/start.json"
-[FS] Found: "D:\\git\\INC\\GION\\.\\maps/start.json"
+[FS] Checking: "D:\\git\\INC\\hl3\\.\\maps/start.json"
+[FS] Found: "D:\\git\\INC\\hl3\\.\\maps/start.json"
 [Entity] info_player_start at (0, 0, 128)
 [Entity] light_environment at (128, 64, 256)
 [Entity] prop_static at (0, 0, 0)
