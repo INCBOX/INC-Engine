@@ -54,7 +54,7 @@ void ShaderAPI_GL::EndFrame() {
 
 void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
     int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
+    glUniformMatrix4fv(mvpLoc, 1, GL_TRUE, mvp.Data());
 }
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
