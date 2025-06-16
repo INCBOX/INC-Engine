@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream> // REMOVE LATER required for std::cout
 #include "mathlib/matrix.h"
 
 Matrix Matrix::Identity() {

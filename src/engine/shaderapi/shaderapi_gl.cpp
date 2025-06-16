@@ -47,14 +47,16 @@ void ShaderAPI_GL::BeginFrame() {
 }
 
 void ShaderAPI_GL::EndFrame() {
+    DebugDrawUnitCube();
     SDL_GL_SwapWindow(m_Window);
 }
 
 
 
+
 void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
     int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
-    glUniformMatrix4fv(mvpLoc, 1, GL_TRUE, mvp.Data());
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
 }
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
@@ -74,7 +76,14 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
 	
 	
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    m_ProjMatrix = Matrix::Perspective(60.0f, aspect, 0.1f, 100.0f);
+    m_ProjMatrix = Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f);
+	
+		Vector cameraPos(0.0f, 0.0f, 5.0f);
+		Vector cameraTarget(0.0f, 0.0f, 0.0f);
+		Vector up(0.0f, 1.0f, 0.0f);
+		m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
+
+
 
     m_Shader->Use();
 }
@@ -118,4 +127,37 @@ void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
 void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix)
 {
     m_ViewMatrix = viewMatrix;
+}
+
+
+void ShaderAPI_GL::DebugDrawUnitCube() {
+    std::vector<float> vertices = {
+        -0.5f,-0.5f,-0.5f,   0.5f,-0.5f,-0.5f,   0.5f, 0.5f,-0.5f,  -0.5f, 0.5f,-0.5f,
+        -0.5f,-0.5f, 0.5f,   0.5f,-0.5f, 0.5f,   0.5f, 0.5f, 0.5f,  -0.5f, 0.5f, 0.5f
+    };
+    std::vector<unsigned int> indices = {
+        0,1,2, 2,3,0,  // back
+        4,5,6, 6,7,4,  // front
+        0,4,7, 7,3,0,  // left
+        1,5,6, 6,2,1,  // right
+        3,2,6, 6,7,3,  // top
+        0,1,5, 5,4,0   // bottom
+    };
+
+    Mesh tempCube;
+    tempCube.Upload(vertices, indices);
+
+    Matrix model = Matrix::Identity();
+    Matrix mvp = m_ProjMatrix * m_ViewMatrix * model;
+    SetMVP(mvp);
+
+    // 👇 Add this debug print
+    std::cout << "[DEBUG] MVP Matrix:\n";
+    const float* data = mvp.Data();
+    for (int i = 0; i < 4; ++i)
+        std::cout << data[i * 4] << " " << data[i * 4 + 1] << " " << data[i * 4 + 2] << " " << data[i * 4 + 3] << "\n";
+
+    tempCube.Bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(tempCube.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+    tempCube.Unbind();
 }

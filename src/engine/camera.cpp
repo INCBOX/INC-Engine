@@ -24,7 +24,7 @@ void Camera::UpdateForwardVector()
 void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDeltaX, int mouseDeltaY)
 {
     // Update rotation based on mouse input
-    yaw += mouseDeltaX * mouseSensitivity;
+    yaw -= mouseDeltaX * mouseSensitivity;
     pitch -= mouseDeltaY * mouseSensitivity;
 
     const float pitchLimit = 1.5f; // ~85 degrees

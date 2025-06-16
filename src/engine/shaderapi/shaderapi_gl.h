@@ -23,6 +23,8 @@ public:
 	void SetViewMatrix(const Matrix& viewMatrix) override;
     // Draw a mesh with a given model matrix transform
     void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix);
+	
+	void DebugDrawUnitCube();
 
 private:
     SDL_Window* m_Window = nullptr;
