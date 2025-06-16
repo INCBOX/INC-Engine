@@ -1,7 +1,8 @@
-#include "shaderapi/shaderapi_gl_buffer.h"
-#include <glad/glad.h>
+// (VertexBuffer)
 
-VertexBuffer::VertexBuffer() {
+#include "shaderapi/shaderapi_gl_buffer.h"
+
+VertexBuffer::VertexBuffer(unsigned int target) : Target(target) {
     glGenBuffers(1, &ID);
 }
 
@@ -10,14 +11,14 @@ VertexBuffer::~VertexBuffer() {
 }
 
 void VertexBuffer::Bind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, ID);
+    glBindBuffer(Target, ID);
 }
 
 void VertexBuffer::Unbind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(Target, 0);
 }
 
 void VertexBuffer::SetData(const void* data, size_t size) const {
-    glBindBuffer(GL_ARRAY_BUFFER, ID);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBindBuffer(Target, ID);
+    glBufferData(Target, size, data, GL_STATIC_DRAW);
 }

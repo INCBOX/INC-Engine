@@ -17,7 +17,7 @@ public:
     bool Init(void* windowHandle, int width, int height) override;
     void Shutdown() override;
     void BeginFrame() override;
-    void Renderer_Frame(int width, int height) override;
+    void PrepareFrame(int width, int height) override;
     void EndFrame() override;
     void OnResize(int width, int height) override;
 
@@ -28,7 +28,9 @@ private:
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
 
-    // Removed triangle-specific methods
+    // View and Projection matrices as class members (instance scope)
+    Matrix m_ViewMatrix;
+    Matrix m_ProjMatrix;
 
     void SetMVP(const Matrix& mvp);
 

@@ -2,8 +2,8 @@
 
 Mesh::Mesh() {
     m_VAO = std::make_unique<VertexArray>();
-    m_VBO = std::make_unique<VertexBuffer>();
-    m_EBO = std::make_unique<VertexBuffer>();
+    m_VBO = std::make_unique<VertexBuffer>(GL_ARRAY_BUFFER);         // Vertex buffer
+    m_EBO = std::make_unique<VertexBuffer>(GL_ELEMENT_ARRAY_BUFFER);  // Index buffer
 }
 
 Mesh::~Mesh() {

@@ -1,6 +1,29 @@
 #include "shaderapi/shaderapi_gl_shader.h"
 #include <glad/glad.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
+bool ShaderProgram::CompileFromFile(const char* vertexPath, const char* fragmentPath) {
+    std::ifstream vFile(vertexPath);
+    std::ifstream fFile(fragmentPath);
+
+    if (!vFile || !fFile) {
+        std::cerr << "[Shader] Failed to open shader files\n";
+        return false;
+    }
+
+    std::stringstream vStream, fStream;
+    vStream << vFile.rdbuf();
+    fStream << fFile.rdbuf();
+
+    std::string vSource = vStream.str();
+    std::string fSource = fStream.str();
+
+    return Compile(vSource.c_str(), fSource.c_str());
+}
+
+
 
 bool ShaderProgram::Compile(const char* vertexSrc, const char* fragmentSrc) {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);

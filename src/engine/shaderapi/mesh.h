@@ -12,8 +12,7 @@ public:
     Mesh();
     ~Mesh();
 
-    // Upload geometry data to GPU (positions, normals, texcoords, indices)
-    // For simplicity, let's just do positions and indices here
+    // Upload geometry data to GPU (positions and indices)
     void Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
 
     void Bind() const;

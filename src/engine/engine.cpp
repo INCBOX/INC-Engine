@@ -15,6 +15,8 @@
 #include "engine_api.h"
 #include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
+#include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
+
 using json = nlohmann::json;
 
 //-----------------------------------------------------------------------------
@@ -114,6 +116,8 @@ bool LoadMap(const std::string& mapName) {
         }
     }
 
+    LoadStaticGeometryFromMap(mapData);
+
     return true;
 }
 
@@ -166,7 +170,13 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
     }
 
     g_Renderer->BeginFrame();
-    g_Renderer->Renderer_Frame(width, height);
+    g_Renderer->PrepareFrame(width, height);
+	
+    // Render static geometry from loaded map
+    for (const auto& instance : GetStaticGeometry()) {
+        g_Renderer->DrawMesh(*instance.mesh, instance.transform);
+    }
+
     g_Renderer->EndFrame();
 
     return true;

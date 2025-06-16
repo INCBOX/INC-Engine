@@ -1,5 +1,22 @@
+// src/mathlib/matrix.cpp
+
 #include <cmath>
 #include "mathlib/matrix.h"
+
+Matrix Matrix::Identity() {
+    Matrix result = {};
+    for (int i = 0; i < 4; i++)
+        result[i][i] = 1.0f;
+    return result;
+}
+
+Matrix Matrix::Translation(const Vector& t) {
+    Matrix result = Matrix::Identity();
+    result[0][3] = t.x;
+    result[1][3] = t.y;
+    result[2][3] = t.z;
+    return result;
+}
 
 Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up) {
     Vector f = (center - eye).Normalize();
@@ -35,12 +52,5 @@ Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float f
     result[2][2] = (farZ + nearZ) / (nearZ - farZ);
     result[2][3] = -1.0f;
     result[3][2] = (2 * farZ * nearZ) / (nearZ - farZ);
-    return result;
-}
-
-Matrix Matrix::Identity() {
-    Matrix result = {};
-    for (int i = 0; i < 4; i++)
-        result[i][i] = 1.0f;
     return result;
 }

@@ -3,11 +3,15 @@
 // Abstract interface for all rendering backends (OpenGL, Vulkan, DirectX, etc.)
 // This allows the engine to remain backend-agnostic.
 
+// JSON GEOMETRY STUFF
+class Mesh;
+class Matrix;
+
 class ShaderAPICore {
 public:
 	virtual ~ShaderAPICore() = default;
 	
-	virtual void Renderer_Frame(int width, int height) = 0;  // Add this
+	virtual void PrepareFrame(int width, int height) = 0;  // Add this
 
 	// Initialize renderer with platform-specific window handle
 	virtual bool Init(void* windowHandle, int width, int height) = 0;
@@ -23,4 +27,7 @@ public:
 
 	// Handle window resize events (optional)
 	virtual void OnResize(int width, int height) = 0;
+	
+	// JSON GEOMETRY Draw a mesh with a transform
+	virtual void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) = 0;
 };

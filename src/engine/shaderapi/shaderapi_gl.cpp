@@ -28,22 +28,15 @@ bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
 
     glEnable(GL_DEPTH_TEST);
 
-    m_Shader = std::make_unique<ShaderProgram>();
-    if (!m_Shader->Compile(vertexShaderSrc, fragmentShaderSrc)) {
-        std::cerr << "[GL] Shader compilation failed\n";
-        return false;
-    }
+	std::string vertPath = "hl3/shaders/cube.vert";
+	std::string fragPath = "hl3/shaders/cube.frag";
+	
+	m_Shader = std::make_unique<ShaderProgram>();
+	if (!m_Shader->CompileFromFile(vertPath.c_str(), fragPath.c_str())) {
+		std::cerr << "[GL] Shader compilation failed for: " << vertPath << " and " << fragPath << "\n";
+		return false;
+	}
 
-    // Removed SetupTriangleGeometry and related calls
-
-    // Optional: print enabled vertex attributes for debugging
-    GLint maxAttribs;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttribs);
-    for (int i = 0; i < maxAttribs; ++i) {
-        GLint enabled = 0;
-        glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
-        if (enabled) std::cout << "[GL] Vertex attribute " << i << " is enabled\n";
-    }
 
     return true;
 }
@@ -64,20 +57,26 @@ void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
 }
 
-void ShaderAPI_GL::Renderer_Frame(int width, int height) {
+void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE); // optional
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // solid fill
+
+    // Setup camera
+    Vector cameraPos = Vector(0.0f, 2.0f, 5.0f);       // Position of camera
+    Vector cameraTarget = Vector(0.0f, 0.0f, 0.0f);    // Look at origin
+    Vector up = Vector(0.0f, 1.0f, 0.0f);              // World up
+
+    m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    m_ProjMatrix = Matrix::Perspective(60.0f, aspect, 0.1f, 100.0f);
 
     m_Shader->Use();
-    SetMVP(Matrix::Identity());
-
-    // Removed DrawTriangle();
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // solid fill
 }
+
 
 void ShaderAPI_GL::Shutdown() {
     if (m_Shader) {
@@ -105,9 +104,7 @@ void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
 
     // Compute final MVP matrix (viewProjection * model)
     // For now, assume identity viewProjection; you can expand this later
-    Matrix mvp = Matrix::Identity(); 
-    mvp = mvp * modelMatrix;
-
+    Matrix mvp = m_ProjMatrix * m_ViewMatrix * modelMatrix;
     SetMVP(mvp);
 
     mesh.Bind();
