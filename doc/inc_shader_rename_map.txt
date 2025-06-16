@@ -5,7 +5,7 @@
 src/engine/shaders/shader_loader.cpp     -> src/engine/shaders/inc_shader_core.cpp
 src/engine/shaders/shader_loader.h       -> src/engine/shaders/inc_shader_core.h
 
-src/engine/shaders/shaderapi_gl.cpp      -> src/engine/shaders/inc_shader_gl.cpp
-src/engine/shaders/shaderapi_gl.h        -> src/engine/shaders/inc_shader_gl.h
+src/engine/shaders/ShaderAPICore.cpp      -> src/engine/shaders/inc_shader_gl.cpp
+src/engine/shaders/ShaderAPICore.h        -> src/engine/shaders/inc_shader_gl.h
 
 src/public/shaderapi/ishaderapi.h        -> src/public/shaderapi/inc_shader.h

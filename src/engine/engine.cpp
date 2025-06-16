@@ -1,12 +1,10 @@
 // engine.cpp
-// Core engine logic managing SDL window, OpenGL context, filesystem DLL loading,
-// map loading, and main loop. Uses fully modular ShaderAPI abstraction for rendering.
-// No direct OpenGL or Vulkan calls here — only through ShaderAPI interfaces.
+// Core engine logic managing SDL window, ShaderAPI abstraction, filesystem DLL loading,
+// map loading, and main loop. Uses fully modular ShaderAPI backend (OpenGL, Vulkan, etc).
 
-// Includes Win32 API for dynamic DLL loading (LoadLibrary, GetProcAddress)
 #include <Windows.h>
 
-#define SDL_MAIN_HANDLED // BEFORE SDL
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <iostream>
 #include <fstream>
@@ -14,38 +12,29 @@
 #include <string>
 #include "nlohmann/json.hpp"
 
-#include "engine.h"
-
-// Modular renderer interface
-#include "renderer/renderer.h" // <--- CHANGED: Include the main Renderer interface
+#include "engine_api.h"
+#include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
 using json = nlohmann::json;
 
 //-----------------------------------------------------------------------------
-// FileSystem DLL dynamic loading handles and function pointers
-// Allows modular filesystem implementation similar to Source Engine's filesystem_stdio.dll.
-// We load this DLL at runtime and call its exported functions via pointers.
-// This approach lets us swap or update the filesystem without recompiling engine.
+// FileSystem DLL dynamic loading
 //-----------------------------------------------------------------------------
 static HMODULE g_FileSystemDLL = nullptr;
 
-// Function pointer types for filesystem interface
 typedef const std::string& (*FS_GetGameDirFn)();
 typedef std::string (*FS_ResolvePathFn)(const std::string&);
-
-// Function pointers to actual implementations loaded from DLL
 static FS_GetGameDirFn FS_GetGameDir = nullptr;
 static FS_ResolvePathFn FS_ResolvePath = nullptr;
 
 //-----------------------------------------------------------------------------
-// SDL Window and rendering handles
+// SDL + Renderer
 //-----------------------------------------------------------------------------
 static SDL_Window* g_Window = nullptr;
-static Renderer* g_Renderer = nullptr; // <--- CHANGED: Now points to the main Renderer class
+static ShaderAPICore* g_Renderer = nullptr;
 
 //-----------------------------------------------------------------------------
-// Platform-dependent export and calling conventions for DLL interface
-// Ensures functions can be exported with correct symbol visibility and calling style.
+// Cross-platform export macros
 //-----------------------------------------------------------------------------
 #if defined(_WIN32)
 #define DLL_EXPORT extern "C" __declspec(dllexport)
@@ -56,29 +45,20 @@ static Renderer* g_Renderer = nullptr; // <--- CHANGED: Now points to the main R
 #endif
 
 //-----------------------------------------------------------------------------
-// Initialize engine log output file
-// Redirects stdout and stderr to "logs/engine.log" for easier debugging.
-// Also disables buffering to ensure immediate flush of logs to file/console.
+// Logging
 //-----------------------------------------------------------------------------
 void InitEngineLog() {
     std::filesystem::create_directories("logs");
-    FILE* logFile = nullptr;
-    freopen_s(&logFile, "logs/engine.log", "w", stdout); // Added missing semicolon
-    if (logFile) {
-        freopen_s(&logFile, "logs/engine.log", "a", stderr);
-    } else {
-        std::cerr << "[Engine] Failed to open stdout log file.\n";
-    }
-
+    FILE* logFile;
+    freopen_s(&logFile, "logs/engine.log", "w", stdout);
+    freopen_s(&logFile, "logs/engine.log", "w", stderr);
     setvbuf(stdout, nullptr, _IONBF, 0);
     setvbuf(stderr, nullptr, _IONBF, 0);
     std::cout << "[Engine] Log started\n";
 }
 
 //-----------------------------------------------------------------------------
-// Dynamically loads the filesystem_stdio.dll which provides file path resolution
-// and game directory functions.
-// Returns true if DLL and functions loaded successfully.
+// FileSystem loader
 //-----------------------------------------------------------------------------
 bool LoadFileSystem() {
     g_FileSystemDLL = LoadLibraryExA("bin/filesystem_stdio.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -92,8 +72,6 @@ bool LoadFileSystem() {
 
     if (!FS_GetGameDir || !FS_ResolvePath) {
         std::cerr << "[Engine] Failed to resolve FileSystem exports\n";
-        FreeLibrary(g_FileSystemDLL); // Clean up if exports fail
-        g_FileSystemDLL = nullptr;
         return false;
     }
 
@@ -102,9 +80,7 @@ bool LoadFileSystem() {
 }
 
 //-----------------------------------------------------------------------------
-// Loads a JSON map file from disk using the filesystem's resolved path.
-// Parses entities and forwards the map data to the renderer module.
-// Returns true on success, false on failure.
+// Map loader (JSON-based for now)
 //-----------------------------------------------------------------------------
 bool LoadMap(const std::string& mapName) {
     std::string relative = "maps/" + mapName + ".json";
@@ -138,16 +114,11 @@ bool LoadMap(const std::string& mapName) {
         }
     }
 
-    // Forward map to renderer (future work)
-    // g_Renderer->LoadMap(mapData); // Example of forwarding to the main renderer
     return true;
 }
 
 //-----------------------------------------------------------------------------
-// Engine Initialization entry point
-// Creates SDL window and OpenGL context,
-// Initializes the ShaderAPI abstraction layer and renderer module.
-// No direct graphics calls here, all done through interfaces.
+// Engine Initialization
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Init() {
     SDL_SetMainReady();
@@ -159,34 +130,31 @@ DLL_EXPORT void STDCALL Engine_Init() {
 
     g_Window = SDL_CreateWindow("INC Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN); // Keep SDL_WINDOW_OPENGL for now as Renderer still relies on GL context
+        1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!g_Window) {
         std::cerr << "[Engine] SDL_CreateWindow failed: " << SDL_GetError() << "\n";
         return;
     }
 
-    g_Renderer = new Renderer(); // <--- CHANGED: Instantiate the main Renderer class
-    if (!g_Renderer->Init(g_Window)) { // <--- CHANGED: Pass window handle
-        std::cerr << "[Engine] Renderer init failed\n";
+    g_Renderer = CreateShaderAPI(); // Modular backend creation
+    if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
+        std::cerr << "[Engine] ShaderAPI Init failed\n";
         return;
     }
 
-    std::cout << "[Engine] SDL + Renderer initialized\n"; // <--- CHANGED: Reflects the new structure
+    std::cout << "[Engine] SDL + ShaderAPI initialized\n";
 }
 
 //-----------------------------------------------------------------------------
-// Engine frame update function
-// Polls SDL events, handles quit requests,
-// invokes renderer frame logic, and swaps buffers.
+// Engine Frame
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            std::cout << "[Engine] Quit event received.\n";
-            return false; // Signal main loop to exit
+            std::cout << "[Engine] SDL_QUIT event received\n";
+            return false;
         }
-        // Optionally add keyboard/mouse input here
     }
 
     int width, height;
@@ -197,32 +165,28 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
         return false;
     }
 
-    std::cout << "[Engine] Calling BeginFrame...\n";
     g_Renderer->BeginFrame();
-    std::cout << "[Engine] BeginFrame complete. Calling RenderFrame...\n";
-    g_Renderer->RenderFrame(width, height);
-    std::cout << "[Engine] RenderFrame complete. Calling EndFrame...\n";
-    g_Renderer->EndFrame(); // No window param here
-    std::cout << "[Engine] EndFrame complete.\n";
+    g_Renderer->Renderer_Frame(width, height);
+    g_Renderer->EndFrame();
 
     return true;
 }
 
 //-----------------------------------------------------------------------------
-// Engine shutdown function
-// Cleans up renderer, ShaderAPI, SDL context and window,
-// unloads filesystem DLL.
+// Engine Shutdown
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
     if (g_Renderer) {
-        g_Renderer->Shutdown(); // <--- CHANGED: Call Renderer's Shutdown
-        delete g_Renderer;
+        g_Renderer->Shutdown();
+        DestroyShaderAPI(); // ✅ Proper deletion
         g_Renderer = nullptr;
     }
+
     if (g_Window) {
         SDL_DestroyWindow(g_Window);
         g_Window = nullptr;
     }
+
     SDL_Quit();
 
     if (g_FileSystemDLL) {
@@ -234,9 +198,7 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
 }
 
 //-----------------------------------------------------------------------------
-// Main engine run loop entry point.
-// Initializes logging, engine, filesystem, loads starting map,
-// then enters continuous frame update loop with basic 60 FPS cap.
+// Engine Main Entry Point
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Run() {
     InitEngineLog();
@@ -246,17 +208,11 @@ DLL_EXPORT void STDCALL Engine_Run() {
 
     if (!LoadFileSystem()) {
         std::cerr << "[Engine] Failed to load filesystem\n";
-        Engine_Shutdown(); // Ensure proper shutdown if filesystem fails
         return;
     }
 
-    // Example of using the loaded filesystem
-    std::cout << "[Engine] Game directory: " << FS_GetGameDir() << "\n";
-
-
     if (!LoadMap("start")) {
         std::cerr << "[Engine] Failed to load start map\n";
-        Engine_Shutdown(); // Ensure proper shutdown if map fails
         return;
     }
 
@@ -268,10 +224,9 @@ DLL_EXPORT void STDCALL Engine_Run() {
             std::cout << "[Engine] Engine_RunFrame returned false, exiting loop\n";
             break;
         }
-        SDL_Delay(16); // ~60 FPS cap
+        SDL_Delay(16); // ~60 FPS
     }
 
     Engine_Shutdown();
-
     std::cout << "[Engine] Engine_Run exiting\n";
 }

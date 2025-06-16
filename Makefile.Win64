@@ -93,4 +93,4 @@ INC.exe: $(LAUNCHER_OBJ) $(BIN_DIR)/libmathlib.a
 
 clean:
 	find $(BIN_DIR) -name '*.o' -delete
-	rm -f $(BIN_DIR)/*.dll INC.exe
+	rm -f $(BIN_DIR)/*.dll $(BIN_DIR)/*.a INC.exe
