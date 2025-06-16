@@ -44,6 +44,7 @@ Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up)
 
 Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
     float fovRad = fovYDegrees * 3.14159265f / 180.0f;
+	std::cout << "[Matrix::Perspective] FOV radians: " << fovRad << ", aspect: " << aspect << "\n";
     float f = 1.0f / tan(fovRad / 2.0f);
 
     Matrix result = {};
