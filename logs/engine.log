@@ -7,9 +7,9 @@
 [FS] Checking: "D:\\git\\INC\\hl3\\.\\maps/start.json"
 [FS] Found: "D:\\git\\INC\\hl3\\.\\maps/start.json"
 [Entity] static_geometry at (0, 0, 0)
-[Entity] static_geometry at (0, -1, 0)
-[Entity] static_geometry at (0, 0, -2)
 [Entity] static_geometry at (2, 0, 0)
+[Entity] static_geometry at (-4, 0.5, 0)
+[Entity] static_geometry at (3, 1, 3)
 [Engine] Entering main loop
 [Engine] SDL_QUIT event received
 [Engine] Engine_RunFrame returned false, exiting loop

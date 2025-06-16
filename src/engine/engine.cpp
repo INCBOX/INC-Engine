@@ -140,6 +140,11 @@ DLL_EXPORT void STDCALL Engine_Init() {
         return;
     }
 
+    // ** SDL MOUSE GRAB **
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_SetWindowGrab(g_Window, SDL_TRUE);
+    SDL_ShowCursor(SDL_DISABLE);
+
     g_Renderer = CreateShaderAPI(); // Modular backend creation
     if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
         std::cerr << "[Engine] ShaderAPI Init failed\n";
@@ -148,6 +153,7 @@ DLL_EXPORT void STDCALL Engine_Init() {
 
     std::cout << "[Engine] SDL + ShaderAPI initialized\n";
 }
+
 
 //-----------------------------------------------------------------------------
 // Engine Frame
