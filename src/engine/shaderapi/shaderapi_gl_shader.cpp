@@ -20,7 +20,14 @@ bool ShaderProgram::CompileFromFile(const char* vertexPath, const char* fragment
     std::string vSource = vStream.str();
     std::string fSource = fStream.str();
 
-    return Compile(vSource.c_str(), fSource.c_str());
+    bool success = Compile(vSource.c_str(), fSource.c_str());
+
+    m_MVPLocation = glGetUniformLocation(ID, "u_MVP");
+    if (m_MVPLocation == -1) {
+        std::cerr << "Warning: u_MVP uniform not found\n";
+    }
+
+    return success;
 }
 
 

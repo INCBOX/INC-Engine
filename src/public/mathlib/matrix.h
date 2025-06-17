@@ -26,3 +26,5 @@ inline Matrix operator*(const Matrix& a, const Matrix& b)
                 result[col][row] += a[i][row] * b[col][i];
     return result;
 }
+
+using Mat4 = Matrix;		// Matrix and Mat4 be used interchangeably.

@@ -38,7 +38,7 @@ Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up)
 
     result[3][0] = -s.Dot(eye);
     result[3][1] = -u.Dot(eye);
-    result[3][2] = f.Dot(eye);
+    result[3][2] = -f.Dot(eye);
 
     return result;
 }

@@ -18,3 +18,5 @@ public:
 	Vector Cross(const Vector& other) const;
 	Vector Normalize() const;
 };
+
+using Vec3 = Vector;		// Vector and Vec3 be used interchangeably.

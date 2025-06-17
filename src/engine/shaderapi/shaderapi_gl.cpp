@@ -8,9 +8,6 @@
 #include "mathlib/matrix.h"
 
 
-
-
-
 bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
     m_GLContext = SDL_GL_CreateContext(m_Window);
@@ -42,16 +39,17 @@ bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
 }
 
 
+
 void ShaderAPI_GL::BeginFrame() {
-    // Optional: any per-frame setup before rendering
+    int w, h;
+    SDL_GetWindowSize(m_Window, &w, &h);
+    PrepareFrame(w, h);
 }
 
 void ShaderAPI_GL::EndFrame() {
-    DebugDrawUnitCube();
+    // DebugDrawUnitCube();
     SDL_GL_SwapWindow(m_Window);
 }
-
-
 
 
 void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
@@ -67,14 +65,6 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glDisable(GL_CULL_FACE); // optional
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // solid fill
 
-    // 	Setup camera
-    //	Vector cameraPos = Vector(0.0f, 2.0f, 5.0f);       // Position of camera
-    //	Vector cameraTarget = Vector(0.0f, 0.0f, 0.0f);    // Look at origin
-    //	Vector up = Vector(0.0f, 1.0f, 0.0f);              // World up
-	//	
-    //	m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
-	
-	
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     m_ProjMatrix = Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f);
 	
@@ -123,41 +113,8 @@ void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
     mesh.Unbind();
 }
 
-// CAMERA STUFF
+// CAMERA MATRIX STUFF
 void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix)
 {
     m_ViewMatrix = viewMatrix;
-}
-
-
-void ShaderAPI_GL::DebugDrawUnitCube() {
-    std::vector<float> vertices = {
-        -0.5f,-0.5f,-0.5f,   0.5f,-0.5f,-0.5f,   0.5f, 0.5f,-0.5f,  -0.5f, 0.5f,-0.5f,
-        -0.5f,-0.5f, 0.5f,   0.5f,-0.5f, 0.5f,   0.5f, 0.5f, 0.5f,  -0.5f, 0.5f, 0.5f
-    };
-    std::vector<unsigned int> indices = {
-        0,1,2, 2,3,0,  // back
-        4,5,6, 6,7,4,  // front
-        0,4,7, 7,3,0,  // left
-        1,5,6, 6,2,1,  // right
-        3,2,6, 6,7,3,  // top
-        0,1,5, 5,4,0   // bottom
-    };
-
-    Mesh tempCube;
-    tempCube.Upload(vertices, indices);
-
-    Matrix model = Matrix::Identity();
-    Matrix mvp = m_ProjMatrix * m_ViewMatrix * model;
-    SetMVP(mvp);
-
-    // 👇 Add this debug print
-    std::cout << "[DEBUG] MVP Matrix:\n";
-    const float* data = mvp.Data();
-    for (int i = 0; i < 4; ++i)
-        std::cout << data[i * 4] << " " << data[i * 4 + 1] << " " << data[i * 4 + 2] << " " << data[i * 4 + 3] << "\n";
-
-    tempCube.Bind();
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(tempCube.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
-    tempCube.Unbind();
 }

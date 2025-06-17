@@ -2,201 +2,226 @@
 //
 // Responsibilities:
 // - Parses -game <modname> or auto-detects game directory
-// - Reads engine_path.txt to determine DLL paths (optional fallback to defaults)
-// - Loads filesystem_stdio as dynamic library
-// - Loads engine.dll / libengine.so
+// - Reads engine_path.txt for DLL paths (optional fallback to defaults)
+// - Loads filesystem_stdio dynamic library
+// - Loads engine DLL / shared lib
 // - Calls Engine_Run()
-// This file contains NO rendering or ShaderAPI logic.
+// No rendering or ShaderAPI logic here.
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <filesystem>
-
-#include "engine_api.h"
+#include <optional>
 
 #if defined(_WIN32)
     #include <Windows.h>
-    typedef void (__stdcall *EngineRunFn)();
-    typedef bool (*FSInitFn)(const std::string&);
+    using LibHandle = HMODULE;
+    #define LoadLib(path) LoadLibraryExA(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH)
+    #define GetLibProc(lib, name) GetProcAddress(lib, name)
+    #define CloseLib(lib) FreeLibrary(lib)
 #else
     #include <dlfcn.h>
-    #include <unistd.h> // for readlink
-    typedef void (*EngineRunFn)();
-    typedef bool (*FSInitFn)(const std::string&);
+    #include <unistd.h>
+    #include <limits.h>
+    using LibHandle = void*;
+    inline LibHandle LoadLib(const char* path) { return dlopen(path, RTLD_NOW); }
+    inline void* GetLibProc(LibHandle lib, const char* name) { return dlsym(lib, name); }
+    inline void CloseLib(LibHandle lib) { if (lib) dlclose(lib); }
 #endif
 
-// Helper: Get the directory where the launcher executable lives
-static std::string GetExecutableDir() {
+// Function pointer types
+using EngineRunFn = void(*)();
+using FSInitFn = bool(*)(const std::string&);
+
+// Helper: Get executable directory cross-platform
+static std::optional<std::filesystem::path> GetExecutableDir() {
 #if defined(_WIN32)
-    char exePath[MAX_PATH];
-    GetModuleFileNameA(NULL, exePath, MAX_PATH);
-#else
-    char exePath[1024];
+    char exePath[MAX_PATH] = {};
+    if (!GetModuleFileNameA(NULL, exePath, sizeof(exePath))) {
+        std::cerr << "[Launcher] GetModuleFileNameA failed\n";
+        return std::nullopt;
+    }
+    return std::filesystem::path(exePath).parent_path();
+
+#elif defined(__APPLE__)
+    char exePath[PATH_MAX] = {};
+    uint32_t size = sizeof(exePath);
+    if (_NSGetExecutablePath(exePath, &size) != 0) {
+        std::cerr << "[Launcher] _NSGetExecutablePath buffer too small\n";
+        return std::nullopt;
+    }
+    return std::filesystem::path(exePath).parent_path();
+
+#else // Linux
+    char exePath[PATH_MAX] = {};
     ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
-    if (len != -1) exePath[len] = '\0';
-    else strcpy(exePath, "./");
+    if (len == -1) {
+        std::cerr << "[Launcher] readlink /proc/self/exe failed\n";
+        return std::nullopt;
+    }
+    exePath[len] = '\0';
+    return std::filesystem::path(exePath).parent_path();
 #endif
-    return std::filesystem::path(exePath).parent_path().string();
 }
 
-// Helper: Parse engine_path.txt lines into a vector of paths
-static std::vector<std::string> ParseEnginePathFile(const std::string& filePath) {
+// Helper: Parse engine_path.txt into vector<string>, ignoring empty lines and comments (#)
+static std::vector<std::string> ParseEnginePathFile(const std::filesystem::path& filePath) {
     std::vector<std::string> dllPaths;
     std::ifstream file(filePath);
     if (!file.is_open()) {
         std::cerr << "[Launcher] Could not open engine_path.txt, will use default DLL paths.\n";
         return dllPaths;
     }
+
     std::string line;
     while (std::getline(file, line)) {
-        if (!line.empty())
-            dllPaths.push_back(line);
+        // Trim trailing/leading whitespace (simple)
+        size_t start = line.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) continue;
+        size_t end = line.find_last_not_of(" \t\r\n");
+        std::string trimmed = line.substr(start, end - start + 1);
+        if (trimmed.empty() || trimmed[0] == '#') continue; // Skip comments
+
+        dllPaths.push_back(std::move(trimmed));
     }
     return dllPaths;
 }
 
-// Helper: Pick DLL path from engine_path.txt based on current platform prefix
-static std::string PickDllPath(const std::vector<std::string>& dllPaths, const std::string& prefix) {
+// Helper: Find platform DLL path from engine_path.txt entries like "win_engine=path"
+static std::optional<std::string> PickDllPath(const std::vector<std::string>& dllPaths, const std::string& prefix) {
     for (const auto& path : dllPaths) {
-        if (path.rfind(prefix, 0) == 0) { // line starts with prefix
+        if (path.compare(0, prefix.size(), prefix) == 0) {
             auto pos = path.find('=');
-            if (pos != std::string::npos && pos + 1 < path.size())
+            if (pos != std::string::npos && pos + 1 < path.size()) {
                 return path.substr(pos + 1);
+            }
         }
     }
-    return {}; // not found
+    return std::nullopt;
 }
 
-int main(int argc, char** argv) {
-    std::string exeDir = GetExecutableDir();
-    std::string gameDir;
+// Show error in platform native way
+static void ShowError(const char* message) {
+#if defined(_WIN32)
+    MessageBoxA(NULL, message, "Fatal Error", MB_ICONERROR);
+#else
+    std::cerr << "[Launcher] " << message << "\n";
+#endif
+}
 
-    // Step 1: Parse -game <modname> argument (optional)
-    for (int i = 0; i < argc - 1; ++i) {
-        if (std::string(argv[i]) == "-game") {
-            gameDir = (std::filesystem::path(exeDir) / argv[i + 1]).string();
+int main(int argc, char* argv[]) {
+    auto exeDirOpt = GetExecutableDir();
+    if (!exeDirOpt) {
+        ShowError("Failed to get executable directory");
+        return -1;
+    }
+    const auto& exeDir = *exeDirOpt;
+
+    // Parse -game argument (optional)
+    std::filesystem::path gameDir;
+    for (int i = 1; i < argc - 1; ++i) {
+        if (std::string_view(argv[i]) == "-game") {
+            gameDir = exeDir / argv[i + 1];
             break;
         }
     }
 
-    // Step 2: Auto-detect mod folder with gameinfo.txt if -game not given
+    // Auto-detect mod folder by presence of gameinfo.txt if no -game arg
     if (gameDir.empty()) {
         for (const auto& entry : std::filesystem::directory_iterator(exeDir)) {
             if (entry.is_directory()) {
-                std::string candidate = (entry.path() / "gameinfo.txt").string();
+                auto candidate = entry.path() / "gameinfo.txt";
                 if (std::filesystem::exists(candidate)) {
-                    gameDir = entry.path().string();
+                    gameDir = entry.path();
                     break;
                 }
             }
         }
     }
 
-    // Step 3: Validate gameinfo.txt exists
-    std::string gameinfoPath = (std::filesystem::path(gameDir) / "gameinfo.txt").string();
+    if (gameDir.empty()) {
+        ShowError("Could not detect game directory with gameinfo.txt");
+        return -2;
+    }
+
+    auto gameinfoPath = gameDir / "gameinfo.txt";
     if (!std::filesystem::exists(gameinfoPath)) {
-#if defined(_WIN32)
-        MessageBoxA(NULL, "Could not find gameinfo.txt", "Fatal Error", MB_ICONERROR);
-#else
-        std::cerr << "[Launcher] Could not find gameinfo.txt\n";
-#endif
-        return -1;
+        ShowError("Could not find gameinfo.txt in game directory");
+        return -3;
     }
 
     std::cout << "[Launcher] Using gameinfo.txt: " << gameinfoPath << "\n";
 
-    // Step 4: Read engine_path.txt to get DLL paths (optional)
-    std::string enginePathTxt = (std::filesystem::path(exeDir) / "engine_path.txt").string();
+    // Read engine_path.txt for DLL paths
+    auto enginePathTxt = exeDir / "engine_path.txt";
     auto dllPaths = ParseEnginePathFile(enginePathTxt);
 
-    // Step 5: Pick platform-specific DLL paths from engine_path.txt, fallback to defaults if missing
-    std::string fsPath, enginePath;
-
+    // Determine platform-specific DLL paths, fallback to defaults
+    std::optional<std::string> fsPathOpt, enginePathOpt;
 #if defined(_WIN32)
-    fsPath = PickDllPath(dllPaths, "win_filesystem=");
-    enginePath = PickDllPath(dllPaths, "win_engine=");
-    if (fsPath.empty()) fsPath = (std::filesystem::path(exeDir) / "bin" / "filesystem_stdio.dll").string();
-    if (enginePath.empty()) enginePath = (std::filesystem::path(exeDir) / "bin" / "engine.dll").string();
+    fsPathOpt = PickDllPath(dllPaths, "win_filesystem=");
+    enginePathOpt = PickDllPath(dllPaths, "win_engine=");
+    if (!fsPathOpt) fsPathOpt = (exeDir / "bin" / "filesystem_stdio.dll").string();
+    if (!enginePathOpt) enginePathOpt = (exeDir / "bin" / "engine.dll").string();
 #elif defined(__APPLE__)
-    fsPath = PickDllPath(dllPaths, "mac_filesystem=");
-    enginePath = PickDllPath(dllPaths, "mac_engine=");
-    if (fsPath.empty()) fsPath = (std::filesystem::path(exeDir) / "bin" / "libfilesystem_stdio.dylib").string();
-    if (enginePath.empty()) enginePath = (std::filesystem::path(exeDir) / "bin" / "libengine.dylib").string();
+    fsPathOpt = PickDllPath(dllPaths, "mac_filesystem=");
+    enginePathOpt = PickDllPath(dllPaths, "mac_engine=");
+    if (!fsPathOpt) fsPathOpt = (exeDir / "bin" / "libfilesystem_stdio.dylib").string();
+    if (!enginePathOpt) enginePathOpt = (exeDir / "bin" / "libengine.dylib").string();
 #else // Linux and others
-    fsPath = PickDllPath(dllPaths, "linux_filesystem=");
-    enginePath = PickDllPath(dllPaths, "linux_engine=");
-    if (fsPath.empty()) fsPath = (std::filesystem::path(exeDir) / "bin" / "libfilesystem_stdio.so").string();
-    if (enginePath.empty()) enginePath = (std::filesystem::path(exeDir) / "bin" / "libengine.so").string();
+    fsPathOpt = PickDllPath(dllPaths, "linux_filesystem=");
+    enginePathOpt = PickDllPath(dllPaths, "linux_engine=");
+    if (!fsPathOpt) fsPathOpt = (exeDir / "bin" / "libfilesystem_stdio.so").string();
+    if (!enginePathOpt) enginePathOpt = (exeDir / "bin" / "libengine.so").string();
 #endif
+
+    const std::string& fsPath = *fsPathOpt;
+    const std::string& enginePath = *enginePathOpt;
 
     std::cout << "[Launcher] Loading FileSystem DLL: " << fsPath << "\n";
 
-    // Step 6: Load filesystem_stdio DLL
-#if defined(_WIN32)
-    HMODULE fsLib = LoadLibraryExA(fsPath.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-#else
-    void* fsLib = dlopen(fsPath.c_str(), RTLD_NOW);
-#endif
+    // Load filesystem_stdio library
+    LibHandle fsLib = LoadLib(fsPath.c_str());
     if (!fsLib) {
-#if defined(_WIN32)
-        MessageBoxA(NULL, "Failed to load filesystem_stdio DLL", "Fatal Error", MB_ICONERROR);
-#else
-        std::cerr << "[Launcher] Failed to load FileSystem DLL: " << fsPath << "\n";
-#endif
-        return -2;
+        ShowError("Failed to load filesystem_stdio DLL");
+        return -4;
     }
 
-    // Step 7: Get FS_Init function pointer and initialize filesystem with gameinfo.txt
-#if defined(_WIN32)
-    FSInitFn FS_Init = (FSInitFn)GetProcAddress(fsLib, "FS_Init");
-#else
-    FSInitFn FS_Init = (FSInitFn)dlsym(fsLib, "FS_Init");
-#endif
-    if (!FS_Init || !FS_Init(gameinfoPath)) {
-#if defined(_WIN32)
-        MessageBoxA(NULL, "Filesystem failed to initialize", "Fatal Error", MB_ICONERROR);
-#else
-        std::cerr << "[Launcher] FileSystem initialization failed\n";
-#endif
-        return -3;
+    // Get FS_Init function pointer
+    auto FS_Init = reinterpret_cast<FSInitFn>(GetLibProc(fsLib, "FS_Init"));
+    if (!FS_Init || !FS_Init(gameinfoPath.string())) {
+        ShowError("Filesystem failed to initialize");
+        CloseLib(fsLib);
+        return -5;
     }
 
     std::cout << "[Launcher] Loading Engine DLL: " << enginePath << "\n";
 
-    // Step 8: Load engine DLL
-#if defined(_WIN32)
-    HMODULE engineLib = LoadLibraryExA(enginePath.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-#else
-    void* engineLib = dlopen(enginePath.c_str(), RTLD_NOW);
-#endif
+    // Load engine library
+    LibHandle engineLib = LoadLib(enginePath.c_str());
     if (!engineLib) {
-#if defined(_WIN32)
-        MessageBoxA(NULL, "Failed to load engine DLL", "Fatal Error", MB_ICONERROR);
-#else
-        std::cerr << "[Launcher] Failed to load Engine DLL: " << enginePath << "\n";
-#endif
-        return -4;
+        ShowError("Failed to load engine DLL");
+        CloseLib(fsLib);
+        return -6;
     }
 
-    // Step 9: Get Engine_Run function pointer
-#if defined(_WIN32)
-    EngineRunFn Engine_Run = (EngineRunFn)GetProcAddress(engineLib, "Engine_Run");
-#else
-    EngineRunFn Engine_Run = (EngineRunFn)dlsym(engineLib, "Engine_Run");
-#endif
+    // Get Engine_Run function pointer
+    auto Engine_Run = reinterpret_cast<EngineRunFn>(GetLibProc(engineLib, "Engine_Run"));
     if (!Engine_Run) {
-#if defined(_WIN32)
-        MessageBoxA(NULL, "Missing Engine_Run() in engine DLL", "Fatal Error", MB_ICONERROR);
-#else
-        std::cerr << "[Launcher] Engine_Run not found in engine DLL\n";
-#endif
-        return -5;
+        ShowError("Missing Engine_Run() in engine DLL");
+        CloseLib(engineLib);
+        CloseLib(fsLib);
+        return -7;
     }
 
-    // Step 10: Call Engine_Run main loop
+    // Run the engine (blocks until engine exits)
     Engine_Run();
+
+    // Cleanup
+    CloseLib(engineLib);
+    CloseLib(fsLib);
 
     return 0;
 }

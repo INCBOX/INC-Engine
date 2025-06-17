@@ -13,6 +13,7 @@
 #include "nlohmann/json.hpp"
 
 #include "engine_api.h"
+#include "engine_globals.h"				// access the main camera from anywhere in engine
 #include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
 #include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
@@ -142,6 +143,9 @@ DLL_EXPORT void STDCALL Engine_Init() {
         return;
     }
 
+    // Enable VSync for stable FPS and reduce tearing
+    SDL_GL_SetSwapInterval(1);
+
     // ** SDL MOUSE GRAB **
 	SDL_SetRelativeMouseMode(SDL_TRUE);   // Grab mouse, hide cursor, get relative motion
 	SDL_SetWindowGrab(g_Window, SDL_TRUE);
@@ -160,7 +164,7 @@ DLL_EXPORT void STDCALL Engine_Init() {
 //-----------------------------------------------------------------------------
 // Engine Frame
 //-----------------------------------------------------------------------------
-DLL_EXPORT bool STDCALL Engine_RunFrame() {
+DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
     int mouseDeltaX = 0;
     int mouseDeltaY = 0;
@@ -179,8 +183,8 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
 	
 	const Uint8* keystate = SDL_GetKeyboardState(NULL);
 	
-	// Update camera with inputs, deltaTime ~ 1/60
-    g_Camera.Update(1.0f / 60.0f, keystate, mouseDeltaX, mouseDeltaY);
+    // Update camera with inputs and actual frame delta time
+    g_Camera.Update(deltaTime, keystate, mouseDeltaX, mouseDeltaY);
 
 
     // Get current window size
@@ -199,8 +203,12 @@ DLL_EXPORT bool STDCALL Engine_RunFrame() {
     Matrix view = g_Camera.GetViewMatrix();
     g_Renderer->SetViewMatrix(view);
 	
+    // Log how many static meshes to render
+    const auto& staticGeometry = GetStaticGeometry();
+    std::cout << "[Engine] Rendering " << staticGeometry.size() << " static meshes this frame\n";
+	
     // Render static geometry from loaded map
-    for (const auto& instance : GetStaticGeometry()) {
+    for (const auto& instance : staticGeometry) {
         g_Renderer->DrawMesh(*instance.mesh, instance.transform);
     }
 
@@ -255,15 +263,35 @@ DLL_EXPORT void STDCALL Engine_Run() {
 
     std::cout << "[Engine] Entering main loop\n";
 
+    Uint64 now = SDL_GetPerformanceCounter();
+    Uint64 last = 0;
+    double deltaTime = 0.0;
+
     while (true) {
-        bool keepRunning = Engine_RunFrame();
+        last = now;
+        now = SDL_GetPerformanceCounter();
+		
+        deltaTime = (double)((now - last) * 1000 / (double)SDL_GetPerformanceFrequency()); // ms elapsed
+		
+        // Log frame time
+        std::cout << "[Engine] Frame time: " << deltaTime << " ms\n";
+		
+        bool keepRunning = Engine_RunFrame(static_cast<float>(deltaTime / 1000.0)); // seconds
+		
         if (!keepRunning) {
             std::cout << "[Engine] Engine_RunFrame returned false, exiting loop\n";
             break;
         }
-        SDL_Delay(16); // ~60 FPS
+		
+        // Optional: yield CPU briefly to avoid busy loop (not a fixed delay)
+        SDL_Delay(1);
     }
 
     Engine_Shutdown();
     std::cout << "[Engine] Engine_Run exiting\n";
+}
+
+// OUTSIDE OF ALL FUNCTIONS:
+Camera& GetMainCamera() {
+    return g_Camera;
 }

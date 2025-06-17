@@ -10,4 +10,6 @@
 
 DLL_EXPORT void STDCALL Engine_Run();
 DLL_EXPORT void STDCALL Engine_Shutdown();
-DLL_EXPORT bool STDCALL Engine_RunFrame(); // <- return bool now
+
+// Changed to accept deltaTime parameter
+DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime);

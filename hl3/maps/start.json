@@ -4,32 +4,80 @@
       "classname": "static_geometry",
       "origin": [0, 0, 0],
       "geometry": {
-        "type": "cube",
-        "size": [1.0, 1.0, 1.0]
-      }
-    },
-    {
-      "classname": "static_geometry",
-      "origin": [2, 0, 0],
-      "geometry": {
         "type": "plane",
-        "size": [2.0, 2.0]
+        "size": [30, 30]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [-4, 0.5, 0],
+      "origin": [0, 1.5, -10],
       "geometry": {
         "type": "cube",
-        "size": [1.0, 1.0, 1.0]
+        "size": [30, 3, 1]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [3, 1, 3],
+      "origin": [-14, 1.5, 0],
       "geometry": {
-        "type": "plane",
-        "size": [3.0, 3.0]
+        "type": "cube",
+        "size": [1, 3, 20]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [14, 1.5, 0],
+      "geometry": {
+        "type": "cube",
+        "size": [1, 3, 20]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [0, 1.5, 10],
+      "geometry": {
+        "type": "cube",
+        "size": [30, 3, 1]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [0, 4, 5],
+      "geometry": {
+        "type": "cube",
+        "size": [10, 1, 10]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [-7, 0.5, 12],
+      "geometry": {
+        "type": "cube",
+        "size": [2, 1, 2]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [-7, 1.5, 14],
+      "geometry": {
+        "type": "cube",
+        "size": [2, 1, 2]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [-7, 2.5, 16],
+      "geometry": {
+        "type": "cube",
+        "size": [2, 1, 2]
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [0, 0.5, 18],
+      "geometry": {
+        "type": "cube",
+        "size": [10, 1, 10]
       }
     }
   ]
