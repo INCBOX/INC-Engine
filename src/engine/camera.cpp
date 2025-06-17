@@ -1,66 +1,45 @@
 #include "mathlib/camera.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <cmath>
 
 Camera::Camera()
-    : position(0.0f, 0.0f, 5.0f),
-      up(0.0f, 1.0f, 0.0f),
-      yaw(3.14159f),  // pointing along -Z
-      pitch(0.0f)
 {
-    UpdateForwardVector();
+    position = Vec3(0.0f, 0.0f, 3.0f);
+    yaw = -90.0f;
+    pitch = 0.0f;
+    cameraSpeed = 5.0f;
+    mouseSensitivity = 0.1f;
 }
 
-void Camera::UpdateForwardVector()
+void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDX, int mouseDY)
 {
-    Vector dir;
-    dir.x = cosf(pitch) * sinf(yaw);
-    dir.y = sinf(pitch);
-    dir.z = cosf(pitch) * cosf(yaw);
+    yaw += mouseDX * mouseSensitivity;
+    pitch -= mouseDY * mouseSensitivity; // Subtract for natural up/down
 
-    forward = dir.Normalize();
+    // Clamp pitch to prevent flipping
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    // Convert to forward vector
+    float radYaw = yaw * (3.14159265f / 180.0f);
+    float radPitch = pitch * (3.14159265f / 180.0f);
+    forward = Vec3(
+        cos(radYaw) * cos(radPitch),
+        sin(radPitch),
+        sin(radYaw) * cos(radPitch)
+    ).Normalize();
+
+    // Flat movement plane
+    Vec3 flatForward = Vec3(forward.x, 0.0f, forward.z).Normalize();
+    Vec3 right = flatForward.Cross(Vec3(0.0f, 1.0f, 0.0f)).Normalize();
+
+    if (keystate[SDL_SCANCODE_W]) position += flatForward * cameraSpeed * deltaTime;
+    if (keystate[SDL_SCANCODE_S]) position -= flatForward * cameraSpeed * deltaTime;
+    if (keystate[SDL_SCANCODE_A]) position -= right * cameraSpeed * deltaTime;
+    if (keystate[SDL_SCANCODE_D]) position += right * cameraSpeed * deltaTime;
 }
 
-void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDeltaX, int mouseDeltaY)
+Mat4 Camera::GetViewMatrix() const
 {
-    // Update rotation based on mouse input
-    yaw -= mouseDeltaX * mouseSensitivity;
-    pitch -= mouseDeltaY * mouseSensitivity;
-
-    const float pitchLimit = 1.5f; // ~85 degrees
-    if (pitch > pitchLimit) pitch = pitchLimit;
-    if (pitch < -pitchLimit) pitch = -pitchLimit;
-
-    UpdateForwardVector();
-
-    // Calculate right vector
-    Vector right = forward.Cross(up).Normalize();
-
-    // Update position based on keyboard input
-    if (keystate[SDL_SCANCODE_W])
-        position = position + forward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_S])
-        position = position - forward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_A])
-        position = position - right * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_D])
-        position = position + right * cameraSpeed * deltaTime;
-}
-
-Matrix Camera::GetViewMatrix() const
-{
-    Vector right = forward.Cross(up).Normalize();
-    Vector trueUp = right.Cross(forward).Normalize();
-
-    Matrix view = Matrix::Identity();
-
-    view.m[0][0] = right.x;    view.m[1][0] = right.y;    view.m[2][0] = right.z;
-    view.m[0][1] = trueUp.x;   view.m[1][1] = trueUp.y;   view.m[2][1] = trueUp.z;
-    view.m[0][2] = -forward.x; view.m[1][2] = -forward.y; view.m[2][2] = -forward.z;
-
-    view.m[3][0] = -position.Dot(right);
-    view.m[3][1] = -position.Dot(trueUp);
-    view.m[3][2] = position.Dot(forward);
-
-    return view;
+    return Matrix::LookAt(position, position + forward, Vec3(0.0f, 1.0f, 0.0f));
 }

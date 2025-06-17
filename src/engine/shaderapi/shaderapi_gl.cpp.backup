@@ -67,9 +67,13 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     m_ProjMatrix = Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f);
+	
+		Vector cameraPos(0.0f, 0.0f, 5.0f);
+		Vector cameraTarget(0.0f, 0.0f, 0.0f);
+		Vector up(0.0f, 1.0f, 0.0f);
+		m_ViewMatrix = Matrix::LookAt(cameraPos, cameraTarget, up);
 
-    // 🚫 Don't overwrite the view matrix here!
-    // The actual camera should call SetViewMatrix() every frame
+
 
     m_Shader->Use();
 }

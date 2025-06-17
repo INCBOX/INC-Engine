@@ -17,10 +17,13 @@
 #include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
 #include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
+
+#include "input.h"
 #include "mathlib/camera.h"
 
 using json = nlohmann::json;
 static Camera g_Camera;
+static Input g_Input;  // Our new Input system instance
 
 //-----------------------------------------------------------------------------
 // FileSystem DLL dynamic loading
@@ -157,6 +160,8 @@ DLL_EXPORT void STDCALL Engine_Init() {
         return;
     }
 
+    g_Input.Init();  // Initialize our input system
+
     std::cout << "[Engine] SDL + ShaderAPI initialized\n";
 }
 
@@ -166,8 +171,9 @@ DLL_EXPORT void STDCALL Engine_Init() {
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
-    int mouseDeltaX = 0;
-    int mouseDeltaY = 0;
+	
+    // Reset and update input states, including mouse deltas
+    g_Input.Update();
 	
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
@@ -175,13 +181,14 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
             return false;
         }
         else if (event.type == SDL_MOUSEMOTION) {
-            mouseDeltaX += event.motion.xrel;
-            mouseDeltaY += event.motion.yrel;
+            // Input system handles mouse deltas internally
         }
     }
-	
-	
-	const Uint8* keystate = SDL_GetKeyboardState(NULL);
+
+    // Get raw input data from Input system
+    const Uint8* keystate = g_Input.GetKeyState();
+    int mouseDeltaX = g_Input.GetMouseDeltaX();
+    int mouseDeltaY = g_Input.GetMouseDeltaY();
 	
     // Update camera with inputs and actual frame delta time
     g_Camera.Update(deltaTime, keystate, mouseDeltaX, mouseDeltaY);
@@ -217,6 +224,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     return true;
 }
 
+
 //-----------------------------------------------------------------------------
 // Engine Shutdown
 //-----------------------------------------------------------------------------
@@ -231,6 +239,8 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
         SDL_DestroyWindow(g_Window);
         g_Window = nullptr;
     }
+
+    g_Input.Shutdown();  // Shutdown input cleanly
 
     SDL_Quit();
 

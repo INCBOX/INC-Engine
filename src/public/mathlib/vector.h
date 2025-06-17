@@ -10,6 +10,19 @@ public:
     Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
     Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
     Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
+	Vector& operator+=(const Vector& v) {
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
+	}
+	
+	Vector& operator-=(const Vector& v) {
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
+	}
 
     float* Base() { return &x; }
     const float* Base() const { return &x; }

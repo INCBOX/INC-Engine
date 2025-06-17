@@ -17,28 +17,30 @@ Matrix Matrix::Translation(const Vector& t) {
     return result;
 }
 
-Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up) {
-    Vector f = (center - eye).Normalize();
-    Vector s = f.Cross(up).Normalize();
-    Vector u = s.Cross(f);
+Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up)
+{
+    Vector f = (center - eye).Normalize(); // forward
+    Vector s = f.Cross(up).Normalize();    // right
+    Vector u = s.Cross(f);                 // up
 
     Matrix result = Matrix::Identity();
 
+    // column-major order: m[col][row]
     result[0][0] = s.x;
-    result[0][1] = s.y;
-    result[0][2] = s.z;
+    result[0][1] = u.x;
+    result[0][2] = -f.x;
 
-    result[1][0] = u.x;
+    result[1][0] = s.y;
     result[1][1] = u.y;
-    result[1][2] = u.z;
+    result[1][2] = -f.y;
 
-    result[2][0] = -f.x;
-    result[2][1] = -f.y;
+    result[2][0] = s.z;
+    result[2][1] = u.z;
     result[2][2] = -f.z;
 
     result[3][0] = -s.Dot(eye);
     result[3][1] = -u.Dot(eye);
-    result[3][2] = -f.Dot(eye);
+    result[3][2] = f.Dot(eye); // right-handed OpenGL
 
     return result;
 }
