@@ -20,10 +20,12 @@
 
 #include "input.h"
 #include "mathlib/camera.h"
+#include "player.h"
 
 using json = nlohmann::json;
 static Camera g_Camera;
-static Input g_Input;  // Our new Input system instance
+static Input g_Input;
+static Player g_Player;
 
 //-----------------------------------------------------------------------------
 // FileSystem DLL dynamic loading
@@ -206,9 +208,12 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
 	
-    // **PASS CAMERA VIEW MATRIX TO RENDERER**
-    Matrix view = g_Camera.GetViewMatrix();
-    g_Renderer->SetViewMatrix(view);
+	// Game update
+	g_Player.Update(deltaTime, g_Input);
+	
+	// Rendering
+	Matrix view = g_Player.GetCamera().GetViewMatrix();
+	g_Renderer->SetViewMatrix(view);
 	
     // Log how many static meshes to render
     const auto& staticGeometry = GetStaticGeometry();

@@ -18,3 +18,7 @@ Vector Vector::Normalize() const {
     if (len == 0.0f) return Vector(0, 0, 0);
     return Vector(x / len, y / len, z / len);
 }
+// CAMERA, PLAYER, STUFF
+float Vector::Length() const {
+    return std::sqrt(x * x + y * y + z * z);
+}

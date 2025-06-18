@@ -26,7 +26,7 @@ public:
 
     float* Base() { return &x; }
     const float* Base() const { return &x; }
-	
+	float Length() const;
 	float Dot(const Vector& other) const;
 	Vector Cross(const Vector& other) const;
 	Vector Normalize() const;
