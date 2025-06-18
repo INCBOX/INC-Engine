@@ -1,3 +1,7 @@
+#include "shaderapi/shaderapi.h" 		// access to g_pShaderAPI
+#include "shaderapi/ishaderapi.h"      	// interface for ShaderAPICore
+#include "shaderapi/imesh.h"          	// IMesh interface
+#include "mathlib/matrix.h"           	// for Matrix::Translation
 #include "world/geometry_loader.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -78,7 +82,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
         }
 
         StaticMeshInstance instance;
-        instance.mesh = std::make_unique<Mesh>();
+        instance.mesh.reset(g_pShaderAPI->CreateMesh());
         instance.mesh->Upload(verts, indices);
 
         // Create translation matrix from position

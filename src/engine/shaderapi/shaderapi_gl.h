@@ -22,15 +22,19 @@ public:
     void OnResize(int width, int height) override;
 	void SetViewMatrix(const Matrix& viewMatrix) override;
     // Draw a mesh with a given model matrix transform
-    void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix);
+    void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) override;
+
 	
 	void DebugDrawUnitCube();
 
 private:
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
+	IMesh* CreateMesh() override;
 
     // View and Projection matrices as class members (instance scope)
+	int m_MVPLocation = -1;
+	Matrix m_ViewProjectionMatrix; // Avoids recomputing m_ProjMatrix * m_ViewMatrix inside DrawMesh() for every mesh. 
     Matrix m_ViewMatrix;
     Matrix m_ProjMatrix;
 

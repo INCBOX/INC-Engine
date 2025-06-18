@@ -149,7 +149,7 @@ DLL_EXPORT void STDCALL Engine_Init() {
     }
 
     // Enable VSync for stable FPS and reduce tearing
-    SDL_GL_SetSwapInterval(1);
+    // SDL_GL_SetSwapInterval(1); VSync
 
     // ** SDL MOUSE GRAB **
 	SDL_SetRelativeMouseMode(SDL_TRUE);   // Grab mouse, hide cursor, get relative motion
@@ -217,7 +217,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 	
     // Log how many static meshes to render
     const auto& staticGeometry = GetStaticGeometry();
-    std::cout << "[Engine] Rendering " << staticGeometry.size() << " static meshes this frame\n";
+    // std::cout << "[Engine] Rendering " << staticGeometry.size() << " static meshes this frame\n";
 	
     // Render static geometry from loaded map
     for (const auto& instance : staticGeometry) {
@@ -289,7 +289,7 @@ DLL_EXPORT void STDCALL Engine_Run() {
         deltaTime = (double)((now - last) * 1000 / (double)SDL_GetPerformanceFrequency()); // ms elapsed
 		
         // Log frame time
-        std::cout << "[Engine] Frame time: " << deltaTime << " ms\n";
+        // std::cout << "[Engine] Frame time: " << deltaTime << " ms\n";
 		
         bool keepRunning = Engine_RunFrame(static_cast<float>(deltaTime / 1000.0)); // seconds
 		

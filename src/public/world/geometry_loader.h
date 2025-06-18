@@ -1,14 +1,15 @@
 #pragma once
 
+
 #include <vector>
 #include <memory>
 #include <nlohmann/json.hpp>  // FOR JSON GEOMETRY
-#include "shaderapi/mesh.h"
+#include "shaderapi/imesh.h"
 #include "mathlib/vector.h"
 #include "mathlib/matrix.h"
 
 struct StaticMeshInstance {
-    std::unique_ptr<Mesh> mesh;
+    std::unique_ptr<IMesh> mesh;
     Matrix transform;
 };
 

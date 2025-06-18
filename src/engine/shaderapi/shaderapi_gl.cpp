@@ -2,11 +2,14 @@
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/shaderapi_gl_buffer.h"
 #include "shaderapi/shaderapi_gl_vao.h"
-#include "shaderapi/mesh.h"
+#include "shaderapi/gl_mesh.h"
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix.h"
 
+IMesh* ShaderAPI_GL::CreateMesh() {
+    return new MeshGL();
+}
 
 bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
@@ -33,17 +36,30 @@ bool ShaderAPI_GL::Init(void* windowHandle, int width, int height) {
 		std::cerr << "[GL] Shader compilation failed for: " << vertPath << " and " << fragPath << "\n";
 		return false;
 	}
-
+	
+	// Cache uniform location once here:
+	m_MVPLocation = glGetUniformLocation(m_Shader->ID, "u_MVP");
 
     return true;
 }
 
+
+void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix)
+{
+	
+	m_ViewMatrix = viewMatrix; // HARDCODED WILL BE UPDATED!
+    // TODO: Implement setting the view matrix for your GL backend
+    // For example, upload it as uniform or store it internally for later use
+}
 
 
 void ShaderAPI_GL::BeginFrame() {
     int w, h;
     SDL_GetWindowSize(m_Window, &w, &h);
     PrepareFrame(w, h);
+
+    // Precompute viewProjection for the frame (once)
+    m_ViewProjectionMatrix = m_ProjMatrix * m_ViewMatrix;
 }
 
 void ShaderAPI_GL::EndFrame() {
@@ -53,8 +69,9 @@ void ShaderAPI_GL::EndFrame() {
 
 
 void ShaderAPI_GL::SetMVP(const Matrix& mvp) {
-    int mvpLoc = glGetUniformLocation(m_Shader->ID, "u_MVP");
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.Data());
+    if (m_MVPLocation != -1) {
+        glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, mvp.Data());
+    }
 }
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
@@ -95,22 +112,17 @@ void ShaderAPI_GL::OnResize(int width, int height) {
 }
 
 
-// MESH
-void ShaderAPI_GL::DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) {
+// MESH + CAMERA MATRIX STUFF
+void ShaderAPI_GL::DrawMesh(const IMesh& mesh, const Matrix& modelMatrix)
+{
+    const MeshGL& glMesh = static_cast<const MeshGL&>(mesh);
+
     m_Shader->Use();
 
-    // Compute final MVP matrix (viewProjection * model)
-    // For now, assume identity viewProjection; you can expand this later
-    Matrix mvp = m_ProjMatrix * m_ViewMatrix * modelMatrix;
+    Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
     SetMVP(mvp);
 
-    mesh.Bind();
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
-    mesh.Unbind();
-}
-
-// CAMERA MATRIX STUFF
-void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix)
-{
-    m_ViewMatrix = viewMatrix;
+    glMesh.Bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(glMesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+    glMesh.Unbind();
 }

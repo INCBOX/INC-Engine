@@ -4,7 +4,7 @@
 // This allows the engine to remain backend-agnostic.
 
 // JSON GEOMETRY STUFF
-class Mesh;
+class IMesh;
 class Matrix;
 
 class ShaderAPICore {
@@ -28,9 +28,13 @@ public:
 	// Handle window resize events (optional)
 	virtual void OnResize(int width, int height) = 0;
 	
-	// JSON GEOMETRY Draw a mesh with a transform
-	virtual void DrawMesh(const Mesh& mesh, const Matrix& modelMatrix) = 0;
-	
 	// CAMERA STUFF Set the current camera view matrix (view transform)
 	virtual void SetViewMatrix(const Matrix& viewMatrix) = 0;
+	
+	
+	// JSON GEOMETRY Draw a mesh with a transform
+	virtual void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) = 0;
+
+	// Factory to create backend-specific mesh
+	virtual IMesh* CreateMesh() = 0;
 };
