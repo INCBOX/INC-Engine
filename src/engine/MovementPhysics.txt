@@ -1,0 +1,23 @@
+class MovementPhysics {
+public:
+    void Update(float dt, const Input& input, Vector& position, Vector& velocity, bool onGround);
+
+    void SetOnGround(bool grounded);
+    void SetJumpPressed(bool jump);
+
+private:
+    void ApplyFriction(float dt, Vector& velocity);
+    void ApplyAcceleration(float dt, const Vector& wishDir, float wishSpeed, Vector& velocity);
+    void ApplyGravity(float dt, Vector& velocity);
+    void HandleJump(Vector& velocity);
+
+    bool m_OnGround = false;
+    bool m_JumpPressed = false;
+
+    float m_JumpForce = 5.0f;
+    float m_Gravity = 9.81f;
+    float m_Friction = 6.0f;
+    float m_MaxSpeed = 10.0f;
+    float m_Acceleration = 10.0f;
+    float m_AirAcceleration = 2.0f;
+};

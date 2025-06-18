@@ -18,7 +18,42 @@ Vector Vector::Normalize() const {
     if (len == 0.0f) return Vector(0, 0, 0);
     return Vector(x / len, y / len, z / len);
 }
+
+
 // CAMERA, PLAYER, STUFF
 float Vector::Length() const {
     return std::sqrt(x * x + y * y + z * z);
 }
+
+
+/////
+// MOVEMENT PHYSCIS: for faster length comparisons (avoid sqrt)
+float Vector::LengthSqr() const {
+    return x * x + y * y + z * z;
+}
+
+// useful for tiny velocity checks and optimization
+bool Vector::IsZero(float epsilon) const {
+    return LengthSqr() < epsilon * epsilon;
+}
+
+Vector& Vector::operator*=(float f) {
+    x *= f; y *= f; z *= f;
+    return *this;
+}
+
+Vector& Vector::operator/=(float f) {
+    if (f != 0.0f) {
+        x /= f; y /= f; z /= f;
+    }
+    return *this;
+}
+
+// used for friction, sliding, etc)
+Vector Vector::ProjectOnto(const Vector& other) const {
+    float otherLenSqr = other.LengthSqr();
+    if (otherLenSqr == 0.0f) return Vector(0, 0, 0);
+    float dot = this->Dot(other);
+    return other * (dot / otherLenSqr);
+}
+/////

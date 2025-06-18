@@ -21,227 +21,95 @@
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 65.3464 ms
+[Engine] Frame time: 83.643 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 31.0537 ms
+[Engine] Frame time: 41.9418 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 31.2591 ms
+[Engine] Frame time: 34.0814 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.7473 ms
+[Engine] Frame time: 29.1573 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 30.0867 ms
+[Engine] Frame time: 30.0623 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 30.9036 ms
+[Engine] Frame time: 33.4913 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0044 ms
+[Engine] Frame time: 32.0838 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.8805 ms
+[Engine] Frame time: 34.8201 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.5116 ms
+[Engine] Frame time: 32.1366 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 35.2196 ms
+[Engine] Frame time: 35.8497 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.5488 ms
+[Engine] Frame time: 31.902 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.7363 ms
+[Engine] Frame time: 32.0882 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.6216 ms
+[Engine] Frame time: 33.9181 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0352 ms
+[Engine] Frame time: 33.0694 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.7302 ms
+[Engine] Frame time: 33.2811 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.5661 ms
+[Engine] Frame time: 33.1594 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0357 ms
+[Engine] Frame time: 33.0064 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 31.899 ms
+[Engine] Frame time: 33.7372 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.9115 ms
+[Engine] Frame time: 32.9404 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 35.617 ms
+[Engine] Frame time: 33.748 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.8836 ms
+[Engine] Frame time: 34.0272 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.2461 ms
+[Engine] Frame time: 31.9709 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.341 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.4351 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 31.9279 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.7634 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 31.8457 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.9814 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1349 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.8898 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.485 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.6888 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.8142 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.2247 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.0076 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.9968 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.3652 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.624 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.3535 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 34.6539 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1046 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.6705 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.5989 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.285 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.154 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.5627 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0738 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1789 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.8384 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1154 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0919 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.3188 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.2865 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.5847 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.9396 ms
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
-[Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.046 ms
+[Engine] Frame time: 35.0113 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
@@ -249,91 +117,787 @@
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0978 ms
+[Engine] Frame time: 34.0037 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.66 ms
+[Engine] Frame time: 31.0024 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.3779 ms
+[Engine] Frame time: 34.9971 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.7979 ms
+[Engine] Frame time: 32.2843 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.671 ms
+[Engine] Frame time: 33.7998 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.2308 ms
+[Engine] Frame time: 34.1328 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1863 ms
+[Engine] Frame time: 32.8621 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.9785 ms
+[Engine] Frame time: 33.3916 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 35.0714 ms
+[Engine] Frame time: 33.0342 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.4329 ms
+[Engine] Frame time: 32.7267 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0254 ms
+[Engine] Frame time: 33.2337 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.7573 ms
+[Engine] Frame time: 33.9885 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.6595 ms
+[Engine] Frame time: 32.8436 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.8152 ms
+[Engine] Frame time: 33.6908 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.1887 ms
+[Engine] Frame time: 33.3276 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.2107 ms
+[Engine] Frame time: 33.2537 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.5559 ms
+[Engine] Frame time: 32.6592 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.2992 ms
+[Engine] Frame time: 33.8394 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.7695 ms
+[Engine] Frame time: 33.438 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.7785 ms
+[Engine] Frame time: 34.3982 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.3246 ms
+[Engine] Frame time: 33.1476 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0044 ms
+[Engine] Frame time: 32.318 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.7793 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0328 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9553 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.716 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2985 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2337 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.3434 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0228 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0885 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1372 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2508 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.6864 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9748 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1293 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.5756 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6346 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8235 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2736 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.802 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0135 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1418 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1188 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6145 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0455 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2987 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.054 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.2989 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.728 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8785 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9829 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3256 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6556 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8008 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9836 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1831 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3183 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9394 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9536 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0968 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.439 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2376 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.344 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0017 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6634 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3329 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6155 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1533 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.2452 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0389 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.7072 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.7864 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9968 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1877 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.154 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.926 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8748 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1401 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9433 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.7732 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3662 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6453 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1716 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6796 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8199 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.4244 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9619 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2352 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8607 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1633 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5084 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6351 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.504 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.382 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5759 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1816 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.7243 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9304 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.7294 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3608 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8934 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3007 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.023 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 36.1362 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 30.69 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6536 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5451 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2503 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0929 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.5312 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8419 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.4679 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8233 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.471 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.4512 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1159 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.3 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.537 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2354 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.7164 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3207 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.7409 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1841 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9976 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9443 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9235 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.933 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6703 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.076 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9582 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9917 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9421 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9976 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9998 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9443 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9939 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0992 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9636 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0775 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9147 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.999 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9998 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2337 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5974 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5422 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0594 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9905 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.574 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9951 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.3046 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.078 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0819 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0953 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9734 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9286 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9445 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0831 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9704 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9575 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9817 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0616 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0024 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0205 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0932 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0376 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.7196 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.6736 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.1083 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2276 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9027 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.4263 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.4659 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8783 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8876 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.4393 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8103 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8822 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0892 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9433 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0963 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9367 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9924 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0316 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9076 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0668 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0504 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9665 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.024 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.966 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1012 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.002 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6527 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6414 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0657 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.7392 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
@@ -341,19 +905,283 @@
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.0836 ms
+[Engine] Frame time: 33.1222 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.2444 ms
+[Engine] Frame time: 33.219 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 33.8311 ms
+[Engine] Frame time: 32.8304 ms
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
 [Engine] Rendering 10 static meshes this frame
-[Engine] Frame time: 32.6905 ms
+[Engine] Frame time: 33.8433 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1579 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0978 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2095 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.087 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.5476 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9235 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.2814 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2806 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.198 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2728 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0619 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9335 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.0921 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9827 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9905 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.936 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0638 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9376 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0078 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.122 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9318 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.934 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0709 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9876 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0259 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9858 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0531 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9492 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.933 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0624 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9995 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9998 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.9489 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.056 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0863 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.902 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0311 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9132 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0631 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9364 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0684 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.99 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0127 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0506 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.02 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0567 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.9218 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.6397 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.407 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.526 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0946 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 31.7827 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.3836 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.8915 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6375 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.495 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.8409 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.2298 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0445 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.1193 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.9084 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 34.0022 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 32.6504 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.219 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.6747 ms
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Matrix::Perspective] FOV radians: 0.523599, aspect: 1.77778
+[Engine] Rendering 10 static meshes this frame
+[Engine] Frame time: 33.0416 ms
 [Engine] SDL_QUIT event received
 [Engine] Engine_RunFrame returned false, exiting loop
 [Engine] Shutdown complete

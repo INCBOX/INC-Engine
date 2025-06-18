@@ -2,7 +2,7 @@
 #pragma once
 #include "mathlib/camera.h"
 #include "input.h"
-#include "movementcontroller.h"
+#include "movementphysics.h"
 
 class Player {
 public:
@@ -11,7 +11,7 @@ public:
     void Update(float dt, const Input& input);
     Camera& GetCamera() { return m_Camera; }
 	
-	MovementController m_Movement;
+	MovementPhysics m_Movement;
 
 private:
     Vector m_Position;
