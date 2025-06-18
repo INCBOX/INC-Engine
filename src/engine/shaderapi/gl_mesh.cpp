@@ -14,25 +14,28 @@ MeshGL::~MeshGL() {
 }
 
 void MeshGL::Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
+    if (m_Uploaded)
+        return; // Already uploaded once, don't do it again
+
     m_IndexCount = indices.size();
 
     m_VAO->Bind();
 
-    // Upload vertex buffer (positions only, 3 floats per vertex)
     m_VBO->Bind();
     m_VBO->SetData(vertices.data(), vertices.size() * sizeof(float));
 
-    // Upload index buffer
     m_EBO->Bind();
     m_EBO->SetData(indices.data(), indices.size() * sizeof(unsigned int));
 
-    // Setup vertex attribute 0: position, 3 floats
     m_VAO->AddVertexAttribute(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
 
     m_VAO->Unbind();
     m_VBO->Unbind();
     m_EBO->Unbind();
+
+    m_Uploaded = true; // uploaded for performance
 }
+
 
 void MeshGL::Bind() const {
     m_VAO->Bind();

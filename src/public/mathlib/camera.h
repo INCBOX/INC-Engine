@@ -41,6 +41,9 @@ public:
 	// PLAYER CONTROLS CAMERA
 	void UpdateOrientation(); // orientation only
 	///////////////////////////////////////////////
+	
+	// CAMERA MVP SETUP
+	Mat4 GetProjectionMatrix(float aspectRatio) const;
 
 private:
     Vec3 position;         // Camera position in world space
@@ -49,4 +52,8 @@ private:
     float pitch;           // Vertical angle in degrees (rotation around X axis)
     float cameraSpeed;     // Movement speed (units per second)
     float mouseSensitivity;// Mouse sensitivity for looking around (degrees per pixel)
+	
+    float m_fovDegrees = 90.0f; // Field of view in degrees
+    float m_zNear = 0.1f;       // Near clipping plane
+    float m_zFar = 1000.0f;     // Far clipping plane
 };

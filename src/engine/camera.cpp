@@ -111,3 +111,8 @@ void Camera::UpdateOrientation()
         sinf(radYaw) * cosf(radPitch)
     ).Normalize();
 }
+
+// MVP Setup FOR camera
+Mat4 Camera::GetProjectionMatrix(float aspect) const {
+    return Mat4::Perspective(m_fovDegrees, aspect, m_zNear, m_zFar);
+}

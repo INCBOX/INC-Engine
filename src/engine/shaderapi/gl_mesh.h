@@ -26,4 +26,5 @@ private:
     std::unique_ptr<VertexBuffer> m_EBO; // Element buffer object for indices
 
     size_t m_IndexCount = 0;
+	bool m_Uploaded = false; // kills performance fix
 };

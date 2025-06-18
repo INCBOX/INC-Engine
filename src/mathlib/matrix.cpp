@@ -59,3 +59,19 @@ Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float f
     result[3][2] = (2.0f * farZ * nearZ) / (nearZ - farZ);
     return result;
 }
+
+// FOR SHADOWS [NOT USED YET]
+Matrix Matrix::Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ) {
+    Matrix result = {};
+
+    result[0][0] = 2.0f / (right - left);
+    result[1][1] = 2.0f / (top - bottom);
+    result[2][2] = -2.0f / (farZ - nearZ);
+
+    result[3][0] = -(right + left) / (right - left);
+    result[3][1] = -(top + bottom) / (top - bottom);
+    result[3][2] = -(farZ + nearZ) / (farZ - nearZ);
+    result[3][3] = 1.0f;
+
+    return result;
+}

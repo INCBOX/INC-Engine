@@ -1,6 +1,8 @@
-// engine.cpp
-// Core engine logic managing SDL window, ShaderAPI abstraction, filesystem DLL loading,
-// map loading, and main loop. Uses fully modular ShaderAPI backend (OpenGL, Vulkan, etc).
+//-----------------------------------------------------------------------------
+// ENGINE.CPP - INC. INC© INCBOX 2007 ALL RIGHTS RESERVED.
+// Core engine logic: SDL window, ShaderAPI abstraction, filesystem DLL loading,
+// map loading (JSON), input, player, and main loop.
+//-----------------------------------------------------------------------------
 
 #include <Windows.h>
 
@@ -14,15 +16,19 @@
 
 #include "engine_api.h"
 #include "engine_globals.h"				// access the main camera from anywhere in engine
-#include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
+#include "shaderapi/shaderapi.h" 		// Modular ShaderAPI interface
 
-#include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
+#include "world/geometry_loader.h" 		// Static geometry loader (JSON)
 
 #include "input.h"
 #include "mathlib/camera.h"
 #include "player.h"
 
 using json = nlohmann::json;
+
+//-----------------------------------------------------------------------------
+// Globals
+//-----------------------------------------------------------------------------
 static Camera g_Camera;
 static Input g_Input;
 static Player g_Player;
@@ -38,7 +44,7 @@ static FS_GetGameDirFn FS_GetGameDir = nullptr;
 static FS_ResolvePathFn FS_ResolvePath = nullptr;
 
 //-----------------------------------------------------------------------------
-// SDL + Renderer
+// SDL + ShaderAPI
 //-----------------------------------------------------------------------------
 static SDL_Window* g_Window = nullptr;
 static ShaderAPICore* g_Renderer = nullptr;
@@ -55,7 +61,7 @@ static ShaderAPICore* g_Renderer = nullptr;
 #endif
 
 //-----------------------------------------------------------------------------
-// Logging
+// Logging setup
 //-----------------------------------------------------------------------------
 void InitEngineLog() {
     std::filesystem::create_directories("logs");
@@ -68,7 +74,7 @@ void InitEngineLog() {
 }
 
 //-----------------------------------------------------------------------------
-// FileSystem loader
+// Load filesystem DLL and get function pointers
 //-----------------------------------------------------------------------------
 bool LoadFileSystem() {
     g_FileSystemDLL = LoadLibraryExA("bin/filesystem_stdio.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -82,6 +88,8 @@ bool LoadFileSystem() {
 
     if (!FS_GetGameDir || !FS_ResolvePath) {
         std::cerr << "[Engine] Failed to resolve FileSystem exports\n";
+        FreeLibrary(g_FileSystemDLL);
+        g_FileSystemDLL = nullptr;
         return false;
     }
 
@@ -90,7 +98,7 @@ bool LoadFileSystem() {
 }
 
 //-----------------------------------------------------------------------------
-// Map loader (JSON-based for now)
+// Load JSON map, parse entities, and load static geometry
 //-----------------------------------------------------------------------------
 bool LoadMap(const std::string& mapName) {
     std::string relative = "maps/" + mapName + ".json";
@@ -125,12 +133,11 @@ bool LoadMap(const std::string& mapName) {
     }
 
     LoadStaticGeometryFromMap(mapData);
-
     return true;
 }
 
 //-----------------------------------------------------------------------------
-// Engine Initialization
+// Initialize SDL, window, input, and ShaderAPI
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Init() {
     SDL_SetMainReady();
@@ -140,25 +147,31 @@ DLL_EXPORT void STDCALL Engine_Init() {
         return;
     }
 
-    g_Window = SDL_CreateWindow("INC Engine",
+    g_Window = SDL_CreateWindow(
+        "INC Engine",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        1280, 720,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+    );
+	
     if (!g_Window) {
         std::cerr << "[Engine] SDL_CreateWindow failed: " << SDL_GetError() << "\n";
+        SDL_Quit();
         return;
     }
 
     // Enable VSync for stable FPS and reduce tearing
     // SDL_GL_SetSwapInterval(1); VSync
 
-    // ** SDL MOUSE GRAB **
-	SDL_SetRelativeMouseMode(SDL_TRUE);   // Grab mouse, hide cursor, get relative motion
+    // Enable relative mouse mode: grab and hide cursor for FPS controls
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_SetWindowGrab(g_Window, SDL_TRUE);
 	SDL_ShowCursor(SDL_DISABLE);
 
     g_Renderer = CreateShaderAPI(); // Modular backend creation
     if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
         std::cerr << "[Engine] ShaderAPI Init failed\n";
+		Engine_Shutdown(); // make sure SDL is cleaned
         return;
     }
 
@@ -167,76 +180,70 @@ DLL_EXPORT void STDCALL Engine_Init() {
     std::cout << "[Engine] SDL + ShaderAPI initialized\n";
 }
 
+//---FPS ------------------------------------------------------------------
+Uint64 now = SDL_GetPerformanceCounter();
+Uint64 last = now;
+double deltaTime = 0.0;
+
+// FPS tracking
+int frameCount = 0;
+double fpsTimer = 0.0;
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Engine Frame
+// Engine Frame: Main per-frame update and rendering
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
-	
-    // Reset and update input states, including mouse deltas
-    g_Input.Update();
+    g_Input.Update();	// Reset and update input states, including mouse deltas
 	
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cout << "[Engine] SDL_QUIT event received\n";
             return false;
         }
-        else if (event.type == SDL_MOUSEMOTION) {
-            // Input system handles mouse deltas internally
-        }
     }
 
-    // Get raw input data from Input system
+    // Input state and mouse movement
     const Uint8* keystate = g_Input.GetKeyState();
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
 	
-    // Update camera with inputs and actual frame delta time
+    // Update camera using input & deltaTime
     g_Camera.Update(deltaTime, keystate, mouseDeltaX, mouseDeltaY);
 
-
-    // Get current window size
-    int width, height;
+    int width, height;	// Get current window size
     SDL_GetWindowSize(g_Window, &width, &height);
 
-    if (!g_Renderer) {
-        std::cerr << "[Engine] Renderer is null!\n";
-        return false;
-    }
+    if (!g_Renderer) return false;
 
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
 	
-	// Game update
+	// Update player logic with input
 	g_Player.Update(deltaTime, g_Input);
 	
-	// Rendering
+	// Setup view matrix for rendering
 	Matrix view = g_Player.GetCamera().GetViewMatrix();
 	g_Renderer->SetViewMatrix(view);
 	
-    // Log how many static meshes to render
+    // Draw static geometry loaded from map
     const auto& staticGeometry = GetStaticGeometry();
-    // std::cout << "[Engine] Rendering " << staticGeometry.size() << " static meshes this frame\n";
-	
-    // Render static geometry from loaded map
     for (const auto& instance : staticGeometry) {
         g_Renderer->DrawMesh(*instance.mesh, instance.transform);
     }
 
     g_Renderer->EndFrame();
-
     return true;
 }
 
-
 //-----------------------------------------------------------------------------
-// Engine Shutdown
+// Engine Shutdown: Clean up resources and shutdown SDL + Renderer + DLL
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
     if (g_Renderer) {
         g_Renderer->Shutdown();
-        DestroyShaderAPI(); // ✅ Proper deletion
+        DestroyShaderAPI();
         g_Renderer = nullptr;
     }
 
@@ -245,8 +252,7 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
         g_Window = nullptr;
     }
 
-    g_Input.Shutdown();  // Shutdown input cleanly
-
+    g_Input.Shutdown();
     SDL_Quit();
 
     if (g_FileSystemDLL) {
@@ -258,7 +264,7 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
 }
 
 //-----------------------------------------------------------------------------
-// Engine Main Entry Point
+// Engine Main entrypoint: Init, load filesystem and map, run main loop
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Run() {
     InitEngineLog();
@@ -286,11 +292,10 @@ DLL_EXPORT void STDCALL Engine_Run() {
         last = now;
         now = SDL_GetPerformanceCounter();
 		
-        deltaTime = (double)((now - last) * 1000 / (double)SDL_GetPerformanceFrequency()); // ms elapsed
+        // Convert performance counter difference to milliseconds
+        deltaTime = (double)((now - last) * 1000 / (double)SDL_GetPerformanceFrequency());
 		
-        // Log frame time
-        // std::cout << "[Engine] Frame time: " << deltaTime << " ms\n";
-		
+		// Run one frame (deltaTime converted to seconds)
         bool keepRunning = Engine_RunFrame(static_cast<float>(deltaTime / 1000.0)); // seconds
 		
         if (!keepRunning) {
@@ -298,7 +303,7 @@ DLL_EXPORT void STDCALL Engine_Run() {
             break;
         }
 		
-        // Optional: yield CPU briefly to avoid busy loop (not a fixed delay)
+        // Yield CPU briefly
         SDL_Delay(1);
     }
 
@@ -306,7 +311,9 @@ DLL_EXPORT void STDCALL Engine_Run() {
     std::cout << "[Engine] Engine_Run exiting\n";
 }
 
-// OUTSIDE OF ALL FUNCTIONS:
+//-----------------------------------------------------------------------------
+// Global camera accessor
+//-----------------------------------------------------------------------------
 Camera& GetMainCamera() {
     return g_Camera;
 }

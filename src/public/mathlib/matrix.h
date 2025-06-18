@@ -15,6 +15,9 @@ struct Matrix {
     static Matrix Translation(const Vector& t);
     static Matrix LookAt(const Vector& eye, const Vector& center, const Vector& up);
     static Matrix Perspective(float fovYDeg, float aspect, float nearZ, float farZ);
+	
+	// FOR SHADOWS
+	static Matrix Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ);
 };
 
 inline Matrix operator*(const Matrix& a, const Matrix& b)
