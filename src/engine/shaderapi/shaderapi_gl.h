@@ -1,16 +1,14 @@
 #pragma once
 #include "shaderapi/ishaderapi.h"
-
+#include "shaderapi/shaderapi_gl_shader.h"
+#include "shaderapi/imesh.h"
+#include "mathlib/matrix.h"
 #include <SDL.h>
+#include <glad/glad.h>
 #include <memory>
 
-#include "mathlib/matrix.h"
-#include "shaderapi_gl_shader.h"
-#include "shaderapi_gl_buffer.h"
-#include "shaderapi_gl_vao.h"
-
-// Forward declare Mesh class
-class Mesh;
+// Forward declarations
+class ShaderProgram;
 
 class ShaderAPI_GL : public ShaderAPICore {
 public:
@@ -20,25 +18,24 @@ public:
     void PrepareFrame(int width, int height) override;
     void EndFrame() override;
     void OnResize(int width, int height) override;
-	void SetViewMatrix(const Matrix& viewMatrix) override;
-    // Draw a mesh with a given model matrix transform
+
+    void SetViewMatrix(const Matrix& viewMatrix) override;
+    void SetProjectionMatrix(const Matrix& projMatrix) override;
+
     void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) override;
 
-	
-	void DebugDrawUnitCube();
-
 private:
+    IMesh* CreateMesh() override;
+
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
-	IMesh* CreateMesh() override;
 
-    // View and Projection matrices as class members (instance scope)
-	int m_MVPLocation = -1;
-	Matrix m_ViewProjectionMatrix; // Avoids recomputing m_ProjMatrix * m_ViewMatrix inside DrawMesh() for every mesh. 
+    std::unique_ptr<ShaderProgram> m_Shader;
+    GLuint m_ShaderProgram = 0;
+    int m_MVPLocation = -1;
+
     Matrix m_ViewMatrix;
-    Matrix m_ProjMatrix;
-
-    void SetMVP(const Matrix& mvp);
-
-    std::unique_ptr<class ShaderProgram> m_Shader;
+    Matrix m_ProjectionMatrix;
+    Matrix m_ViewProjectionMatrix;
+    bool m_MVPDirty = true;
 };

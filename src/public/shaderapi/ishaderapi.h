@@ -11,7 +11,7 @@ class ShaderAPICore {
 public:
 	virtual ~ShaderAPICore() = default;
 	
-	virtual void PrepareFrame(int width, int height) = 0;  // Add this
+	virtual void PrepareFrame(int width, int height) = 0;
 
 	// Initialize renderer with platform-specific window handle
 	virtual bool Init(void* windowHandle, int width, int height) = 0;
@@ -28,9 +28,11 @@ public:
 	// Handle window resize events (optional)
 	virtual void OnResize(int width, int height) = 0;
 	
-	// CAMERA STUFF Set the current camera view matrix (view transform)
+	// MVP Camera view matrix (world-to-camera)
 	virtual void SetViewMatrix(const Matrix& viewMatrix) = 0;
 	
+	// Projection matrix (camera lens)
+    virtual void SetProjectionMatrix(const Matrix& projMatrix) = 0;
 	
 	// JSON GEOMETRY Draw a mesh with a transform
 	virtual void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) = 0;

@@ -39,7 +39,7 @@ public:
     Vec3 GetRightVector() const;
 	
 	// PLAYER CONTROLS CAMERA
-	void UpdateOrientation();
+	void UpdateOrientation(); // orientation only
 	///////////////////////////////////////////////
 
 private:
