@@ -1,5 +1,16 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
+
+# Default to Debug mode if not specified
+# make -f makefile.win64 MODE=Release
+# make -f makefile.win64 MODE=Debug
+MODE ?= Debug
+
+ifeq ($(MODE),Debug)
+    CXXFLAGS = -std=c++17 -Wall -Wextra -g -DDEBUG
+else ifeq ($(MODE),Release)
+    CXXFLAGS = -std=c++17 -Wall -Wextra -O3 -DNDEBUG -march=native
+endif
+
 LINKFLAGS = -static-libstdc++ -static-libgcc -Lbin -lmathlib
 
 # Shared global includes

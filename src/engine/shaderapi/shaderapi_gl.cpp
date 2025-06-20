@@ -1,10 +1,9 @@
-// OPENGL 
-
 #include "shaderapi/shaderapi_gl.h"
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/shaderapi_gl_buffer.h"
 #include "shaderapi/shaderapi_gl_vao.h"
 #include "shaderapi/gl_mesh.h"
+
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix.h"
@@ -18,14 +17,13 @@ IMesh* ShaderAPI_GL::CreateMesh() {
 bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
 
-	// PERFORMANCE BOOST STUFF..
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	// OPTIONAL
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);		// OPTIONAL
-	
-	
+    // Set GL context attributes
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     m_GLContext = SDL_GL_CreateContext(m_Window);
     if (!m_GLContext) {
         std::cerr << "[GL] Failed to create GL context\n";
@@ -37,32 +35,23 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
         return false;
     }
 
-    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetSwapInterval(0); // Disable vsync for benchmarking Defaukt: (1)
     std::cout << "[GL] OpenGL initialized\n";
-	
-    // Compile main shader
+
+    // Compile and upload main shader
     m_Shader = std::make_unique<ShaderProgram>();
     if (!m_Shader->CompileFromFile("hl3/shaders/cube.vert", "hl3/shaders/cube.frag")) {
         std::cerr << "[GL] Shader compilation failed\n";
         return false;
     }
+
     m_ShaderProgram = m_Shader->ID;
     m_MVPLocation = glGetUniformLocation(m_ShaderProgram, "u_MVP");
-	
+
     glEnable(GL_DEPTH_TEST);
 
-    // Compile shaders
-    m_Shader = std::make_unique<ShaderProgram>();
-    if (!m_Shader->CompileFromFile("hl3/shaders/cube.vert", "hl3/shaders/cube.frag")) {
-        std::cerr << "[GL] Shader compilation failed\n";
-        return false;
-    }
-
-    m_ShaderProgram = m_Shader->ID;
-    m_MVPLocation = glGetUniformLocation(m_ShaderProgram, "u_MVP");
-
+    // Initial MVP state
     m_MVPDirty = true;
-
     m_ViewMatrix = Matrix::Identity();
     m_ProjectionMatrix = Matrix::Identity();
     m_ViewProjectionMatrix = Matrix::Identity();
@@ -91,21 +80,16 @@ void ShaderAPI_GL::BeginFrame() {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
         m_MVPDirty = false;
     }
-	
-    // Use shader once here instead of every DrawMesh
-    m_Shader->Use();
-}
 
+    m_Shader->Use(); // Use shader once for entire frame
+}
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // glDisable(GL_CULL_FACE); intentionally disabling it
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // toggling wireframe
-
-    float aspect = float(width) / float(height);
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
     SetProjectionMatrix(Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f));
 }
 
@@ -116,13 +100,11 @@ void ShaderAPI_GL::EndFrame() {
 void ShaderAPI_GL::OnResize(int width, int height) {
     glViewport(0, 0, width, height);
 
-    float aspect = float(width) / float(height);
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
     SetProjectionMatrix(Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f));
 }
 
-
-
-// MVP STUFF
+// MVP
 void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix) {
     m_ViewMatrix = viewMatrix;
     m_MVPDirty = true;
@@ -133,7 +115,7 @@ void ShaderAPI_GL::SetProjectionMatrix(const Matrix& projMatrix) {
     m_MVPDirty = true;
 }
 
-// MESH STUFF
+// MESH
 void ShaderAPI_GL::DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) {
     if (m_MVPDirty) {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
@@ -141,13 +123,12 @@ void ShaderAPI_GL::DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) {
     }
 
     Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
-	// Use shader only once at start of frame — so REMOVE this line from here:
-	// m_Shader->Use();
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 
-    mesh.Bind();
-    glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-    mesh.Unbind();
+    if (&mesh != m_LastBoundMesh) {
+        mesh.Bind();
+        m_LastBoundMesh = &mesh;
+    }
 
-    // glUseProgram(0);	// reset program — glUseProgram(0) is expensive and unnecessary
+    glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 }

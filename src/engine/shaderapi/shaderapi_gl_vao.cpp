@@ -3,18 +3,22 @@
 #include "shaderapi/shaderapi_gl_vao.h"
 #include <glad/glad.h>
 
+// Constructor: generate VAO
 VertexArray::VertexArray() {
     glGenVertexArrays(1, &ID);
 }
 
+// Destructor: delete VAO
 VertexArray::~VertexArray() {
     if (ID) glDeleteVertexArrays(1, &ID);
 }
 
+// Bind VAO
 void VertexArray::Bind() const {
     glBindVertexArray(ID);
 }
 
+// Unbind VAO
 void VertexArray::Unbind() const {
     glBindVertexArray(0);
 }
