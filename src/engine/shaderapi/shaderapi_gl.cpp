@@ -37,11 +37,11 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
 
     SDL_GL_SetSwapInterval(0); // Disable vsync for benchmarking Defaukt: (1)
     std::cout << "[GL] OpenGL initialized\n";
-	
-    // Disable face culling to check if it's the cause of invisible spheres
+
+	// Disable face culling to check if it's the cause of invisible spheres
     glDisable(GL_CULL_FACE);
 
-    // Compile and upload main shader
+	// Compile and upload main shader
     m_Shader = std::make_unique<ShaderProgram>();
     if (!m_Shader->CompileFromFile("hl3/shaders/cube.vert", "hl3/shaders/cube.frag")) {
         std::cerr << "[GL] Shader compilation failed\n";
@@ -53,7 +53,7 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
 
     glEnable(GL_DEPTH_TEST);
 
-    // Initial MVP state
+	// Initial MVP state
     m_MVPDirty = true;
     m_ViewMatrix = Matrix::Identity();
     m_ProjectionMatrix = Matrix::Identity();
@@ -81,7 +81,7 @@ void ShaderAPI_GL::BeginFrame() {
 
     UpdateViewProjectionMatrixIfNeeded();
 
-    m_Shader->Use(); // Use shader once for entire frame
+    m_Shader->Use(); // Bind shader once per frame
 }
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
@@ -117,9 +117,7 @@ void ShaderAPI_GL::SetProjectionMatrix(const Matrix& projMatrix) {
 
 // MESH
 void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
-    // No MVP recalculation here
-    Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
-    glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
+    UpdateMVP(modelMatrix); // Centralized MVP upload
 
     if (&mesh != m_LastBoundMesh) {
         mesh.Bind();
@@ -129,12 +127,16 @@ void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
     glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-
-
 // PRIVATE HELPER: Recalculate the combined ViewProjection matrix if dirty
 void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
     if (m_MVPDirty) {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
         m_MVPDirty = false;
     }
+}
+
+// CENTRALIZED MVP
+void ShaderAPI_GL::UpdateMVP(const Matrix& modelMatrix) {
+    Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
+    glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }

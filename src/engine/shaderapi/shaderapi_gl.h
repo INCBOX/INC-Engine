@@ -28,8 +28,6 @@ public:
     void DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) override;
 
 private:
-	void UpdateViewProjectionMatrixIfNeeded();
-
 	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
@@ -40,6 +38,9 @@ private:
     GLint m_TransformUBO = 0;
     GLuint m_UBOHandle = 0;
     int m_MVPLocation = -1;
+
+	void UpdateViewProjectionMatrixIfNeeded();
+	void UpdateMVP(const Matrix& modelMatrix);
 
     Matrix m_ViewMatrix;
     Matrix m_ProjectionMatrix;
