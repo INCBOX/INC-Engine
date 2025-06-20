@@ -51,7 +51,7 @@ void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDX, int mou
 Mat4 Camera::GetViewMatrix() const
 {
     // Assuming your mathlib Matrix class has a LookAt static method
-    return Matrix::LookAt(position, position + forward, Vec3(0.0f, 1.0f, 0.0f));
+    return Matrix4x4::LookAt(position, position + forward, Vec3(0.0f, 1.0f, 0.0f));
 }
 
 // Set the camera's absolute position

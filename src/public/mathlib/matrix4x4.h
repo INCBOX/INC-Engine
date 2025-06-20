@@ -1,31 +1,33 @@
+// Wire up MVP logic
+
 #pragma once
 #include "mathlib/vector.h"
-#include <cstring>
 
-class matrix4x4_t {
-public:
-    float m[4][4];
+struct Matrix4x4 {
+    float m[4][4]; // COLUMN-MAJOR: m[col][row]
 
-    matrix4x4_t() {
-        std::memset(m, 0, sizeof(m));
-    }
+    float* operator[](int col) { return m[col]; }
+    const float* operator[](int col) const { return m[col]; }
 
-    void InitIdentity() {
-        std::memset(m, 0, sizeof(m));
-        m[0][0] = 1.0f;
-        m[1][1] = 1.0f;
-        m[2][2] = 1.0f;
-        m[3][3] = 1.0f;
-    }
+    const float* Data() const { return &m[0][0]; }
 
-    static matrix4x4_t BuildTranslation(const Vector& v) {
-        matrix4x4_t mat;
-        mat.InitIdentity();
-        mat.m[0][3] = v.x;
-        mat.m[1][3] = v.y;
-        mat.m[2][3] = v.z;
-        return mat;
-    }
+    static Matrix4x4 Identity();
+    static Matrix4x4 Translation(const Vector& t);
+    static Matrix4x4 LookAt(const Vector& eye, const Vector& center, const Vector& up);
+    static Matrix4x4 Perspective(float fovYDeg, float aspect, float nearZ, float farZ);
 
-    const float* Base() const { return &m[0][0]; }
+    // FOR SHADOWS
+    static Matrix4x4 Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ);
 };
+
+inline Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)
+{
+    Matrix4x4 result = {};
+    for (int col = 0; col < 4; ++col)
+        for (int row = 0; row < 4; ++row)
+            for (int i = 0; i < 4; ++i)
+                result[col][row] += a[i][row] * b[col][i];
+    return result;
+}
+
+using Mat4 = Matrix4x4;  // Matrix and Mat4 be used interchangeably.

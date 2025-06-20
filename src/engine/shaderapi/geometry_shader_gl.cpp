@@ -1,12 +1,12 @@
-#include "shaderapi/geometry_shader_gl.h"  // GeometryGL class declaration
-#include <glad/glad.h>           // For GL constants
-#include <memory>                // For unique_ptr, if needed
+#include "shaderapi/geometry_shader_gl.h"  	// GeometryGL class declaration
+#include <glad/glad.h>           			// For GL constants
+#include <memory>                			// For unique_ptr, if needed
 
 
 GeometryGL::GeometryGL() {
     m_VAO = std::make_unique<VertexArray>();
-    m_VBO = std::make_unique<VertexBuffer>(GL_ARRAY_BUFFER);         // Vertex buffer
-    m_EBO = std::make_unique<VertexBuffer>(GL_ELEMENT_ARRAY_BUFFER);  // Index buffer
+    m_VBO = std::make_unique<VertexBuffer>(GL_ARRAY_BUFFER);         	// Vertex buffer
+    m_EBO = std::make_unique<VertexBuffer>(GL_ELEMENT_ARRAY_BUFFER); 	// Index buffer
 }
 
 GeometryGL::~GeometryGL() {

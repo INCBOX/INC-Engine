@@ -229,7 +229,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 	g_Player.Update(deltaTime, g_Input);
 	
 	// Setup view matrix for rendering
-	Matrix view = g_Player.GetCamera().GetViewMatrix();
+	Matrix4x4 view = g_Player.GetCamera().GetViewMatrix();
 	g_Renderer->SetViewMatrix(view);
 	
     // Draw static geometry loaded from map

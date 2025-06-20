@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mathlib/matrix.h" 	// CPU-side Matrix class
+#include "mathlib/matrix4x4.h" 	// CPU-side Matrix class
 #include "mathlib/vector.h"   	// CPU-side Vec3 class
 
 // GPU-aligned float4x4 matrix — matches GLSL std140 layout
@@ -24,7 +24,7 @@ struct GpuTransformData
 };
 
 // Converts your CPU-side Matrix to GPU-ready flat matrix
-inline GpuMat4 ConvertToGpu(const Matrix& mat)
+inline GpuMat4 ConvertToGpu(const Matrix4x4& mat)
 {
     GpuMat4 result;
     for (int col = 0; col < 4; ++col)

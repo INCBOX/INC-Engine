@@ -76,7 +76,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
             continue;
         }
 
-        instance.transform = Matrix::Translation(position);
+        instance.transform = Matrix4x4::Translation(position);
 
         g_StaticMeshes.push_back(std::move(instance));
         EngineLog("[LoadStaticGeometryFromMap] Mesh added. Total static meshes: %zu", g_StaticMeshes.size());

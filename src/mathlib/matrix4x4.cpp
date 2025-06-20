@@ -1,29 +1,29 @@
 #include <cmath>
 #include <iostream> // REMOVE LATER required for std::cout
-#include "mathlib/matrix.h"
+#include "mathlib/matrix4x4.h"
 
-Matrix Matrix::Identity() {
-    Matrix result = {};
+Matrix4x4 Matrix4x4::Identity() {
+    Matrix4x4 result = {};
     for (int i = 0; i < 4; i++)
         result[i][i] = 1.0f;
     return result;
 }
 
-Matrix Matrix::Translation(const Vector& t) {
-    Matrix result = Matrix::Identity();
+Matrix4x4 Matrix4x4::Translation(const Vector& t) {
+    Matrix4x4 result = Matrix4x4::Identity();
     result[3][0] = t.x;
     result[3][1] = t.y;
     result[3][2] = t.z;
     return result;
 }
 
-Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up)
+Matrix4x4 Matrix4x4::LookAt(const Vector& eye, const Vector& center, const Vector& up)
 {
     Vector f = (center - eye).Normalize(); // forward
     Vector s = f.Cross(up).Normalize();    // right
     Vector u = s.Cross(f);                 // up
 
-    Matrix result = Matrix::Identity();
+    Matrix4x4 result = Matrix4x4::Identity();
 
     // column-major order: m[col][row]
     result[0][0] = s.x;
@@ -45,12 +45,12 @@ Matrix Matrix::LookAt(const Vector& eye, const Vector& center, const Vector& up)
     return result;
 }
 
-Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
+Matrix4x4 Matrix4x4::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
     float fovRad = fovYDegrees * 3.14159265f / 180.0f;
-	// std::cout << "[Matrix::Perspective] FOV radians: " << fovRad << ", aspect: " << aspect << "\n";
+    // std::cout << "[Matrix4x4::Perspective] FOV radians: " << fovRad << ", aspect: " << aspect << "\n";
     float f = 1.0f / tan(fovRad / 2.0f);
 
-    Matrix result = {};
+    Matrix4x4 result = {};
 
     result[0][0] = f / aspect;
     result[1][1] = f;
@@ -61,8 +61,8 @@ Matrix Matrix::Perspective(float fovYDegrees, float aspect, float nearZ, float f
 }
 
 // FOR SHADOWS [NOT USED YET]
-Matrix Matrix::Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ) {
-    Matrix result = {};
+Matrix4x4 Matrix4x4::Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ) {
+    Matrix4x4 result = {};
 
     result[0][0] = 2.0f / (right - left);
     result[1][1] = 2.0f / (top - bottom);

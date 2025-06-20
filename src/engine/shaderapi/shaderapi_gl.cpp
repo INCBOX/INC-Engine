@@ -6,7 +6,7 @@
 
 #include <glad/glad.h>
 #include <iostream>
-#include "mathlib/matrix.h"
+#include "mathlib/matrix4x4.h"
 
 // CreateMesh
 IGeometry* ShaderAPI_GL::CreateMesh() {
@@ -55,9 +55,9 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
 
 	// Initial MVP state
     m_MVPDirty = true;
-    m_ViewMatrix = Matrix::Identity();
-    m_ProjectionMatrix = Matrix::Identity();
-    m_ViewProjectionMatrix = Matrix::Identity();
+    m_ViewMatrix = Matrix4x4::Identity();
+    m_ProjectionMatrix = Matrix4x4::Identity();
+    m_ViewProjectionMatrix = Matrix4x4::Identity();
 
     return true;
 }
@@ -90,7 +90,7 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    SetProjectionMatrix(Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f));
+    SetProjectionMatrix(Matrix4x4::Perspective(30.0f, aspect, 0.1f, 100.0f));
 }
 
 void ShaderAPI_GL::EndFrame() {
@@ -101,22 +101,22 @@ void ShaderAPI_GL::OnResize(int width, int height) {
     glViewport(0, 0, width, height);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    SetProjectionMatrix(Matrix::Perspective(30.0f, aspect, 0.1f, 100.0f));
+    SetProjectionMatrix(Matrix4x4::Perspective(30.0f, aspect, 0.1f, 100.0f));
 }
 
 // MVP
-void ShaderAPI_GL::SetViewMatrix(const Matrix& viewMatrix) {
+void ShaderAPI_GL::SetViewMatrix(const Matrix4x4& viewMatrix) {
     m_ViewMatrix = viewMatrix;
     m_MVPDirty = true;
 }
 
-void ShaderAPI_GL::SetProjectionMatrix(const Matrix& projMatrix) {
+void ShaderAPI_GL::SetProjectionMatrix(const Matrix4x4& projMatrix) {
     m_ProjectionMatrix = projMatrix;
     m_MVPDirty = true;
 }
 
 // MESH
-void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
+void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix4x4& modelMatrix) {
     UpdateMVP(modelMatrix); // Centralized MVP upload
 
     if (&mesh != m_LastBoundMesh) {
@@ -136,7 +136,7 @@ void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
 }
 
 // CENTRALIZED MVP
-void ShaderAPI_GL::UpdateMVP(const Matrix& modelMatrix) {
-    Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
+void ShaderAPI_GL::UpdateMVP(const Matrix4x4& modelMatrix) {
+    Matrix4x4 mvp = m_ViewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }

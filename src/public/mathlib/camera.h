@@ -1,6 +1,6 @@
 #pragma once
 #include "mathlib/vector.h"
-#include "mathlib/matrix.h"
+#include "mathlib/matrix4x4.h"
 #include <SDL.h>
 
 // Camera class for handling position, rotation, and view matrix calculations.
