@@ -16,6 +16,7 @@
 
 #include "engine_api.h"
 #include "engine_globals.h"				// access the main camera from anywhere in engine
+#include "engine_log.h"
 #include "shaderapi/shaderapi.h" 		// Modular ShaderAPI interface
 
 #include "world/geometry_loader.h" 		// Static geometry loader (JSON)
@@ -73,13 +74,8 @@ static ShaderAPICore* g_Renderer = nullptr;
 // Logging setup
 //-----------------------------------------------------------------------------
 void InitEngineLog() {
-    std::filesystem::create_directories("logs");
-    FILE* logFile;
-    freopen_s(&logFile, "logs/engine.log", "w", stdout);
-    freopen_s(&logFile, "logs/engine.log", "w", stderr);
-    setvbuf(stdout, nullptr, _IONBF, 0);
-    setvbuf(stderr, nullptr, _IONBF, 0);
-    std::cout << "[Engine] Log started\n";
+    EngineLog_Init();
+    EngineLog("[Engine] Log started");
 }
 
 //-----------------------------------------------------------------------------
@@ -316,8 +312,8 @@ DLL_EXPORT void STDCALL Engine_Run() {
         SDL_Delay(1);
     }
 
-    Engine_Shutdown();
-    std::cout << "[Engine] Engine_Run exiting\n";
+	EngineLog("[Engine] Shutdown complete");
+	EngineLog_Shutdown();
 }
 
 //-----------------------------------------------------------------------------

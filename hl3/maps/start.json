@@ -10,39 +10,39 @@
     },
     {
       "classname": "static_geometry",
-      "origin": [0, 1.5, -10],
+      "origin": [0, 1.2, -10],
       "geometry": {
         "type": "cube",
-        "size": [30, 3, 1]
+        "size": [30, 2.4, 1]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [-14, 1.5, 0],
+      "origin": [-14, 1.2, 0],
       "geometry": {
         "type": "cube",
-        "size": [1, 3, 20]
+        "size": [1, 2.4, 20]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [14, 1.5, 0],
+      "origin": [14, 1.2, 0],
       "geometry": {
         "type": "cube",
-        "size": [1, 3, 20]
+        "size": [1, 2.4, 20]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [0, 1.5, 10],
+      "origin": [0, 1.2, 10],
       "geometry": {
         "type": "cube",
-        "size": [30, 3, 1]
+        "size": [30, 2.4, 1]
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [0, 4, 5],
+      "origin": [0, 3, 5],
       "geometry": {
         "type": "cube",
         "size": [10, 1, 10]
@@ -50,34 +50,42 @@
     },
     {
       "classname": "static_geometry",
-      "origin": [-7, 0.5, 12],
+      "origin": [0, 8, 0],
       "geometry": {
-        "type": "cube",
-        "size": [2, 1, 2]
+        "type": "sphere",
+        "radius": 4.0,
+        "slices": 24,
+        "stacks": 24
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [-7, 1.5, 14],
+      "origin": [0, 2, 0],
       "geometry": {
-        "type": "cube",
-        "size": [2, 1, 2]
+        "type": "sphere",
+        "radius": 2.0,
+        "slices": 16,
+        "stacks": 16
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [-7, 2.5, 16],
+      "origin": [50, 10, 50],
       "geometry": {
-        "type": "cube",
-        "size": [2, 1, 2]
+        "type": "sphere",
+        "radius": 8.0,
+        "slices": 32,
+        "stacks": 32
       }
     },
     {
       "classname": "static_geometry",
-      "origin": [0, 0.5, 18],
+      "origin": [-60, 20, -60],
       "geometry": {
-        "type": "cube",
-        "size": [10, 1, 10]
+        "type": "sphere",
+        "radius": 12.0,
+        "slices": 32,
+        "stacks": 32
       }
     }
   ]

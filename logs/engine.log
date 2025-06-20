@@ -1,23 +1,23 @@
 [Engine] Log started
-[Engine] Starting Engine_Run
-[GL] OpenGL initialized
-[Engine] SDL + ShaderAPI initialized
-[Engine] FileSystem loaded
-[FS] Resolving: maps/start.json
-[FS] Checking: "D:\\git\\INC\\hl3\\.\\maps/start.json"
-[FS] Found: "D:\\git\\INC\\hl3\\.\\maps/start.json"
-[Entity] static_geometry at (0, 0, 0)
-[Entity] static_geometry at (0, 1.5, -10)
-[Entity] static_geometry at (-14, 1.5, 0)
-[Entity] static_geometry at (14, 1.5, 0)
-[Entity] static_geometry at (0, 1.5, 10)
-[Entity] static_geometry at (0, 4, 5)
-[Entity] static_geometry at (-7, 0.5, 12)
-[Entity] static_geometry at (-7, 1.5, 14)
-[Entity] static_geometry at (-7, 2.5, 16)
-[Entity] static_geometry at (0, 0.5, 18)
-[Engine] Entering main loop
-[Engine] SDL_QUIT event received
-[Engine] Engine_RunFrame returned false, exiting loop
+[LoadStaticGeometryFromMap] Clearing previous static geometry.
+[LoadStaticGeometryFromMap] Creating plane at (0.00, 0.00, 0.00) with size (30.00, 30.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 1
+[LoadStaticGeometryFromMap] Creating cube at (0.00, 1.20, -10.00) with size (30.00, 2.40, 1.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 2
+[LoadStaticGeometryFromMap] Creating cube at (-14.00, 1.20, 0.00) with size (1.00, 2.40, 20.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 3
+[LoadStaticGeometryFromMap] Creating cube at (14.00, 1.20, 0.00) with size (1.00, 2.40, 20.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 4
+[LoadStaticGeometryFromMap] Creating cube at (0.00, 1.20, 10.00) with size (30.00, 2.40, 1.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 5
+[LoadStaticGeometryFromMap] Creating cube at (0.00, 3.00, 5.00) with size (10.00, 1.00, 10.00).
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 6
+[LoadStaticGeometryFromMap] Creating sphere at (0.00, 8.00, 0.00) with radius 4.00, slices 24, stacks 24.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 7
+[LoadStaticGeometryFromMap] Creating sphere at (0.00, 2.00, 0.00) with radius 2.00, slices 16, stacks 16.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 8
+[LoadStaticGeometryFromMap] Creating sphere at (50.00, 10.00, 50.00) with radius 8.00, slices 32, stacks 32.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 9
+[LoadStaticGeometryFromMap] Creating sphere at (-60.00, 20.00, -60.00) with radius 12.00, slices 32, stacks 32.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 10
 [Engine] Shutdown complete
-[Engine] Engine_Run exiting

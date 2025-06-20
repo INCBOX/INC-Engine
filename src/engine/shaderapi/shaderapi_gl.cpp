@@ -37,6 +37,9 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
 
     SDL_GL_SetSwapInterval(0); // Disable vsync for benchmarking Defaukt: (1)
     std::cout << "[GL] OpenGL initialized\n";
+	
+    // Disable face culling to check if it's the cause of invisible spheres
+    glDisable(GL_CULL_FACE);
 
     // Compile and upload main shader
     m_Shader = std::make_unique<ShaderProgram>();
@@ -86,7 +89,7 @@ void ShaderAPI_GL::BeginFrame() {
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
     glViewport(0, 0, width, height);
-    glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
