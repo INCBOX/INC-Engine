@@ -1,27 +1,15 @@
-#include "shaderapi/shaderapi.h" 		// access to g_pShaderAPI
-#include "shaderapi/ishaderapi.h"      	// interface for ShaderAPICore
-#include "shaderapi/geometry_shaderapi.h"          	// IGeometry interface
-#include "mathlib/matrix.h"           	// for Matrix::Translation
 #include "world/geometry_loader.h"
+#include "world/mesh_primitives.h"
+#include "mathlib/math_constants.h"
+#include "shaderapi/shaderapi.h"
 #include <nlohmann/json.hpp>
-#include <iostream>
 #include "engine_log.h"
 
-// Static storage of all loaded static meshes
 static std::vector<StaticMeshInstance> g_StaticMeshes;
 
 void ClearStaticGeometry() {
     g_StaticMeshes.clear();
 }
-
-void LoadStaticGeometryFromMap(const nlohmann::json& mapData);
-const std::vector<StaticMeshInstance>& GetStaticGeometry();
-
-// Mesh creation functions:
-void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size);
-void CreatePlaneMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size);
-void CreateSphereMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, float radius, int slices, int stacks);
-
 
 void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
     EngineLog("[LoadStaticGeometryFromMap] Clearing previous static geometry.");
@@ -31,6 +19,8 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
         EngineLog("[LoadStaticGeometryFromMap] No 'entities' found in map data.");
         return;
     }
+
+    using namespace geometry;  // For Create*Mesh calls
 
     for (const auto& ent : mapData["entities"]) {
         if (ent.value("classname", "") != "static_geometry")

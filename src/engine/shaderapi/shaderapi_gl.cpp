@@ -79,10 +79,7 @@ void ShaderAPI_GL::BeginFrame() {
     SDL_GetWindowSize(m_Window, &w, &h);
     PrepareFrame(w, h);
 
-    if (m_MVPDirty) {
-        m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
-        m_MVPDirty = false;
-    }
+    UpdateViewProjectionMatrixIfNeeded();
 
     m_Shader->Use(); // Use shader once for entire frame
 }
@@ -120,11 +117,7 @@ void ShaderAPI_GL::SetProjectionMatrix(const Matrix& projMatrix) {
 
 // MESH
 void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
-    if (m_MVPDirty) {
-        m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
-        m_MVPDirty = false;
-    }
-
+    // No MVP recalculation here
     Matrix mvp = m_ViewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 
@@ -134,4 +127,14 @@ void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
     }
 
     glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+}
+
+
+
+// PRIVATE HELPER: Recalculate the combined ViewProjection matrix if dirty
+void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
+    if (m_MVPDirty) {
+        m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+        m_MVPDirty = false;
+    }
 }

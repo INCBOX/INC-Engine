@@ -36,7 +36,6 @@ void GeometryGL::Upload(const std::vector<float>& vertices, const std::vector<un
     m_Uploaded = true; // uploaded for performance
 }
 
-
 void GeometryGL::Bind() const {
     m_VAO->Bind();
 }

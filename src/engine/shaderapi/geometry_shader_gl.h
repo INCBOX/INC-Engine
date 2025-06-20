@@ -11,19 +11,21 @@
 class GeometryGL : public IGeometry {
 public:
     GeometryGL();
-    ~GeometryGL();
+    ~GeometryGL() override;
 
-    // Upload geometry data to GPU (positions and indices)
     void Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) override;
     void Bind() const override;
     void Unbind() const override;
     size_t GetIndexCount() const override;
 
+    GeometryGL(GeometryGL&&) = default;
+    GeometryGL& operator=(GeometryGL&&) = default;
+
 private:
     std::unique_ptr<VertexArray> m_VAO;
-    std::unique_ptr<VertexBuffer> m_VBO; // Vertex data (positions, etc.)
-    std::unique_ptr<VertexBuffer> m_EBO; // Element buffer object for indices
+    std::unique_ptr<VertexBuffer> m_VBO;
+    std::unique_ptr<VertexBuffer> m_EBO;
 
     size_t m_IndexCount = 0;
-    bool m_Uploaded = false; // kills performance fix
+    bool m_Uploaded = false; // Flag to avoid redundant uploads
 };
