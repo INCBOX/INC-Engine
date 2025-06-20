@@ -4,14 +4,14 @@
 #include <memory>
 #include <glad/glad.h>
 
-#include "shaderapi/imesh.h"
-#include "shaderapi_gl_vao.h"
-#include "shaderapi_gl_buffer.h"
+#include "shaderapi/geometry_shaderapi.h"
+#include "shaderapi/shaderapi_gl_vao.h"
+#include "shaderapi/shaderapi_gl_buffer.h"
 
-class MeshGL : public IMesh {
+class GeometryGL : public IGeometry {
 public:
-    MeshGL();
-    ~MeshGL();
+    GeometryGL();
+    ~GeometryGL();
 
     // Upload geometry data to GPU (positions and indices)
     void Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) override;

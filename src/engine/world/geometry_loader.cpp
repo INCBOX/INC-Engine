@@ -1,6 +1,6 @@
 #include "shaderapi/shaderapi.h" 		// access to g_pShaderAPI
 #include "shaderapi/ishaderapi.h"      	// interface for ShaderAPICore
-#include "shaderapi/imesh.h"          	// IMesh interface
+#include "shaderapi/geometry_shaderapi.h"          	// IGeometry interface
 #include "mathlib/matrix.h"           	// for Matrix::Translation
 #include "world/geometry_loader.h"
 #include <nlohmann/json.hpp>
@@ -14,43 +14,14 @@ void ClearStaticGeometry() {
     g_StaticMeshes.clear();
 }
 
-// Create a simple cube mesh (centered at origin)
-void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size) {
-    float sx = size.x * 0.5f, sy = size.y * 0.5f, sz = size.z * 0.5f;
+void LoadStaticGeometryFromMap(const nlohmann::json& mapData);
+const std::vector<StaticMeshInstance>& GetStaticGeometry();
 
-    float cubeVerts[] = {
-        -sx, -sy, -sz,  sx, -sy, -sz,  sx,  sy, -sz,  -sx,  sy, -sz,
-        -sx, -sy,  sz,  sx, -sy,  sz,  sx,  sy,  sz,  -sx,  sy,  sz
-    };
+// Mesh creation functions:
+void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size);
+void CreatePlaneMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size);
+void CreateSphereMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, float radius, int slices, int stacks);
 
-    unsigned int cubeIndices[] = {
-        0,1,2, 2,3,0,
-        1,5,6, 6,2,1,
-        5,4,7, 7,6,5,
-        4,0,3, 3,7,4,
-        3,2,6, 6,7,3,
-        4,5,1, 1,0,4
-    };
-
-    verts.assign(cubeVerts, cubeVerts + 8 * 3);
-    indices.assign(cubeIndices, cubeIndices + 36);
-}
-
-// Create a simple plane mesh on the XZ plane, centered at origin
-void CreatePlaneMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector& size) {
-    float sx = size.x * 0.5f, sz = size.z * 0.5f;
-
-    float planeVerts[] = {
-        -sx, 0, -sz,  sx, 0, -sz,  sx, 0, sz,  -sx, 0, sz
-    };
-
-    unsigned int planeIndices[] = {
-        0,1,2, 2,3,0
-    };
-
-    verts.assign(planeVerts, planeVerts + 12);
-    indices.assign(planeIndices, planeIndices + 6);
-}
 
 void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
     EngineLog("[LoadStaticGeometryFromMap] Clearing previous static geometry.");

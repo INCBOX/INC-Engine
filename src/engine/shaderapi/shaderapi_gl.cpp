@@ -2,15 +2,15 @@
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/shaderapi_gl_buffer.h"
 #include "shaderapi/shaderapi_gl_vao.h"
-#include "shaderapi/gl_mesh.h"
+#include "shaderapi/geometry_shader_gl.h"
 
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix.h"
 
 // CreateMesh
-IMesh* ShaderAPI_GL::CreateMesh() {
-    return new MeshGL();
+IGeometry* ShaderAPI_GL::CreateMesh() {
+    return new GeometryGL();
 }
 
 // Init: create GL context, load glad, compile shaders
@@ -119,7 +119,7 @@ void ShaderAPI_GL::SetProjectionMatrix(const Matrix& projMatrix) {
 }
 
 // MESH
-void ShaderAPI_GL::DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) {
+void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) {
     if (m_MVPDirty) {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
         m_MVPDirty = false;

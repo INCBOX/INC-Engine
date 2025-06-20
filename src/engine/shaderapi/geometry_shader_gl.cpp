@@ -1,19 +1,19 @@
-#include "shaderapi/gl_mesh.h"  // MeshGL class declaration
+#include "shaderapi/geometry_shader_gl.h"  // GeometryGL class declaration
 #include <glad/glad.h>           // For GL constants
 #include <memory>                // For unique_ptr, if needed
 
 
-MeshGL::MeshGL() {
+GeometryGL::GeometryGL() {
     m_VAO = std::make_unique<VertexArray>();
     m_VBO = std::make_unique<VertexBuffer>(GL_ARRAY_BUFFER);         // Vertex buffer
     m_EBO = std::make_unique<VertexBuffer>(GL_ELEMENT_ARRAY_BUFFER);  // Index buffer
 }
 
-MeshGL::~MeshGL() {
+GeometryGL::~GeometryGL() {
     // Unique pointers auto-cleanup
 }
 
-void MeshGL::Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
+void GeometryGL::Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
     if (m_Uploaded)
         return; // Already uploaded once, don't do it again
 
@@ -37,14 +37,14 @@ void MeshGL::Upload(const std::vector<float>& vertices, const std::vector<unsign
 }
 
 
-void MeshGL::Bind() const {
+void GeometryGL::Bind() const {
     m_VAO->Bind();
 }
 
-void MeshGL::Unbind() const {
+void GeometryGL::Unbind() const {
     m_VAO->Unbind();
 }
 
-size_t MeshGL::GetIndexCount() const {
+size_t GeometryGL::GetIndexCount() const {
     return m_IndexCount;
 }

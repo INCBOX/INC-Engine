@@ -4,7 +4,7 @@
 // This allows the engine to remain backend-agnostic.
 
 // JSON GEOMETRY STUFF
-class IMesh;
+class IGeometry;
 class Matrix;
 
 class ShaderAPICore {
@@ -35,8 +35,8 @@ public:
     virtual void SetProjectionMatrix(const Matrix& projMatrix) = 0;
 	
 	// JSON GEOMETRY Draw a mesh with a transform
-	virtual void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) = 0;
+	virtual void DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) = 0;
 
 	// Factory to create backend-specific mesh
-	virtual IMesh* CreateMesh() = 0;
+	virtual IGeometry* CreateMesh() = 0;
 };

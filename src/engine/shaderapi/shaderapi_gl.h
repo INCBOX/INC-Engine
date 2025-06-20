@@ -2,7 +2,7 @@
 
 #include "shaderapi/ishaderapi.h"
 #include "shaderapi/shaderapi_gl_shader.h"
-#include "shaderapi/imesh.h"
+#include "shaderapi/geometry_shaderapi.h"
 #include "mathlib/matrix.h"
 
 #include <SDL.h>
@@ -25,10 +25,10 @@ public:
     void SetViewMatrix(const Matrix& viewMatrix) override;
     void SetProjectionMatrix(const Matrix& projMatrix) override;
 
-    void DrawMesh(const IMesh& mesh, const Matrix& modelMatrix) override;
+    void DrawMesh(const IGeometry& mesh, const Matrix& modelMatrix) override;
 
 private:
-	const IMesh* m_LastBoundMesh = nullptr; // PERFORMANCE
+	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
 
@@ -44,5 +44,5 @@ private:
     Matrix m_ViewProjectionMatrix;
     bool m_MVPDirty = true;
 	
-    IMesh* CreateMesh() override;
+    IGeometry* CreateMesh() override;
 };
