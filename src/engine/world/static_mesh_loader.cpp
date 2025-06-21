@@ -1,6 +1,6 @@
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
-#include "world/geometry_loader.h"
+#include "world/static_mesh_loader.h"
 #include "world/mesh_primitives.h"
 #include "mathlib/math_constants.h"
 #include "shaderapi/shaderapi.h"

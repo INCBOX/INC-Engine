@@ -39,4 +39,20 @@ public:
 
 	// Factory to create backend-specific mesh
 	virtual IGeometry* CreateMesh() = 0;
+	
+	
+	
+	
+	
+	
+	// --- STAR FIELD RENDERING!! SHADERAPI  ---
+    
+    // Load/compile starfield shader(s)
+    virtual bool LoadStarfieldShaders() = 0;
+
+    // Render the procedural starfield, passing elapsed time for animation
+    virtual void RenderStarfield(float elapsedTime) = 0;
+
+    // Release starfield-related resources
+    virtual void ReleaseStarfield() = 0;
 };

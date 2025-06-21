@@ -4,7 +4,7 @@
 #include <memory>
 #include <glad/glad.h>
 
-#include "shaderapi/geometry_shaderapi.h"
+#include "shaderapi/static_mesh_shaderapi.h"
 #include "shaderapi/shaderapi_gl_vao.h"
 #include "shaderapi/shaderapi_gl_buffer.h"
 

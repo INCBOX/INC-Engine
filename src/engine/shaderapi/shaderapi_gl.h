@@ -2,7 +2,7 @@
 
 #include "shaderapi/ishaderapi.h"
 #include "shaderapi/shaderapi_gl_shader.h"
-#include "shaderapi/geometry_shaderapi.h"
+#include "shaderapi/static_mesh_shaderapi.h"
 #include "mathlib/matrix4x4_f.h"
 
 #include <SDL.h>
@@ -26,6 +26,11 @@ public:
     void SetProjectionMatrix(const Mat4_f& projMatrix) override;
 
     void DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) override;
+	
+	// STARFIELD
+    bool LoadStarfieldShaders();
+    void RenderStarfield(float elapsedTime);
+    void ReleaseStarfield();
 
 private:
 	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
@@ -48,4 +53,12 @@ private:
     bool m_MVPDirty = true;
 	
     IGeometry* CreateMesh() override;
+	
+	// STARFIELD
+	std::unique_ptr<ShaderProgram> m_StarfieldShader;
+    unsigned int m_StarfieldVAO = 0;
+    unsigned int m_StarfieldVBO = 0;
+
+    void InitStarfieldGeometry();
+    void CleanupStarfieldGeometry();
 };

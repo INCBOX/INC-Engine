@@ -1,0 +1,22 @@
+
+
+	Step 1: Procedural starfield + nebula background (shader or skybox).
+	
+	Step 2: Sector-based space chunking for object management.
+	
+	Step 3: Procedural planets, dynamic props, etc.
+	
+	
+	
+[HIGH] ShaderAPI header restructure
+    - WHY: Current header includes are causing `Matrix4x4_f` / `mat4_f` mismatch.
+    - ACTION: Decide on unified matrix type or proper shared mathlib location.
+    - FILES: ishaderapi.h, engine.cpp, shaderapi_gl.*
+
+[MED] IGeometry forward declaration error in static_mesh_loader.cpp
+    - WHY: Using incomplete type prevents method calls and unique_ptr usage.
+    - ACTION: Include actual definition, not just forward declare.
+
+[LOW] Clean up g_StarfieldMesh lifetime
+    - WHY: Linker error due to undefined symbol.
+    - ACTION: Define it in mesh_primitives.cpp, declare properly in a header.

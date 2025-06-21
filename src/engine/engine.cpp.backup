@@ -15,7 +15,7 @@
 #include "engine_api.h"
 #include "shaderapi/shaderapi.h" // Modular ShaderAPI interface (replaces shaderapi_gl.h)
 
-#include "world/geometry_loader.h" // FOR JSON LOAD GEOMETRY
+#include "world/static_mesh_loader.h" // FOR JSON LOAD GEOMETRY
 
 using json = nlohmann::json;
 

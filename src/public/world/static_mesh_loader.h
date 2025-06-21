@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <nlohmann/json.hpp>  // FOR JSON GEOMETRY
-#include "shaderapi/geometry_shaderapi.h"
+#include "shaderapi/static_mesh_shaderapi.h"
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
 

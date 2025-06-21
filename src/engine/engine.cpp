@@ -19,7 +19,7 @@
 #include "engine_log.h"
 #include "shaderapi/shaderapi.h" 		// Modular ShaderAPI interface
 
-#include "world/geometry_loader.h" 		// Static geometry loader (JSON)
+#include "world/static_mesh_loader.h" 		// Static geometry loader (JSON)
 
 #include "input.h"
 #include "mathlib/camera_f.h"
@@ -224,6 +224,11 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
+	
+    // --- STARFIELD START ---
+    static float totalTime = 0.0f;
+    totalTime += deltaTime;
+    g_Renderer->RenderStarfield(totalTime);
 	
 	// Update player logic with input
 	g_Player.Update(deltaTime, g_Input);
