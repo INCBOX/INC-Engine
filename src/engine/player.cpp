@@ -1,4 +1,5 @@
 // Player.cpp
+#include "mathlib/vector3_f.h"
 #include "player.h"
 #include <SDL.h>
 
@@ -7,7 +8,7 @@
 // m_OnGround = true; 
 
 Player::Player() : m_Position(0, 0, 0), m_Velocity(0, 0, 0) {
-    m_Camera.SetPosition(m_Position + Vector(0, m_PlayerHeight, 0));
+    m_Camera.SetPosition(m_Position + Vec3_f(0, m_PlayerHeight, 0));
     m_Movement.m_OnGround = true; // Initialize here (Player is friend of MovementPhysics)
 }
 
@@ -26,14 +27,14 @@ void Player::Update(float dt, const Input& input) {
     m_Camera.ClampPitch(-89.9f, 89.9f);
 
     // Calculate forward/right vectors
-    Vector forward = m_Camera.GetForwardVector();
-    Vector right = m_Camera.GetRightVector();
+    Vec3_f forward = m_Camera.GetForwardVector();
+    Vec3_f right = m_Camera.GetRightVector();
 
     // Apply movement input, passing the m_OnGround state from MovementPhysics
     m_Movement.Update(dt, input, m_Position, m_Velocity, forward, right, m_Movement.m_OnGround);
 
     // Update camera position to match player head
-    m_Camera.SetPosition(m_Position + Vector(0, m_PlayerHeight, 0));
+    m_Camera.SetPosition(m_Position + Vec3_f(0, m_PlayerHeight, 0));
 
     m_Camera.UpdateOrientation(); // PLAYER CONTROLS CAMERA NOW
 }

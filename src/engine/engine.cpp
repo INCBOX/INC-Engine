@@ -22,7 +22,7 @@
 #include "world/geometry_loader.h" 		// Static geometry loader (JSON)
 
 #include "input.h"
-#include "mathlib/camera.h"
+#include "mathlib/camera_f.h"
 #include "player.h"
 
 using json = nlohmann::json;
@@ -229,7 +229,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 	g_Player.Update(deltaTime, g_Input);
 	
 	// Setup view matrix for rendering
-	Matrix4x4 view = g_Player.GetCamera().GetViewMatrix();
+	Matrix4x4_f view = g_Player.GetCamera().GetViewMatrix();
 	g_Renderer->SetViewMatrix(view);
 	
     // Draw static geometry loaded from map

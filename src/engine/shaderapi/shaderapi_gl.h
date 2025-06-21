@@ -3,7 +3,7 @@
 #include "shaderapi/ishaderapi.h"
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/geometry_shaderapi.h"
-#include "mathlib/matrix4x4.h"
+#include "mathlib/matrix4x4_f.h"
 
 #include <SDL.h>
 #include <glad/glad.h>
@@ -22,10 +22,10 @@ public:
     void OnResize(int width, int height) override;
     void PrepareFrame(int width, int height) override;
 
-    void SetViewMatrix(const Matrix4x4& viewMatrix) override;
-    void SetProjectionMatrix(const Matrix4x4& projMatrix) override;
+    void SetViewMatrix(const Mat4_f& viewMatrix) override;
+    void SetProjectionMatrix(const Mat4_f& projMatrix) override;
 
-    void DrawMesh(const IGeometry& mesh, const Matrix4x4& modelMatrix) override;
+    void DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) override;
 
 private:
 	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
@@ -40,11 +40,11 @@ private:
     int m_MVPLocation = -1;
 
 	void UpdateViewProjectionMatrixIfNeeded();
-	void UpdateMVP(const Matrix4x4& modelMatrix);
+	void UpdateMVP(const Mat4_f& modelMatrix);
 
-    Matrix4x4 m_ViewMatrix;
-    Matrix4x4 m_ProjectionMatrix;
-    Matrix4x4 m_ViewProjectionMatrix;
+    Mat4_f m_ViewMatrix;
+    Mat4_f m_ProjectionMatrix;
+    Mat4_f m_ViewProjectionMatrix;
     bool m_MVPDirty = true;
 	
     IGeometry* CreateMesh() override;

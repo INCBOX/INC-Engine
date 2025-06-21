@@ -1,6 +1,7 @@
-// ✅ filesystem_stdio.cpp - updated for Source-style directory structure
+// filesystem_stdio.cpp - updated for Source-style directory structure
 #include "filesystem_stdio.h"
 
+#include <vector> // added because contains vector stuff
 #include <fstream>
 #include <sstream>
 #include <iostream>

@@ -1,4 +1,6 @@
-#include "mathlib/camera.h"
+#include "mathlib/vector3_f.h"
+#include "mathlib/matrix4x4_f.h"
+#include "mathlib/camera_f.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 
@@ -7,12 +9,12 @@ static constexpr float DEG2RAD = 3.14159265f / 180.0f;
 
 Camera::Camera()
 {
-    position = Vec3(0.0f, 0.0f, 3.0f);
+    position = Vec3_f(0.0f, 0.0f, 3.0f);
     yaw = -90.0f;         // Facing along negative Z by default
     pitch = 0.0f;
     cameraSpeed = 5.0f;
     mouseSensitivity = 0.1f;
-    forward = Vec3(0.0f, 0.0f, -1.0f);
+    forward = Vec3_f(0.0f, 0.0f, -1.0f);
 }
 
 // Update camera orientation and position based on input
@@ -28,17 +30,17 @@ void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDX, int mou
     // Calculate the new forward vector from yaw and pitch
     float radYaw = yaw * DEG2RAD;
     float radPitch = pitch * DEG2RAD;
-    forward = Vec3(
+    forward = Vec3_f(
         cosf(radYaw) * cosf(radPitch),
         sinf(radPitch),
         sinf(radYaw) * cosf(radPitch)
     ).Normalize();
 
     // Calculate flat forward vector for movement (ignore vertical component)
-    Vec3 flatForward = Vec3(forward.x, 0.0f, forward.z).Normalize();
+    Vec3_f flatForward = Vec3_f(forward.x, 0.0f, forward.z).Normalize();
 
     // Calculate right vector as perpendicular to flat forward
-    Vec3 right = flatForward.Cross(Vec3(0.0f, 1.0f, 0.0f)).Normalize();
+    Vec3_f right = flatForward.Cross(Vec3_f(0.0f, 1.0f, 0.0f)).Normalize();
 
     // Movement input - WASD keys
     if (keystate[SDL_SCANCODE_W]) position += flatForward * cameraSpeed * deltaTime;
@@ -48,20 +50,20 @@ void Camera::Update(float deltaTime, const Uint8* keystate, int mouseDX, int mou
 }
 
 // Get the view matrix used for rendering the scene from the camera's perspective
-Mat4 Camera::GetViewMatrix() const
+Mat4_f Camera::GetViewMatrix() const
 {
     // Assuming your mathlib Matrix class has a LookAt static method
-    return Matrix4x4::LookAt(position, position + forward, Vec3(0.0f, 1.0f, 0.0f));
+    return Mat4_f::LookAt(position, position + forward, Vec3_f(0.0f, 1.0f, 0.0f));
 }
 
 // Set the camera's absolute position
-void Camera::SetPosition(const Vec3& pos)
+void Camera::SetPosition(const Vec3_f& pos)
 {
     position = pos;
 }
 
 // Get the camera's current position
-Vec3 Camera::GetPosition() const
+Vec3_f Camera::GetPosition() const
 {
     return position;
 }
@@ -86,16 +88,16 @@ void Camera::ClampPitch(float minDegrees, float maxDegrees)
 }
 
 // Get the forward direction vector
-Vec3 Camera::GetForwardVector() const
+Vec3_f Camera::GetForwardVector() const
 {
     return forward;
 }
 
 // Get the right direction vector (perpendicular to forward and up)
-Vec3 Camera::GetRightVector() const
+Vec3_f Camera::GetRightVector() const
 {
     // Right vector = forward cross up
-    Vec3 up(0.0f, 1.0f, 0.0f);
+    Vec3_f up(0.0f, 1.0f, 0.0f);
     return forward.Cross(up).Normalize();
 }
 
@@ -105,7 +107,7 @@ void Camera::UpdateOrientation()
     float radYaw = yaw * DEG2RAD;
     float radPitch = pitch * DEG2RAD;
 
-    forward = Vec3(
+    forward = Vec3_f(
         cosf(radYaw) * cosf(radPitch),
         sinf(radPitch),
         sinf(radYaw) * cosf(radPitch)
@@ -113,6 +115,6 @@ void Camera::UpdateOrientation()
 }
 
 // MVP Setup FOR camera
-Mat4 Camera::GetProjectionMatrix(float aspect) const {
-    return Mat4::Perspective(m_fovDegrees, aspect, m_zNear, m_zFar);
+Mat4_f Camera::GetProjectionMatrix(float aspect) const {
+    return Mat4_f::Perspective(m_fovDegrees, aspect, m_zNear, m_zFar);
 }

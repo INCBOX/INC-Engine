@@ -1,6 +1,7 @@
 // player.h
 #pragma once
-#include "mathlib/camera.h"
+#include "mathlib/vector3_f.h"
+#include "mathlib/camera_f.h"
 #include "input.h"
 #include "movementphysics.h"
 
@@ -14,8 +15,8 @@ public:
 	MovementPhysics m_Movement;
 
 private:
-    Vector m_Position;
-    Vector m_Velocity;
+    Vec3_f m_Position;
+    Vec3_f m_Velocity;
     Camera m_Camera;
 
     float m_PlayerHeight = 1.8f; // player eye height in meters

@@ -5,7 +5,7 @@
 
 // JSON GEOMETRY STUFF
 class IGeometry;
-class Matrix4x4;
+class Matrix4x4_f;
 
 class ShaderAPICore {
 public:
@@ -29,13 +29,13 @@ public:
 	virtual void OnResize(int width, int height) = 0;
 	
 	// MVP Camera view matrix (world-to-camera)
-	virtual void SetViewMatrix(const Matrix4x4& viewMatrix) = 0;
+	virtual void SetViewMatrix(const Matrix4x4_f& viewMatrix) = 0;
 	
 	// Projection matrix (camera lens)
-    virtual void SetProjectionMatrix(const Matrix4x4& projMatrix) = 0;
+    virtual void SetProjectionMatrix(const Matrix4x4_f& projMatrix) = 0;
 	
 	// JSON GEOMETRY Draw a mesh with a transform
-	virtual void DrawMesh(const IGeometry& mesh, const Matrix4x4& modelMatrix) = 0;
+	virtual void DrawMesh(const IGeometry& mesh, const Matrix4x4_f& modelMatrix) = 0;
 
 	// Factory to create backend-specific mesh
 	virtual IGeometry* CreateMesh() = 0;

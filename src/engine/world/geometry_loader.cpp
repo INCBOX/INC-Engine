@@ -1,3 +1,5 @@
+#include "mathlib/vector3_f.h"
+#include "mathlib/matrix4x4_f.h"
 #include "world/geometry_loader.h"
 #include "world/mesh_primitives.h"
 #include "mathlib/math_constants.h"
@@ -27,7 +29,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
             continue;
 
         auto origin = ent.value("origin", std::vector<float>{0, 0, 0});
-        Vector position(origin[0], origin[1], origin[2]);
+        Vec3_f position(origin[0], origin[1], origin[2]);
 
         if (!ent.contains("geometry")) {
             EngineLog("[LoadStaticGeometryFromMap] Entity at position (%.2f, %.2f, %.2f) missing 'geometry' key.", position.x, position.y, position.z);
@@ -44,12 +46,12 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
             auto size = geo.value("size", std::vector<float>{1, 1, 1});
             EngineLog("[LoadStaticGeometryFromMap] Creating cube at (%.2f, %.2f, %.2f) with size (%.2f, %.2f, %.2f).",
                       position.x, position.y, position.z, size[0], size[1], size[2]);
-            CreateCubeMesh(verts, indices, Vector(size[0], size[1], size[2]));
+            CreateCubeMesh(verts, indices, Vec3_f(size[0], size[1], size[2]));
         } else if (type == "plane") {
             auto size = geo.value("size", std::vector<float>{1, 1});
             EngineLog("[LoadStaticGeometryFromMap] Creating plane at (%.2f, %.2f, %.2f) with size (%.2f, %.2f).",
                       position.x, position.y, position.z, size[0], size[1]);
-            CreatePlaneMesh(verts, indices, Vector(size[0], 0.0f, size[1]));
+            CreatePlaneMesh(verts, indices, Vec3_f(size[0], 0.0f, size[1]));
         } else if (type == "sphere") {
             float radius = geo.value("radius", 1.0f);
             int slices = geo.value("slices", 32);
@@ -76,7 +78,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
             continue;
         }
 
-        instance.transform = Matrix4x4::Translation(position);
+        instance.transform = Mat4_f::Translation(position);
 
         g_StaticMeshes.push_back(std::move(instance));
         EngineLog("[LoadStaticGeometryFromMap] Mesh added. Total static meshes: %zu", g_StaticMeshes.size());
