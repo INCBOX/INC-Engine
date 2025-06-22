@@ -84,6 +84,8 @@ void ShaderAPI_GL::Shutdown() {
 }
 
 void ShaderAPI_GL::BeginFrame() {
+
+	
     int w, h;
     SDL_GetWindowSize(m_Window, &w, &h);
     PrepareFrame(w, h);
@@ -91,6 +93,10 @@ void ShaderAPI_GL::BeginFrame() {
     UpdateViewProjectionMatrixIfNeeded();
 
     m_Shader->Use(); // Bind shader once per frame
+	UpdateMVP(Mat4_f::Identity()); // Upload clean MVP for cases with no model (like skybox)
+
+	
+
 }
 
 void ShaderAPI_GL::PrepareFrame(int width, int height) {
@@ -100,6 +106,7 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     SetProjectionMatrix(Mat4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
+	UpdateViewProjectionMatrixIfNeeded();
 }
 
 void ShaderAPI_GL::EndFrame() {
@@ -111,6 +118,7 @@ void ShaderAPI_GL::OnResize(int width, int height) {
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     SetProjectionMatrix(Mat4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
+	UpdateViewProjectionMatrixIfNeeded();
 }
 
 // MVP
@@ -126,7 +134,8 @@ void ShaderAPI_GL::SetProjectionMatrix(const Mat4_f& projMatrix) {
 
 // MESH
 void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) {
-    UpdateMVP(modelMatrix); // Centralized MVP upload
+    m_Shader->Use();  // Ensure mesh shader is active
+    UpdateMVP(modelMatrix); // Upload MVP
 
     if (&mesh != m_LastBoundMesh) {
         mesh.Bind();
@@ -135,6 +144,7 @@ void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) {
 
     glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 }
+
 
 // PRIVATE HELPER: Recalculate the combined ViewProjection matrix if dirty
 void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
@@ -203,6 +213,7 @@ void ShaderAPI_GL::RenderStarfield(float elapsedTime) {
     glBindVertexArray(m_StarfieldVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+	glUseProgram(0);
 }
 // STARFIELD
 void ShaderAPI_GL::ReleaseStarfield() {
@@ -225,3 +236,14 @@ void ShaderAPI_GL::CleanupStarfieldGeometry() {
     }
 }
 // STARFIELD
+void ShaderAPI_GL::SetDepthTestEnabled(bool enabled) {
+    if (enabled) {
+        glEnable(GL_DEPTH_TEST);
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
+}
+// STARFIELD
+void ShaderAPI_GL::SetDepthMaskEnabled(bool enabled) {
+    glDepthMask(enabled ? GL_TRUE : GL_FALSE);
+}

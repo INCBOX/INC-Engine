@@ -116,5 +116,11 @@ void Camera::UpdateOrientation()
 
 // MVP Setup FOR camera
 Mat4_f Camera::GetProjectionMatrix(float aspect) const {
-    return Mat4_f::Perspective(m_fovDegrees, aspect, m_zNear, m_zFar);
+	
+    // TEMPORARY FOV Convert horizontal FOV to vertical FOV [ REMOVE LATER ]
+    float fovY = 2.0f * atanf(tanf(m_fovDegrees * 0.5f * DEG2RAD) / aspect) * (180.0f / 3.14159265f);
+	///////////////////////////////////////
+	
+	
+    return Mat4_f::Perspective(fovY, aspect, m_zNear, m_zFar);
 }

@@ -186,9 +186,9 @@ DLL_EXPORT void STDCALL Engine_Init() {
 }
 
 //---FPS ------------------------------------------------------------------
-Uint64 now = SDL_GetPerformanceCounter();
-Uint64 last = now;
-double deltaTime = 0.0;
+// Uint64 now = SDL_GetPerformanceCounter(); // REMOVE IT 
+// Uint64 last = now;
+// double deltaTime = 0.0;
 
 // FPS tracking
 int frameCount = 0;
@@ -200,8 +200,8 @@ double fpsTimer = 0.0;
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
-    g_Input.Update();	// Reset and update input states, including mouse deltas
-	
+    g_Input.Update(); // Reset and update input states, including mouse deltas
+    
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cout << "[Engine] SDL_QUIT event received\n";
@@ -213,30 +213,39 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     const Uint8* keystate = g_Input.GetKeyState();
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
-	
+
     // Update camera using input & deltaTime
     g_Camera.Update(deltaTime, keystate, mouseDeltaX, mouseDeltaY);
 
-    int width, height;	// Get current window size
+    int width, height;    // Get current window size
     SDL_GetWindowSize(g_Window, &width, &height);
 
     if (!g_Renderer) return false;
 
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
-	
+
     // --- STARFIELD START ---
     static float totalTime = 0.0f;
     totalTime += deltaTime;
+    
+    // Disable depth write and test just for starfield rendering
+    g_Renderer->SetDepthMaskEnabled(false);
+    g_Renderer->SetDepthTestEnabled(false);
+    
     g_Renderer->RenderStarfield(totalTime);
-	
-	// Update player logic with input
-	g_Player.Update(deltaTime, g_Input);
-	
-	// Setup view matrix for rendering
-	Matrix4x4_f view = g_Player.GetCamera().GetViewMatrix();
-	g_Renderer->SetViewMatrix(view);
-	
+    
+    // Restore depth write and test for rest of the scene
+    g_Renderer->SetDepthMaskEnabled(true);
+    g_Renderer->SetDepthTestEnabled(true);
+
+    // Update player logic with input
+    g_Player.Update(deltaTime, g_Input);
+    
+    // Setup view matrix for rendering
+    Matrix4x4_f view = g_Player.GetCamera().GetViewMatrix();
+    g_Renderer->SetViewMatrix(view);
+    
     // Draw static geometry loaded from map
     const auto& staticGeometry = GetStaticGeometry();
     for (const auto& instance : staticGeometry) {

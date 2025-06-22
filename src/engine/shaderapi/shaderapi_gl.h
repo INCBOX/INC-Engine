@@ -61,4 +61,8 @@ private:
 
     void InitStarfieldGeometry();
     void CleanupStarfieldGeometry();
+	
+	void SetDepthTestEnabled(bool enabled);
+    void SetDepthMaskEnabled(bool enabled);
+	// STARFIELD
 };
