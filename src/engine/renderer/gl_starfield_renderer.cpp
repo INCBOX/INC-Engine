@@ -1,9 +1,9 @@
-#include "shaderapi/shaderapi_gl_starfield.h"
+#include "renderer/gl_starfield_renderer.h"
 #include <glad/glad.h>
 #include <iostream>
 
 // STARFIELD
-bool StarfieldRenderer::LoadStarfieldShaders() {
+bool GLStarfieldRenderer::LoadStarfieldShaders() {
     m_StarfieldShader = std::make_unique<ShaderProgram>();
     if (!m_StarfieldShader->CompileFromFile("hl3/shaders/starfield.vert", "hl3/shaders/starfield.frag")) {
         std::cerr << "[GL] Starfield shader compilation failed\n";
@@ -14,7 +14,7 @@ bool StarfieldRenderer::LoadStarfieldShaders() {
     return true;
 }
 
-void StarfieldRenderer::InitStarfieldGeometry() {
+void GLStarfieldRenderer::InitStarfieldGeometry() {
     // Fullscreen quad (2 triangles)
     float vertices[] = {
         // positions   // texCoords
@@ -44,7 +44,7 @@ void StarfieldRenderer::InitStarfieldGeometry() {
     glBindVertexArray(0);
 }
 // STARFIELD
-void StarfieldRenderer::RenderStarfield(float elapsedTime) {
+void GLStarfieldRenderer::RenderStarfield(float elapsedTime) {
     m_StarfieldShader->Use();
 
     int timeLocation = glGetUniformLocation(m_StarfieldShader->ID, "u_Time");
@@ -56,7 +56,7 @@ void StarfieldRenderer::RenderStarfield(float elapsedTime) {
 	glUseProgram(0);
 }
 // STARFIELD
-void StarfieldRenderer::ReleaseStarfield() {
+void GLStarfieldRenderer::ReleaseStarfield() {
     if (m_StarfieldShader) {
         m_StarfieldShader->Delete();
         m_StarfieldShader.reset();
@@ -65,7 +65,7 @@ void StarfieldRenderer::ReleaseStarfield() {
     CleanupStarfieldGeometry();
 }
 // STARFIELD
-void StarfieldRenderer::CleanupStarfieldGeometry() {
+void GLStarfieldRenderer::CleanupStarfieldGeometry() {
     if (m_StarfieldVBO) {
         glDeleteBuffers(1, &m_StarfieldVBO);
         m_StarfieldVBO = 0;
@@ -76,7 +76,7 @@ void StarfieldRenderer::CleanupStarfieldGeometry() {
     }
 }
 // STARFIELD
-void StarfieldRenderer::SetDepthTestEnabled(bool enabled) {
+void GLStarfieldRenderer::SetDepthTestEnabled(bool enabled) {
     if (enabled) {
         glEnable(GL_DEPTH_TEST);
     } else {
@@ -84,6 +84,6 @@ void StarfieldRenderer::SetDepthTestEnabled(bool enabled) {
     }
 }
 // STARFIELD
-void StarfieldRenderer::SetDepthMaskEnabled(bool enabled) {
+void GLStarfieldRenderer::SetDepthMaskEnabled(bool enabled) {
     glDepthMask(enabled ? GL_TRUE : GL_FALSE);
 }

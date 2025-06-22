@@ -1,21 +1,21 @@
-#include "shaderapi/shaderapi_gl.h"
-#include "shaderapi/shaderapi_gl_shader.h"
-#include "shaderapi/shaderapi_gl_buffer.h"
-#include "shaderapi/shaderapi_gl_vao.h"
-#include "shaderapi/geometry_shader_gl.h"
-#include "shaderapi/static_mesh_shaderapi.h"
+#include "shaderapi/gpu_render_backend_gl.h"
+#include "shaderapi/gl_shader_program.h"
+#include "shaderapi/gl_buffer.h"
+#include "shaderapi/gl_vertex_array.h"
+#include "shaderapi/gl_mesh.h"
+#include "shaderapi/igpu_mesh.h"
 
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix4x4_f.h"
 
 // CreateMesh
-IGeometry* ShaderAPI_GL::CreateMesh() {
-    return new GeometryGL();
+IGPUMesh* GPURenderBackendGL::CreateMesh() {
+    return new GLMesh();
 }
 
 // Init: create GL context, load glad, compile shaders
-bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
+bool GPURenderBackendGL::Init(void* windowHandle, int /*width*/, int /*height*/) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
 
     // Set GL context attributes
@@ -61,23 +61,23 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
     m_ViewProjectionMatrix = Mat4_f::Identity();
 	
     // --- STARFIELD STARTS HERE ---
-	m_StarfieldRenderer = std::make_unique<StarfieldRenderer>();
-	if (!m_StarfieldRenderer->LoadStarfieldShaders()) {
+	m_GLStarfieldRenderer = std::make_unique<GLStarfieldRenderer>();
+	if (!m_GLStarfieldRenderer->LoadStarfieldShaders()) {
 		// handle error
 	}
 
     return true;
 }
 
-void ShaderAPI_GL::Shutdown() {
+void GPURenderBackendGL::Shutdown() {
     if (m_Shader) {
         m_Shader->Delete();
         m_Shader.reset();
     }
 	
-	if (m_StarfieldRenderer) {
-		m_StarfieldRenderer->ReleaseStarfield();
-		m_StarfieldRenderer.reset();
+	if (m_GLStarfieldRenderer) {
+		m_GLStarfieldRenderer->ReleaseStarfield();
+		m_GLStarfieldRenderer.reset();
 	}
 	
     if (m_GLContext) {
@@ -87,9 +87,7 @@ void ShaderAPI_GL::Shutdown() {
     m_Window = nullptr;
 }
 
-void ShaderAPI_GL::BeginFrame() {
-
-	
+void GPURenderBackendGL::BeginFrame() {
     int w, h;
     SDL_GetWindowSize(m_Window, &w, &h);
     PrepareFrame(w, h);
@@ -98,12 +96,9 @@ void ShaderAPI_GL::BeginFrame() {
 
     m_Shader->Use(); // Bind shader once per frame
 	UpdateMVP(Mat4_f::Identity()); // Upload clean MVP for cases with no model (like skybox)
-
-	
-
 }
 
-void ShaderAPI_GL::PrepareFrame(int width, int height) {
+void GPURenderBackendGL::PrepareFrame(int width, int height) {
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -113,11 +108,11 @@ void ShaderAPI_GL::PrepareFrame(int width, int height) {
 	UpdateViewProjectionMatrixIfNeeded();
 }
 
-void ShaderAPI_GL::EndFrame() {
+void GPURenderBackendGL::EndFrame() {
     SDL_GL_SwapWindow(m_Window);
 }
 
-void ShaderAPI_GL::OnResize(int width, int height) {
+void GPURenderBackendGL::OnResize(int width, int height) {
     glViewport(0, 0, width, height);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
@@ -126,18 +121,18 @@ void ShaderAPI_GL::OnResize(int width, int height) {
 }
 
 // MVP
-void ShaderAPI_GL::SetViewMatrix(const Mat4_f& viewMatrix) {
+void GPURenderBackendGL::SetViewMatrix(const Mat4_f& viewMatrix) {
     m_ViewMatrix = viewMatrix;
     m_MVPDirty = true;
 }
 
-void ShaderAPI_GL::SetProjectionMatrix(const Mat4_f& projMatrix) {
+void GPURenderBackendGL::SetProjectionMatrix(const Mat4_f& projMatrix) {
     m_ProjectionMatrix = projMatrix;
     m_MVPDirty = true;
 }
 
 // MESH
-void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) {
+void GPURenderBackendGL::DrawMesh(const IGPUMesh& mesh, const Mat4_f& modelMatrix) {
     m_Shader->Use();  // Ensure mesh shader is active
     UpdateMVP(modelMatrix); // Upload MVP
 
@@ -149,9 +144,8 @@ void ShaderAPI_GL::DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) {
     glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-
 // PRIVATE HELPER: Recalculate the combined ViewProjection matrix if dirty
-void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
+void GPURenderBackendGL::UpdateViewProjectionMatrixIfNeeded() {
     if (m_MVPDirty) {
         m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
         m_MVPDirty = false;
@@ -159,7 +153,7 @@ void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
 }
 
 // CENTRALIZED MVP
-void ShaderAPI_GL::UpdateMVP(const Mat4_f& modelMatrix) {
+void GPURenderBackendGL::UpdateMVP(const Mat4_f& modelMatrix) {
     Mat4_f mvp = m_ViewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }

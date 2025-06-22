@@ -1,5 +1,12 @@
 
 
+		FIX THIS SHIT
+		
+		THIS >> IShaderAPI* pShaderAPI = g_pGPURender;
+		TO THIS >> IShaderAPI* pShaderAPI = GetShaderAPI();
+		
+
+
 	Step 1: Procedural starfield + nebula background (shader or skybox).
 	
 	Step 2: Sector-based space chunking for object management.
@@ -11,15 +18,99 @@
 [HIGH] ShaderAPI header restructure
     - WHY: Current header includes are causing `Matrix4x4_f` / `mat4_f` mismatch.
     - ACTION: Decide on unified matrix type or proper shared mathlib location.
-    - FILES: ishaderapi.h, engine.cpp, shaderapi_gl.*
+    - FILES: ishaderapi.h, engine.cpp, GPURenderBackendGL.*
 
-[MED] IGeometry forward declaration error in static_mesh_loader.cpp
+[MED] IGPUMesh forward declaration error in static_mesh_loader.cpp
     - WHY: Using incomplete type prevents method calls and unique_ptr usage.
     - ACTION: Include actual definition, not just forward declare.
 
 [LOW] Clean up g_StarfieldMesh lifetime
     - WHY: Linker error due to undefined symbol.
     - ACTION: Define it in mesh_primitives.cpp, declare properly in a header.
+
+
+
+
+🚀 INC Planetary Engine – High-Fidelity TODO List
+
+✅ PHASE 0 – Foundations (already partially done)
+- [x] Implement double-precision `Vector3_d` and `Matrix4x4_d`
+- [x] Add camera-relative rendering system to eliminate float errors
+- [x] Create working `GLStarfieldRenderer` API and render pass
+- [x] Replace map’s static geometry with floating planets/spheres
+
+🪐 PHASE 1 – Planet System Runtime Replacement
+- [ ] Remove JSON-defined planets from level system
+- [ ] Create `PlanetSystem` class to manage all planets
+- [ ] Implement `Planet` class with:
+  - [ ] `Vector3_d position`
+  - [ ] `double radius`
+  - [ ] `uint32_t seed`
+  - [ ] Optional: biome or material parameters
+- [ ] Create engine-side registration like:
+  PlanetSystem::RegisterPlanet("earth", 6371.0, Vector3_d(1e6, 0, 0), 1234);
+
+
+		Optional: Floating Origin Support (Star Citizen-style) well we probably want that.. baby 
+		Your To-Do Breakdown:
+		Task	Module	Status
+		Double precision mathlib (Vector3_d, Matrix4x4_d)	mathlib	Done
+		Refactor Camera to Camera_d	camera_d.h/.cpp	Needs rewrite
+		Add world-space to render-space logic	RenderTransformSystem	Needs implementation
+		Update render system to use float model matrices	PlanetRenderer, EntityRenderer	WIP
+		Add streaming LOD based on camera.worldPosition	StreamingManager, PlanetLODSystem	Co
+		
+		🐉 The Dragon: Parented Transforms
+		If you want characters moving inside ships (that move through space), you’ll have to support:
+		local transforms (float, relative to parent)
+		world transforms (double, absolute in space)
+		Proper update chains: parent rebasing updates children
+		You ready for that? Or should we just glue everyone to asteroids and pretend ships don’t move?
+
+
+
+
+
+
+
+
+🌍 PHASE 2 – Planet Rendering and LOD System
+- [ ] Create basic `PlanetRenderer` class (one per planet)
+- [ ] Use UV sphere mesh or cube-sphere for test planet
+- [ ] Implement `PlanetLODNode` with:
+  - [ ] Frustum culling
+  - [ ] Distance-based LOD switching
+  - [ ] Chunk generation requests
+- [ ] Begin `PlanetChunk` system with LOD mesh generation
+
+🌄 PHASE 3 – Terrain Generation System
+- [ ] Create terrain generator backend:
+  - [ ] Perlin or Simplex noise-based height generation
+  - [ ] Optional: heightmap support
+- [ ] Patch-level procedural generation tied to `PlanetChunk`
+- [ ] Implement async terrain generation jobs (threaded)
+
+🌌 PHASE 4 – Visuals & Physics Integration
+- [ ] Add realistic lighting and shading to terrain patches
+- [ ] Add atmosphere rendering (optional)
+- [ ] Add planetary gravity wells that affect players and entities
+- [ ] Link physics to planetary surface for walking/flying
+- [ ] Handle collision + landing on planets
+
+✨ STARFIELD – Ongoing Improvements
+- [ ] Add procedural 3D star layout (not just background)
+- [ ] Implement parallax and camera-relative depth logic
+- [ ] Physically accurate star brightness + distance falloff
+- [ ] Support millions of stars with zero overdraw
+- [ ] Optional: Depth layers (e.g., nebula behind star layer)
+
+🧠 FUTURE (after planetary system is stable)
+- [ ] Galaxy map & fast travel
+- [ ] Surface biome blending system
+- [ ] Landing zones and surface POIs
+- [ ] Dynamic weather on planets
+- [ ] Atmospheric entry VFX
+
 
 
 
@@ -47,3 +138,28 @@ Sharp, twinkling point stars
 Parallax with camera movement
 
 Depth sorting (optional: far nebula behind stars)
+
+
+
+🚀 High-Fidelity Simulation (what Star Citizen uses)
+This is what you’re trying to move toward:
+
+Feature	Description
+Procedural + data-driven	Planets are defined by seeds, materials, atmospheres, gravity — not just geometry
+Origin shifting / camera-relative	Keeps precision high by offsetting world instead of camera
+LOD terrain streaming	Patches load in chunks as player approaches
+Patch-based simulation	Surface sim, physics, weather are all done per-tile
+Massive scale	1:1 scale planets, moons, stations
+Example	Star Citizen, Outerra, Elite Dangerous
+
+🎯 What Star Citizen Actually Uses
+Proprietary binary formats (.zone, .entity, etc.)
+
+Procedural terrain with runtime LOD generation
+
+Planet definitions via parameterized assets (like planet_data.xml, not JSON geometry)
+
+Each planet: procedural seed, radius, material layers, gravity, atmosphere params
+
+Level editor is only used for space stations or interiors — not planetary layout
+

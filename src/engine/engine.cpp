@@ -12,20 +12,15 @@
 #include <fstream>
 #include <filesystem>
 #include <string>
-#include "nlohmann/json.hpp"
 
 #include "engine_api.h"
 #include "engine_globals.h"				// access the main camera from anywhere in engine
 #include "engine_log.h"
-#include "shaderapi/shaderapi.h" 		// Modular ShaderAPI interface
-
-#include "world/static_mesh_loader.h" 		// Static geometry loader (JSON)
+#include "shaderapi/gpu_render_backend.h" 		// Modular GPU Render Backendd
 
 #include "input.h"
 #include "mathlib/camera_f.h"
 #include "player.h"
-
-using json = nlohmann::json;
 
 //-----------------------------------------------------------------------------
 // DEBUG -O3 -DNDEBUG -march=native,
@@ -57,7 +52,7 @@ static FS_ResolvePathFn FS_ResolvePath = nullptr;
 // SDL + ShaderAPI
 //-----------------------------------------------------------------------------
 static SDL_Window* g_Window = nullptr;
-static ShaderAPICore* g_Renderer = nullptr;
+static IGPURenderInterface* g_Renderer = nullptr;
 
 //-----------------------------------------------------------------------------
 // Cross-platform export macros
@@ -103,45 +98,6 @@ bool LoadFileSystem() {
 }
 
 //-----------------------------------------------------------------------------
-// Load JSON map, parse entities, and load static geometry
-//-----------------------------------------------------------------------------
-bool LoadMap(const std::string& mapName) {
-    std::string relative = "maps/" + mapName + ".json";
-    std::string resolved = FS_ResolvePath(relative);
-
-    if (resolved.empty()) {
-        std::cerr << "[Engine] Map not found: " << relative << "\n";
-        return false;
-    }
-
-    std::ifstream mapFile(resolved);
-    if (!mapFile.is_open()) {
-        std::cerr << "[Engine] Failed to open map: " << resolved << "\n";
-        return false;
-    }
-
-    json mapData;
-    try {
-        mapFile >> mapData;
-    } catch (const std::exception& e) {
-        std::cerr << "[Engine] JSON parsing error: " << e.what() << "\n";
-        return false;
-    }
-
-    if (mapData.contains("entities") && mapData["entities"].is_array()) {
-        for (const auto& entity : mapData["entities"]) {
-            std::string classname = entity.value("classname", "unknown");
-            auto origin = entity.value("origin", std::vector<float>{0, 0, 0});
-            std::cout << "[Entity] " << classname << " at ("
-                      << origin[0] << ", " << origin[1] << ", " << origin[2] << ")\n";
-        }
-    }
-
-    LoadStaticGeometryFromMap(mapData);
-    return true;
-}
-
-//-----------------------------------------------------------------------------
 // Initialize SDL, window, input, and ShaderAPI
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Init() {
@@ -173,7 +129,7 @@ DLL_EXPORT void STDCALL Engine_Init() {
 	SDL_SetWindowGrab(g_Window, SDL_TRUE);
 	SDL_ShowCursor(SDL_DISABLE);
 
-    g_Renderer = CreateShaderAPI(); // Modular backend creation
+    g_Renderer = CreateGPUAPI(); // Modular backend creation
     if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
         std::cerr << "[Engine] ShaderAPI Init failed\n";
 		Engine_Shutdown(); // make sure SDL is cleaned
@@ -245,12 +201,6 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     // Setup view matrix for rendering
     Matrix4x4_f view = g_Player.GetCamera().GetViewMatrix();
     g_Renderer->SetViewMatrix(view);
-    
-    // Draw static geometry loaded from map
-    const auto& staticGeometry = GetStaticGeometry();
-    for (const auto& instance : staticGeometry) {
-        g_Renderer->DrawMesh(*instance.mesh, instance.transform);
-    }
 
     g_Renderer->EndFrame();
     return true;
@@ -262,7 +212,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 DLL_EXPORT void STDCALL Engine_Shutdown() {
     if (g_Renderer) {
         g_Renderer->Shutdown();
-        DestroyShaderAPI();
+        DestroyGPUAPI();
         g_Renderer = nullptr;
     }
 
@@ -293,11 +243,6 @@ DLL_EXPORT void STDCALL Engine_Run() {
 
     if (!LoadFileSystem()) {
         std::cerr << "[Engine] Failed to load filesystem\n";
-        return;
-    }
-
-    if (!LoadMap("start")) {
-        std::cerr << "[Engine] Failed to load start map\n";
         return;
     }
 

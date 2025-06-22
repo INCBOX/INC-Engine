@@ -1,10 +1,10 @@
 #pragma once
 
-#include "shaderapi/ishaderapi.h"
-#include "shaderapi/shaderapi_gl_shader.h"
-#include "shaderapi/static_mesh_shaderapi.h"
-#include "shaderapi/istarfieldrenderer.h"
-#include "shaderapi/shaderapi_gl_starfield.h"
+#include "shaderapi/gpu_render_interface.h"
+#include "shaderapi/gl_shader_program.h"
+#include "shaderapi/igpu_mesh.h"
+#include "renderer/istarfieldrenderer.h"
+#include "renderer/gl_starfield_renderer.h"
 #include "mathlib/matrix4x4_f.h"
 
 #include <SDL.h>
@@ -14,7 +14,7 @@
 // Forward declarations
 class ShaderProgram;
 
-class ShaderAPI_GL : public ShaderAPICore {
+class GPURenderBackendGL : public IGPURenderInterface {
 public:
     bool Init(void* windowHandle, int width, int height) override;
     void Shutdown() override;
@@ -27,30 +27,30 @@ public:
     void SetViewMatrix(const Mat4_f& viewMatrix) override;
     void SetProjectionMatrix(const Mat4_f& projMatrix) override;
 
-    void DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) override;
+    void DrawMesh(const IGPUMesh& mesh, const Mat4_f& modelMatrix) override;
 	
 	// GEOMETRY
-	IGeometry* CreateMesh() override;
+	IGPUMesh* CreateMesh() override;
 	
 	// STARFIELD
     bool LoadStarfieldShaders() override {
-        return m_StarfieldRenderer->LoadStarfieldShaders();
+        return m_GLStarfieldRenderer->LoadStarfieldShaders();
     }
     void RenderStarfield(float elapsedTime) override {
-        m_StarfieldRenderer->RenderStarfield(elapsedTime);
+        m_GLStarfieldRenderer->RenderStarfield(elapsedTime);
     }
     void ReleaseStarfield() override {
-        m_StarfieldRenderer->ReleaseStarfield();
+        m_GLStarfieldRenderer->ReleaseStarfield();
     }
     void SetDepthTestEnabled(bool enabled) override {
-        m_StarfieldRenderer->SetDepthTestEnabled(enabled);
+        m_GLStarfieldRenderer->SetDepthTestEnabled(enabled);
     }
     void SetDepthMaskEnabled(bool enabled) override {
-        m_StarfieldRenderer->SetDepthMaskEnabled(enabled);
+        m_GLStarfieldRenderer->SetDepthMaskEnabled(enabled);
     }
 	
 private:
-	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
+	const IGPUMesh* m_LastBoundMesh = nullptr; // PERFORMANCE
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext = nullptr;
 
@@ -70,5 +70,5 @@ private:
     bool m_MVPDirty = true;
 	
     // STARFIELD renderer pointer
-    std::unique_ptr<StarfieldRenderer> m_StarfieldRenderer;
+    std::unique_ptr<GLStarfieldRenderer> m_GLStarfieldRenderer;
 };

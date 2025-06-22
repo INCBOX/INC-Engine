@@ -4,12 +4,12 @@
 #include <vector>
 #include <memory>
 #include <nlohmann/json.hpp>  // FOR JSON GEOMETRY
-#include "shaderapi/static_mesh_shaderapi.h"
+#include "shaderapi/igpu_mesh.h"
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
 
 struct StaticMeshInstance {
-    std::unique_ptr<IGeometry> mesh;
+    std::unique_ptr<IGPUMesh> mesh;
     Mat4_f transform;
 };
 

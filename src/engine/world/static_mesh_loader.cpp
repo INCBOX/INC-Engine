@@ -1,9 +1,9 @@
+#include "shaderapi/gpu_render_backend.h"
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
 #include "world/static_mesh_loader.h"
 #include "world/mesh_primitives.h"
 #include "mathlib/math_constants.h"
-#include "shaderapi/shaderapi.h"
 #include <nlohmann/json.hpp>
 #include "engine_log.h"
 
@@ -66,7 +66,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
         }
 
         StaticMeshInstance instance;
-        instance.mesh.reset(g_pShaderAPI->CreateMesh());
+        instance.mesh.reset(g_pGPURender->CreateMesh());
 
         try {
             instance.mesh->Upload(verts, indices);

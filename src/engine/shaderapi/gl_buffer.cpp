@@ -1,6 +1,6 @@
 // (VertexBuffer)
 
-#include "shaderapi/shaderapi_gl_buffer.h"
+#include "shaderapi/gl_buffer.h"
 
 VertexBuffer::VertexBuffer(unsigned int target) : Target(target) {
     glGenBuffers(1, &ID);

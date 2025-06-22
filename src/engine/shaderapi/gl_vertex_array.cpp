@@ -1,6 +1,6 @@
 // VertexArray
 
-#include "shaderapi/shaderapi_gl_vao.h"
+#include "shaderapi/gl_vertex_array.h"
 #include <glad/glad.h>
 
 // Constructor: generate VAO

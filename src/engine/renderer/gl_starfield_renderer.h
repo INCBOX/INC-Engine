@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
-#include "shaderapi/shaderapi_gl_shader.h"
-#include "shaderapi/istarfieldrenderer.h"
+#include "shaderapi/gl_shader_program.h"
+#include "renderer/istarfieldrenderer.h"
 
-class StarfieldRenderer : public IStarfieldRenderer {
+class GLStarfieldRenderer : public IStarfieldRenderer {
 public:
     bool LoadStarfieldShaders() override;
     void RenderStarfield(float elapsedTime) override;

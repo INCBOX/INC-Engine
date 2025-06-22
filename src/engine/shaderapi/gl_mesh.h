@@ -4,22 +4,22 @@
 #include <memory>
 #include <glad/glad.h>
 
-#include "shaderapi/static_mesh_shaderapi.h"
-#include "shaderapi/shaderapi_gl_vao.h"
-#include "shaderapi/shaderapi_gl_buffer.h"
+#include "shaderapi/igpu_mesh.h"
+#include "shaderapi/gl_vertex_array.h"
+#include "shaderapi/gl_buffer.h"
 
-class GeometryGL : public IGeometry {
+class GLMesh : public IGPUMesh {
 public:
-    GeometryGL();
-    ~GeometryGL() override;
+    GLMesh();
+    ~GLMesh() override;
 
     void Upload(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) override;
     void Bind() const override;
     void Unbind() const override;
     size_t GetIndexCount() const override;
 
-    GeometryGL(GeometryGL&&) = default;
-    GeometryGL& operator=(GeometryGL&&) = default;
+    GLMesh(GLMesh&&) = default;
+    GLMesh& operator=(GLMesh&&) = default;
 
 private:
     std::unique_ptr<VertexArray> m_VAO;
