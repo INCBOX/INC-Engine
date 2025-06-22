@@ -1,0 +1,27 @@
+#pragma once
+#include "mathlib/vector3_d.h"
+#include "mathlib/matrix4x4_f.h"
+#include <vector>
+#include <cstdint>
+
+struct StarVertex {
+    Vector3_f position;
+    float brightness;
+    Vector3_f color;
+};
+
+class StarfieldRenderer {
+public:
+    StarfieldRenderer();
+    ~StarfieldRenderer();
+
+    void Initialize();
+    void GenerateStars(int numStars, const Vector3_d& cameraPos);
+    void Render(const Matrix4x4_f& viewProj, float time);
+    void Cleanup();
+
+private:
+    uint32_t vao = 0;
+    uint32_t vbo = 0;
+    int starCount = 0;
+};

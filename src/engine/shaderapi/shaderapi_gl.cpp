@@ -3,6 +3,7 @@
 #include "shaderapi/shaderapi_gl_buffer.h"
 #include "shaderapi/shaderapi_gl_vao.h"
 #include "shaderapi/geometry_shader_gl.h"
+#include "shaderapi/static_mesh_shaderapi.h"
 
 #include <glad/glad.h>
 #include <iostream>
@@ -60,10 +61,10 @@ bool ShaderAPI_GL::Init(void* windowHandle, int /*width*/, int /*height*/) {
     m_ViewProjectionMatrix = Mat4_f::Identity();
 	
     // --- STARFIELD STARTS HERE ---
-    if (!LoadStarfieldShaders()) {
-        std::cerr << "[GL] Failed to load starfield shaders\n";
-        return false;
-    }
+	m_StarfieldRenderer = std::make_unique<StarfieldRenderer>();
+	if (!m_StarfieldRenderer->LoadStarfieldShaders()) {
+		// handle error
+	}
 
     return true;
 }
@@ -74,7 +75,10 @@ void ShaderAPI_GL::Shutdown() {
         m_Shader.reset();
     }
 	
-	ReleaseStarfield();  // STARFIELD CLEANUP!
+	if (m_StarfieldRenderer) {
+		m_StarfieldRenderer->ReleaseStarfield();
+		m_StarfieldRenderer.reset();
+	}
 	
     if (m_GLContext) {
         SDL_GL_DeleteContext(m_GLContext);
@@ -158,92 +162,4 @@ void ShaderAPI_GL::UpdateViewProjectionMatrixIfNeeded() {
 void ShaderAPI_GL::UpdateMVP(const Mat4_f& modelMatrix) {
     Mat4_f mvp = m_ViewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
-}
-
-
-
-// STARFIELD
-bool ShaderAPI_GL::LoadStarfieldShaders() {
-    m_StarfieldShader = std::make_unique<ShaderProgram>();
-    if (!m_StarfieldShader->CompileFromFile("hl3/shaders/starfield.vert", "hl3/shaders/starfield.frag")) {
-        std::cerr << "[GL] Starfield shader compilation failed\n";
-        return false;
-    }
-
-    InitStarfieldGeometry();
-    return true;
-}
-// STARFIELD
-void ShaderAPI_GL::InitStarfieldGeometry() {
-    // Fullscreen quad (2 triangles)
-    float vertices[] = {
-        // positions   // texCoords
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f,
-
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f,
-        -1.0f,  1.0f,  0.0f, 1.0f
-    };
-
-    glGenVertexArrays(1, &m_StarfieldVAO);
-    glGenBuffers(1, &m_StarfieldVBO);
-
-    glBindVertexArray(m_StarfieldVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_StarfieldVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0); // position
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(1); // texCoords
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-    glBindVertexArray(0);
-}
-// STARFIELD
-void ShaderAPI_GL::RenderStarfield(float elapsedTime) {
-    m_StarfieldShader->Use();
-
-    int timeLocation = glGetUniformLocation(m_StarfieldShader->ID, "u_Time");
-    glUniform1f(timeLocation, elapsedTime);
-
-    glBindVertexArray(m_StarfieldVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-	glUseProgram(0);
-}
-// STARFIELD
-void ShaderAPI_GL::ReleaseStarfield() {
-    if (m_StarfieldShader) {
-        m_StarfieldShader->Delete();
-        m_StarfieldShader.reset();
-    }
-
-    CleanupStarfieldGeometry();
-}
-// STARFIELD
-void ShaderAPI_GL::CleanupStarfieldGeometry() {
-    if (m_StarfieldVBO) {
-        glDeleteBuffers(1, &m_StarfieldVBO);
-        m_StarfieldVBO = 0;
-    }
-    if (m_StarfieldVAO) {
-        glDeleteVertexArrays(1, &m_StarfieldVAO);
-        m_StarfieldVAO = 0;
-    }
-}
-// STARFIELD
-void ShaderAPI_GL::SetDepthTestEnabled(bool enabled) {
-    if (enabled) {
-        glEnable(GL_DEPTH_TEST);
-    } else {
-        glDisable(GL_DEPTH_TEST);
-    }
-}
-// STARFIELD
-void ShaderAPI_GL::SetDepthMaskEnabled(bool enabled) {
-    glDepthMask(enabled ? GL_TRUE : GL_FALSE);
 }

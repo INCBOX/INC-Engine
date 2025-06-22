@@ -3,6 +3,8 @@
 #include "shaderapi/ishaderapi.h"
 #include "shaderapi/shaderapi_gl_shader.h"
 #include "shaderapi/static_mesh_shaderapi.h"
+#include "shaderapi/istarfieldrenderer.h"
+#include "shaderapi/shaderapi_gl_starfield.h"
 #include "mathlib/matrix4x4_f.h"
 
 #include <SDL.h>
@@ -27,11 +29,26 @@ public:
 
     void DrawMesh(const IGeometry& mesh, const Mat4_f& modelMatrix) override;
 	
+	// GEOMETRY
+	IGeometry* CreateMesh() override;
+	
 	// STARFIELD
-    bool LoadStarfieldShaders();
-    void RenderStarfield(float elapsedTime);
-    void ReleaseStarfield();
-
+    bool LoadStarfieldShaders() override {
+        return m_StarfieldRenderer->LoadStarfieldShaders();
+    }
+    void RenderStarfield(float elapsedTime) override {
+        m_StarfieldRenderer->RenderStarfield(elapsedTime);
+    }
+    void ReleaseStarfield() override {
+        m_StarfieldRenderer->ReleaseStarfield();
+    }
+    void SetDepthTestEnabled(bool enabled) override {
+        m_StarfieldRenderer->SetDepthTestEnabled(enabled);
+    }
+    void SetDepthMaskEnabled(bool enabled) override {
+        m_StarfieldRenderer->SetDepthMaskEnabled(enabled);
+    }
+	
 private:
 	const IGeometry* m_LastBoundMesh = nullptr; // PERFORMANCE
     SDL_Window* m_Window = nullptr;
@@ -52,17 +69,6 @@ private:
     Mat4_f m_ViewProjectionMatrix;
     bool m_MVPDirty = true;
 	
-    IGeometry* CreateMesh() override;
-	
-	// STARFIELD
-	std::unique_ptr<ShaderProgram> m_StarfieldShader;
-    unsigned int m_StarfieldVAO = 0;
-    unsigned int m_StarfieldVBO = 0;
-
-    void InitStarfieldGeometry();
-    void CleanupStarfieldGeometry();
-	
-	void SetDepthTestEnabled(bool enabled);
-    void SetDepthMaskEnabled(bool enabled);
-	// STARFIELD
+    // STARFIELD renderer pointer
+    std::unique_ptr<StarfieldRenderer> m_StarfieldRenderer;
 };

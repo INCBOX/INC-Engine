@@ -1,0 +1,87 @@
+
+#include "shaderapi/shaderapi.h"
+#include "starfield/starfield_renderer.h"
+
+#include <glad/glad.h>
+#include <random>
+#include <cmath>
+
+static float Lerp(float a, float b, float t) { return a + t * (b - a); }
+
+static Vector3_d RandomUnitSphere(std::mt19937& rng, std::uniform_real_distribution<double>& dist) {
+    double z = dist(rng) * 2.0 - 1.0;
+    double t = dist(rng) * 2.0 * 3.14159265358979323846;
+    double r = sqrt(1.0 - z * z);
+    return Vector3_d(r * cos(t), r * sin(t), z);
+}
+
+static Vector3_f PickStarColor(std::mt19937& rng, std::uniform_real_distribution<float>& dist) {
+    float r = dist(rng);
+    if (r < 0.33f) return Vector3_f(1.0f, 1.0f, 1.0f);
+    else if (r < 0.66f) return Vector3_f(1.0f, 0.95f, 0.8f);
+    else return Vector3_f(0.7f, 0.8f, 1.0f);
+}
+
+StarfieldRenderer::StarfieldRenderer() {}
+StarfieldRenderer::~StarfieldRenderer() { Cleanup(); }
+
+void StarfieldRenderer::Initialize() {
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+}
+
+void StarfieldRenderer::GenerateStars(int numStars, const Vector3_d& cameraPos) {
+    starCount = numStars;
+
+    std::vector<StarVertex> stars(numStars);
+    std::mt19937 rng(12345);
+    std::uniform_real_distribution<double> distDouble(0.0, 1.0);
+    std::uniform_real_distribution<float> distFloat(0.0f, 1.0f);
+
+    for (int i = 0; i < numStars; ++i) {
+        Vector3_d dir = RandomUnitSphere(rng, distDouble);
+        double dist = Lerp(1e5, 1e7, distDouble(rng));
+        Vector3_d worldPos = dir * dist;
+        Vector3_d relativePos = worldPos - cameraPos;
+
+        stars[i].position = Vector3_f((float)relativePos.x, (float)relativePos.y, (float)relativePos.z);
+        stars[i].brightness = distFloat(rng);
+        stars[i].color = PickStarColor(rng, distFloat);
+    }
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, stars.size() * sizeof(StarVertex), stars.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(StarVertex), (void*)offsetof(StarVertex, position));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(StarVertex), (void*)offsetof(StarVertex, brightness));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(StarVertex), (void*)offsetof(StarVertex, color));
+
+    glBindVertexArray(0);
+}
+
+void StarfieldRenderer::Render(const Matrix4x4_f& viewProj, float time) {
+    glBindVertexArray(vao);
+    // Assuming your ShaderAPI_GL has a method to bind a shader by name
+    g_pShaderAPI->BindShader("starfield");
+    g_pShaderAPI->SetUniformMatrix4fv("u_ViewProj", viewProj);
+    g_pShaderAPI->SetUniform1f("u_Time", time);
+
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glDrawArrays(GL_POINTS, 0, starCount);
+    glBindVertexArray(0);
+}
+
+void StarfieldRenderer::Cleanup() {
+    if (vbo) {
+        glDeleteBuffers(1, &vbo);
+        vbo = 0;
+    }
+    if (vao) {
+        glDeleteVertexArrays(1, &vao);
+        vao = 0;
+    }
+}
