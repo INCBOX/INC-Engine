@@ -10,7 +10,7 @@
 
 struct StaticMeshInstance {
     std::unique_ptr<IGPUMesh> mesh;
-    Mat4_f transform;
+    Matrix4x4_f transform;
 };
 
 void ClearStaticGeometry();

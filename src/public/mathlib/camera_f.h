@@ -5,10 +5,10 @@
 
 // Camera class for handling position, rotation, and view matrix calculations.
 // Supports mouse look and WASD movement on a flat plane.
-class Camera
+class Camera_f
 {
 public:
-    Camera();
+    Camera_f();
 
     // Update camera orientation and position based on input
     void Update(float deltaTime, const Uint8* keystate, int mouseDX, int mouseDY);

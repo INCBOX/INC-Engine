@@ -8,7 +8,7 @@
 // m_OnGround = true; 
 
 Player::Player() : m_Position(0, 0, 0), m_Velocity(0, 0, 0) {
-    m_Camera.SetPosition(m_Position + Vec3_f(0, m_PlayerHeight, 0));
+    m_Camera_f.SetPosition(m_Position + Vector3_f(0, m_PlayerHeight, 0));
     m_Movement.m_OnGround = true; // Initialize here (Player is friend of MovementPhysics)
 }
 
@@ -20,21 +20,21 @@ void Player::Update(float dt, const Input& input) {
     int mouseDX = input.GetMouseDeltaX();
     int mouseDY = input.GetMouseDeltaY();
 
-    m_Camera.AddYaw(mouseDX * m_MouseSensitivity);
-    m_Camera.AddPitch(-mouseDY * m_MouseSensitivity); // invert Y if desired
+    m_Camera_f.AddYaw(mouseDX * m_MouseSensitivity);
+    m_Camera_f.AddPitch(-mouseDY * m_MouseSensitivity); // invert Y if desired
 
     // Clamp pitch to prevent flipping
-    m_Camera.ClampPitch(-89.9f, 89.9f);
+    m_Camera_f.ClampPitch(-89.9f, 89.9f);
 
     // Calculate forward/right vectors
-    Vec3_f forward = m_Camera.GetForwardVector();
-    Vec3_f right = m_Camera.GetRightVector();
+    Vector3_f forward = m_Camera_f.GetForwardVector();
+    Vector3_f right = m_Camera_f.GetRightVector();
 
     // Apply movement input, passing the m_OnGround state from MovementPhysics
     m_Movement.Update(dt, input, m_Position, m_Velocity, forward, right, m_Movement.m_OnGround);
 
     // Update camera position to match player head
-    m_Camera.SetPosition(m_Position + Vec3_f(0, m_PlayerHeight, 0));
+    m_Camera_f.SetPosition(m_Position + Vector3_f(0, m_PlayerHeight, 0));
 
-    m_Camera.UpdateOrientation(); // PLAYER CONTROLS CAMERA NOW
+    m_Camera_f.UpdateOrientation(); // PLAYER CONTROLS CAMERA NOW
 }

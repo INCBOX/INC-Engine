@@ -24,10 +24,10 @@ public:
     void OnResize(int width, int height) override;
     void PrepareFrame(int width, int height) override;
 
-    void SetViewMatrix(const Mat4_f& viewMatrix) override;
-    void SetProjectionMatrix(const Mat4_f& projMatrix) override;
+    void SetViewMatrix(const Matrix4x4_f& viewMatrix) override;
+    void SetProjectionMatrix(const Matrix4x4_f& projMatrix) override;
 
-    void DrawMesh(const IGPUMesh& mesh, const Mat4_f& modelMatrix) override;
+    void DrawMesh(const IGPUMesh& mesh, const Matrix4x4_f& modelMatrix) override;
 	
 	// GEOMETRY
 	IGPUMesh* CreateMesh() override;
@@ -62,11 +62,11 @@ private:
     int m_MVPLocation = -1;
 
 	void UpdateViewProjectionMatrixIfNeeded();
-	void UpdateMVP(const Mat4_f& modelMatrix);
+	void UpdateMVP(const Matrix4x4_f& modelMatrix);
 
-    Mat4_f m_ViewMatrix;
-    Mat4_f m_ProjectionMatrix;
-    Mat4_f m_ViewProjectionMatrix;
+    Matrix4x4_f m_ViewMatrix;
+    Matrix4x4_f m_ProjectionMatrix;
+    Matrix4x4_f m_ViewProjectionMatrix;
     bool m_MVPDirty = true;
 	
     // STARFIELD renderer pointer

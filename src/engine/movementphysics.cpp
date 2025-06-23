@@ -13,14 +13,14 @@ MovementPhysics::MovementPhysics()
       m_JumpPressedLastFrame(false)
 {}
 
-void MovementPhysics::Update(float dt, const Input& input, Vec3_f& position, Vec3_f& velocity, const Vec3_f& forward, const Vec3_f& right, bool onGround)
+void MovementPhysics::Update(float dt, const Input& input, Vector3_f& position, Vector3_f& velocity, const Vector3_f& forward, const Vector3_f& right, bool onGround)
 {
     m_OnGround = onGround;
     const Uint8* keys = input.GetKeyState();
 
-    Vec3_f wishDir(0, 0, 0);
-    if (keys[SDL_SCANCODE_W]) wishDir += Vec3_f(forward.x, 0, forward.z);
-    if (keys[SDL_SCANCODE_S]) wishDir -= Vec3_f(forward.x, 0, forward.z);
+    Vector3_f wishDir(0, 0, 0);
+    if (keys[SDL_SCANCODE_W]) wishDir += Vector3_f(forward.x, 0, forward.z);
+    if (keys[SDL_SCANCODE_S]) wishDir -= Vector3_f(forward.x, 0, forward.z);
     if (keys[SDL_SCANCODE_A]) wishDir -= right;
     if (keys[SDL_SCANCODE_D]) wishDir += right;
 
@@ -51,7 +51,7 @@ void MovementPhysics::Update(float dt, const Input& input, Vec3_f& position, Vec
     position += velocity * dt;
 }
 
-void MovementPhysics::ApplyFriction(float dt, Vec3_f& velocity)
+void MovementPhysics::ApplyFriction(float dt, Vector3_f& velocity)
 {
     float speed = velocity.Length();
     if (speed < 0.01f) return;
@@ -63,7 +63,7 @@ void MovementPhysics::ApplyFriction(float dt, Vec3_f& velocity)
     velocity = velocity.Normalize() * newSpeed;
 }
 
-void MovementPhysics::ApplyAcceleration(float dt, const Vec3_f& wishDir, float wishSpeed, Vec3_f& velocity)
+void MovementPhysics::ApplyAcceleration(float dt, const Vector3_f& wishDir, float wishSpeed, Vector3_f& velocity)
 {
     float currentSpeed = velocity.Dot(wishDir);
     float addSpeed = wishSpeed - currentSpeed;
@@ -78,12 +78,12 @@ void MovementPhysics::ApplyAcceleration(float dt, const Vec3_f& wishDir, float w
     velocity += wishDir * accelSpeed;
 }
 
-void MovementPhysics::ApplyGravity(float dt, Vec3_f& velocity)
+void MovementPhysics::ApplyGravity(float dt, Vector3_f& velocity)
 {
     velocity.y -= m_Gravity * dt;
 }
 
-void MovementPhysics::HandleJump(Vec3_f& velocity)
+void MovementPhysics::HandleJump(Vector3_f& velocity)
 {
     velocity.y = m_JumpForce;
 }

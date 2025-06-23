@@ -1,16 +1,16 @@
 #pragma once
 
 #include "mathlib/matrix4x4_f.h" 	// CPU-side Matrix class
-#include "mathlib/vector3_f.h"   	// CPU-side Vec3_f class
+#include "mathlib/vector3_f.h"   	// CPU-side Vector3_f class
 
 // GPU-aligned float4x4 matrix — matches GLSL std140 layout
-struct GpuMat4_f
+struct GpuMatrix4x4_f
 {
     float m[16]; // column-major order for GLSL mat4
 };
 
 // GPU vec3 (with padding to 16 bytes for std140 compatibility)
-struct GpuVec3_f
+struct GpuVector3_f
 {
     float x, y, z, pad;
 };
@@ -18,15 +18,15 @@ struct GpuVec3_f
 // Combined transform block (for uniform buffer upload)
 struct GpuTransformData
 {
-    GpuMat4_f model;
-    GpuMat4_f view;
-    GpuMat4_f proj;
+    GpuMatrix4x4_f model;
+    GpuMatrix4x4_f view;
+    GpuMatrix4x4_f proj;
 };
 
 // Converts your CPU-side Matrix to GPU-ready flat matrix
-inline GpuMat4_f ConvertToGpu(const Mat4_f& mat)
+inline GpuMatrix4x4_f ConvertToGpu(const Matrix4x4_f& mat)
 {
-    GpuMat4_f result;
+    GpuMatrix4x4_f result;
     for (int col = 0; col < 4; ++col)
     {
         for (int row = 0; row < 4; ++row)
@@ -37,8 +37,8 @@ inline GpuMat4_f ConvertToGpu(const Mat4_f& mat)
     return result;
 }
 
-// Converts Vec3_f to padded GpuVec3_f
-inline GpuVec3_f ConvertToGpu(const Vec3_f& vec)
+// Converts Vector3_f to padded GpuVector3_f
+inline GpuVector3_f ConvertToGpu(const Vector3_f& vec)
 {
     return { vec.x, vec.y, vec.z, 0.0f };
 }

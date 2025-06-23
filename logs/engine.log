@@ -1,2 +1,9 @@
 [Engine] Log started
+[LoadStaticGeometryFromMap] Clearing previous static geometry.
+[LoadStaticGeometryFromMap] Creating sphere at (0.00, 8.00, 0.00) with radius 4.00, slices 24, stacks 24.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 1
+[LoadStaticGeometryFromMap] Creating sphere at (50.00, 10.00, 50.00) with radius 8.00, slices 32, stacks 32.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 2
+[LoadStaticGeometryFromMap] Creating sphere at (-60.00, 20.00, -60.00) with radius 12.00, slices 32, stacks 32.
+[LoadStaticGeometryFromMap] Mesh added. Total static meshes: 3
 [Engine] Shutdown complete

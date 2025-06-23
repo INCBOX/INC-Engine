@@ -56,9 +56,9 @@ bool GPURenderBackendGL::Init(void* windowHandle, int /*width*/, int /*height*/)
 
 	// Initial MVP state
     m_MVPDirty = true;
-    m_ViewMatrix = Mat4_f::Identity();
-    m_ProjectionMatrix = Mat4_f::Identity();
-    m_ViewProjectionMatrix = Mat4_f::Identity();
+    m_ViewMatrix = Matrix4x4_f::Identity();
+    m_ProjectionMatrix = Matrix4x4_f::Identity();
+    m_ViewProjectionMatrix = Matrix4x4_f::Identity();
 	
     // --- STARFIELD STARTS HERE ---
 	m_GLStarfieldRenderer = std::make_unique<GLStarfieldRenderer>();
@@ -95,7 +95,7 @@ void GPURenderBackendGL::BeginFrame() {
     UpdateViewProjectionMatrixIfNeeded();
 
     m_Shader->Use(); // Bind shader once per frame
-	UpdateMVP(Mat4_f::Identity()); // Upload clean MVP for cases with no model (like skybox)
+	UpdateMVP(Matrix4x4_f::Identity()); // Upload clean MVP for cases with no model (like skybox)
 }
 
 void GPURenderBackendGL::PrepareFrame(int width, int height) {
@@ -104,7 +104,7 @@ void GPURenderBackendGL::PrepareFrame(int width, int height) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    SetProjectionMatrix(Mat4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
+    SetProjectionMatrix(Matrix4x4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
 	UpdateViewProjectionMatrixIfNeeded();
 }
 
@@ -116,23 +116,23 @@ void GPURenderBackendGL::OnResize(int width, int height) {
     glViewport(0, 0, width, height);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    SetProjectionMatrix(Mat4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
+    SetProjectionMatrix(Matrix4x4_f::Perspective(30.0f, aspect, 0.1f, 100.0f));
 	UpdateViewProjectionMatrixIfNeeded();
 }
 
 // MVP
-void GPURenderBackendGL::SetViewMatrix(const Mat4_f& viewMatrix) {
+void GPURenderBackendGL::SetViewMatrix(const Matrix4x4_f& viewMatrix) {
     m_ViewMatrix = viewMatrix;
     m_MVPDirty = true;
 }
 
-void GPURenderBackendGL::SetProjectionMatrix(const Mat4_f& projMatrix) {
+void GPURenderBackendGL::SetProjectionMatrix(const Matrix4x4_f& projMatrix) {
     m_ProjectionMatrix = projMatrix;
     m_MVPDirty = true;
 }
 
 // MESH
-void GPURenderBackendGL::DrawMesh(const IGPUMesh& mesh, const Mat4_f& modelMatrix) {
+void GPURenderBackendGL::DrawMesh(const IGPUMesh& mesh, const Matrix4x4_f& modelMatrix) {
     m_Shader->Use();  // Ensure mesh shader is active
     UpdateMVP(modelMatrix); // Upload MVP
 
@@ -153,7 +153,7 @@ void GPURenderBackendGL::UpdateViewProjectionMatrixIfNeeded() {
 }
 
 // CENTRALIZED MVP
-void GPURenderBackendGL::UpdateMVP(const Mat4_f& modelMatrix) {
-    Mat4_f mvp = m_ViewProjectionMatrix * modelMatrix;
+void GPURenderBackendGL::UpdateMVP(const Matrix4x4_f& modelMatrix) {
+    Matrix4x4_f mvp = m_ViewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }

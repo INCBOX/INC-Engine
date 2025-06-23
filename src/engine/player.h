@@ -10,14 +10,14 @@ public:
     Player();
 
     void Update(float dt, const Input& input);
-    Camera& GetCamera() { return m_Camera; }
+    Camera_f& GetCamera_f() { return m_Camera_f; }
 	
 	MovementPhysics m_Movement;
 
 private:
-    Vec3_f m_Position;
-    Vec3_f m_Velocity;
-    Camera m_Camera;
+    Vector3_f m_Position;
+    Vector3_f m_Velocity;
+    Camera_f m_Camera_f;
 
     float m_PlayerHeight = 1.8f; // player eye height in meters
 

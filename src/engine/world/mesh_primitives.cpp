@@ -5,7 +5,7 @@
 
 namespace geometry {
 
-void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vec3_f& size) {
+void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector3_f& size) {
     float sx = size.x * 0.5f, sy = size.y * 0.5f, sz = size.z * 0.5f;
 
     constexpr int VERT_COUNT = 8;
@@ -29,7 +29,7 @@ void CreateCubeMesh(std::vector<float>& verts, std::vector<unsigned int>& indice
     indices.assign(cubeIndices, cubeIndices + INDEX_COUNT);
 }
 
-void CreatePlaneMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vec3_f& size) {
+void CreatePlaneMesh(std::vector<float>& verts, std::vector<unsigned int>& indices, const Vector3_f& size) {
     float sx = size.x * 0.5f, sz = size.z * 0.5f;
 
     constexpr int VERT_COUNT = 4;
