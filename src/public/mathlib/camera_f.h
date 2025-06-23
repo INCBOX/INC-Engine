@@ -45,6 +45,8 @@ public:
 	// CAMERA MVP SETUP
 	Matrix4x4_f GetProjectionMatrix(float aspectRatio) const;
 
+	void UpdateRotationOnly(float deltaTime, int mouseDX, int mouseDY);
+
 private:
     Vector3_f position;       // Camera position in world space
     Vector3_f forward;        // Forward direction vector (normalized)

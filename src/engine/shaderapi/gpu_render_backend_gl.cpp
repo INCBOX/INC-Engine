@@ -5,6 +5,9 @@
 #include "shaderapi/gl_mesh.h"
 #include "shaderapi/igpu_mesh.h"
 
+#include "engine_globals.h" // THIS IS KINDA WRONG...
+#include "camera_manager.h"	// THIS IS OKKO
+
 #include <glad/glad.h>
 #include <iostream>
 #include "mathlib/matrix4x4_f.h"
@@ -95,6 +98,7 @@ void GPURenderBackendGL::BeginFrame() {
     UpdateViewProjectionMatrixIfNeeded();
 
     m_Shader->Use(); // Bind shader once per frame
+	SetViewMatrix(g_CameraManager.GetLocalViewMatrix());
 	UpdateMVP(Matrix4x4_f::Identity()); // Upload clean MVP for cases with no model (like skybox)
 }
 

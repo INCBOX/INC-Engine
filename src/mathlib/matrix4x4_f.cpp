@@ -47,8 +47,7 @@ Matrix4x4_f Matrix4x4_f::LookAt(const Vector3_f& eye, const Vector3_f& center, c
 
 Matrix4x4_f Matrix4x4_f::Perspective(float fovYDegrees, float aspect, float nearZ, float farZ) {
     float fovRad = fovYDegrees * 3.14159265f / 180.0f;
-    // std::cout << "[Matrix4x4_f::Perspective] FOV radians: " << fovRad << ", aspect: " << aspect << "\n";
-    float f = 1.0f / tan(fovRad / 2.0f);
+    float f = 1.0f / std::tanf(fovRad / 2.0f);
 
     Matrix4x4_f result = {};
 
@@ -57,6 +56,8 @@ Matrix4x4_f Matrix4x4_f::Perspective(float fovYDegrees, float aspect, float near
     result[2][2] = (farZ + nearZ) / (nearZ - farZ);
     result[2][3] = -1.0f;
     result[3][2] = (2.0f * farZ * nearZ) / (nearZ - farZ);
+    result[3][3] = 0.0f;
+
     return result;
 }
 
@@ -74,4 +75,12 @@ Matrix4x4_f Matrix4x4_f::Orthographic(float left, float right, float bottom, flo
     result[3][3] = 1.0f;
 
     return result;
+}
+
+Matrix4x4_f Matrix4x4_f::Translate(const Vector3_f& offset) {
+    Matrix4x4_f mat = Matrix4x4_f::Identity();
+    mat[3][0] = offset.x;
+    mat[3][1] = offset.y;
+    mat[3][2] = offset.z;
+    return mat;
 }

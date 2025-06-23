@@ -15,21 +15,18 @@ Vector3_d Vector3_d::Cross(const Vector3_d& other) const {
 
 Vector3_d Vector3_d::Normalize() const {
     double len = std::sqrt(x * x + y * y + z * z);
-    if (len == 0.0) return Vector3_d(0.0, 0.0, 0.0);
+    if (len == 0.0) return Vector3_d(0, 0, 0);
     return Vector3_d(x / len, y / len, z / len);
 }
 
-// CAMERA, PLAYER, STUFF
 double Vector3_d::Length() const {
     return std::sqrt(x * x + y * y + z * z);
 }
 
-// MOVEMENT PHYSCIS: for faster length comparisons (avoid sqrt)
 double Vector3_d::LengthSqr() const {
     return x * x + y * y + z * z;
 }
 
-// useful for tiny velocity checks and optimization
 bool Vector3_d::IsZero(double epsilon) const {
     return LengthSqr() < epsilon * epsilon;
 }
@@ -46,10 +43,9 @@ Vector3_d& Vector3_d::operator/=(double f) {
     return *this;
 }
 
-// used for friction, sliding, etc)
 Vector3_d Vector3_d::ProjectOnto(const Vector3_d& other) const {
     double otherLenSqr = other.LengthSqr();
-    if (otherLenSqr == 0.0) return Vector3_d(0.0, 0.0, 0.0);
+    if (otherLenSqr == 0.0) return Vector3_d(0, 0, 0);
     double dot = this->Dot(other);
     return other * (dot / otherLenSqr);
 }

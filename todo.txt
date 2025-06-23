@@ -1,10 +1,6 @@
 
-	Step 1: Procedural starfield + nebula background (shader or skybox).
-	
-	Step 2: Sector-based space chunking for object management.
-	
-	Step 3: Procedural planets, dynamic props, etc.
-	
+
+	IMPROVE ENGINE GLOBALS.. OR GET RID OF IT?..
 	
 	
 [MED] IGPUMesh forward declaration error in static_mesh_loader.cpp
@@ -14,8 +10,76 @@
 [LOW] Clean up g_StarfieldMesh lifetime
     - WHY: Linker error due to undefined symbol.
     - ACTION: Define it in mesh_primitives.cpp, declare properly in a header.
+	
+	
+	
+	
+Step 1: Procedural starfield + nebula background (shader).
 
 
+
+
+---------------
+1 Modular Precision System MATHLIB modular 
+Next-Level: Optional precision layer macro
+mathlib_precision.h
+convert_utils.h
+
+2 Double-Precision Camera System with floating-origin - Camera_f and Camera_d
+Goal: Eliminate float precision errors when the player/camera is millions of units from origin.
+
+	- Camera_d moves through real world (light-years, kilometers)
+	- CameraManager computes offset from that
+	- Camera_f is locked to (0,0,0) or local offset and used for gameplay
+	- All rendering systems use CameraManager::GetWorldCamera() for global visuals, and CameraManager::GetLocalCamera() for gameplay visuals
+
+CameraManager 
+	Floating origin system
+	Keep your local scene centered near 0,0,0, while rendering based on real planetary/starlight coordinates
+	Starfield with true parallax
+
+	A high-precision Camera_d for world
+	A float Camera_f for gameplay
+	- Player’s transform must use Vector3_d
+
+IMPORTANT: need to sync camera_d → camera_f
+
+---------------
+
+STEP 3 – Procedural Starfield System
+Once the camera works at double-precision:
+Use Vector3_d for star positions (thousands to millions)
+Stars only render if they're within camera culling bounds
+You render them relative to camera origin, and feed float version to GPU
+Use a point sprite shader, no geometry, millions of stars with zero overdraw
+-------------
+
+✨ STARFIELD – Ongoing Improvements
+- [ ] Add procedural 3D star layout (not just background)
+- [ ] Implement parallax and camera-relative depth logic
+- [ ] Physically accurate star brightness + distance falloff
+- [ ] Support millions of stars with zero overdraw
+- [ ] Optional: Depth layers (e.g., nebula behind star layer)
+
+dynamic 3D stars with true parallax
+physically accurate brightness falloff over light-years
+procedural galaxy noise, color tinting, and depth layering
+camera-relative rendering to eliminate float precision errors
+millions of stars at zero performance cost
+🚀 Star Citizen–Style Starfield: Goals
+You’re not looking for a bokeh blobfield — you’re aiming for this:
+Infinite starfield with real spatial layout
+Zero overdraw & fast rendering, even with 10,000+ stars
+Sharp, twinkling point stars
+Parallax with camera movement
+Depth sorting (optional: far nebula behind stars)
+
+
+
+
+
+Step 2: Sector-based space chunking for object management.
+Step 3: Procedural planets, dynamic props, etc.
 
 
 🚀 INC Planetary Engine – High-Fidelity TODO List
@@ -84,12 +148,6 @@
 - [ ] Link physics to planetary surface for walking/flying
 - [ ] Handle collision + landing on planets
 
-✨ STARFIELD – Ongoing Improvements
-- [ ] Add procedural 3D star layout (not just background)
-- [ ] Implement parallax and camera-relative depth logic
-- [ ] Physically accurate star brightness + distance falloff
-- [ ] Support millions of stars with zero overdraw
-- [ ] Optional: Depth layers (e.g., nebula behind star layer)
 
 🧠 FUTURE (after planetary system is stable)
 - [ ] Galaxy map & fast travel
@@ -101,30 +159,7 @@
 
 
 
-Star Citizen gives you:
 
-dynamic 3D stars with true parallax
-
-physically accurate brightness falloff over light-years
-
-procedural galaxy noise, color tinting, and depth layering
-
-camera-relative rendering to eliminate float precision errors
-
-millions of stars at zero performance cost
-
-🚀 Star Citizen–Style Starfield: Goals
-You’re not looking for a bokeh blobfield — you’re aiming for this:
-
-Infinite starfield with real spatial layout
-
-Zero overdraw & fast rendering, even with 10,000+ stars
-
-Sharp, twinkling point stars
-
-Parallax with camera movement
-
-Depth sorting (optional: far nebula behind stars)
 
 
 

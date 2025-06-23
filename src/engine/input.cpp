@@ -9,7 +9,7 @@ void Input::Init() {
 }
 
 void Input::Shutdown() {
-    SDL_SetRelativeMouseMode(SDL_FALSE);
+    // SDL_SetRelativeMouseMode(SDL_FALSE); // DISABLED: don't turn off relative mode during gameplay
 }
 
 void Input::Update() {

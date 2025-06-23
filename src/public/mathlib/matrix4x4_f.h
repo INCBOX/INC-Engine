@@ -16,6 +16,8 @@ struct Matrix4x4_f {
 
 	// FOR SHADOWS
     static Matrix4x4_f Orthographic(float left, float right, float bottom, float top, float nearZ, float farZ);
+	
+	static Matrix4x4_f Translate(const Vector3_f& offset);
 };
 
 inline Matrix4x4_f operator*(const Matrix4x4_f& a, const Matrix4x4_f& b)

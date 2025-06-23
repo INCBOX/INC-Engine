@@ -124,3 +124,10 @@ Matrix4x4_f Camera_f::GetProjectionMatrix(float aspect) const {
 	
     return Matrix4x4_f::Perspective(fovY, aspect, m_zNear, m_zFar);
 }
+
+void Camera_f::UpdateRotationOnly(float deltaTime, int mouseDX, int mouseDY) {
+    yaw += mouseDX * mouseSensitivity;
+    pitch -= mouseDY * mouseSensitivity;
+    ClampPitch(-89.0f, 89.0f);
+    UpdateOrientation();
+}

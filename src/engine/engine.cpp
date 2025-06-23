@@ -22,10 +22,16 @@
 #include "world/static_mesh_loader.h" 		// Static geometry loader (JSON)
 
 #include "input.h"
-#include "mathlib/camera_f.h"
+#include "camera_manager.h"
 #include "player.h"
 
 using json = nlohmann::json;
+
+CameraManager g_CameraManager;
+
+CameraManager& GetCameraManager() {
+    return g_CameraManager;
+}
 
 //-----------------------------------------------------------------------------
 // DEBUG -O3 -DNDEBUG -march=native,
@@ -39,7 +45,6 @@ using json = nlohmann::json;
 //-----------------------------------------------------------------------------
 // Globals
 //-----------------------------------------------------------------------------
-static Camera_f g_Camera_f;
 static Input g_Input;
 static Player g_Player;
 
@@ -200,8 +205,8 @@ double fpsTimer = 0.0;
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
-    g_Input.Update(); // Reset and update input states, including mouse deltas
-    
+    g_Input.Update(); // Update input states and mouse deltas
+
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cout << "[Engine] SDL_QUIT event received\n";
@@ -209,15 +214,19 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
         }
     }
 
-    // Input state and mouse movement
+    // Get current input states
     const Uint8* keystate = g_Input.GetKeyState();
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
 
-    // Update camera using input & deltaTime
-    g_Camera_f.Update(deltaTime, keystate, mouseDeltaX, mouseDeltaY);
+    // Update player position and velocity (handles movement physics and syncs camera position)
+    g_Player.Update(deltaTime, g_Input);
 
-    int width, height;    // Get current window size
+    // Update only the camera rotation (yaw/pitch) using mouse deltas
+    // This keeps the camera orientation responsive to mouse movement
+    g_CameraManager.UpdateRotationOnly(deltaTime, mouseDeltaX, mouseDeltaY);
+
+    int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
 
     if (!g_Renderer) return false;
@@ -225,28 +234,20 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     g_Renderer->BeginFrame();
     g_Renderer->PrepareFrame(width, height);
 
-    // --- STARFIELD START ---
+    // --- STARFIELD RENDERING ---
     static float totalTime = 0.0f;
     totalTime += deltaTime;
-    
-    // Disable depth write and test just for starfield rendering
+
     g_Renderer->SetDepthMaskEnabled(false);
     g_Renderer->SetDepthTestEnabled(false);
-    
     g_Renderer->RenderStarfield(totalTime);
-    
-    // Restore depth write and test for rest of the scene
     g_Renderer->SetDepthMaskEnabled(true);
     g_Renderer->SetDepthTestEnabled(true);
 
-    // Update player logic with input
-    g_Player.Update(deltaTime, g_Input);
-    
-    // Setup view matrix for rendering
-    Matrix4x4_f view = g_Player.GetCamera_f().GetViewMatrix();
-    g_Renderer->SetViewMatrix(view);
+    // Use floating origin local view matrix from CameraManager for rendering
+    g_Renderer->SetViewMatrix(g_CameraManager.GetLocalViewMatrix());
 
-    // Draw static geometry loaded from map
+    // Render static geometry
     const auto& staticGeometry = GetStaticGeometry();
     for (const auto& instance : staticGeometry) {
         g_Renderer->DrawMesh(*instance.mesh, instance.transform);
@@ -334,5 +335,5 @@ DLL_EXPORT void STDCALL Engine_Run() {
 // Global camera accessor
 //-----------------------------------------------------------------------------
 Camera_f& GetMainCamera_f() {
-    return g_Camera_f;
+    return g_CameraManager.GetCamera_f();
 }

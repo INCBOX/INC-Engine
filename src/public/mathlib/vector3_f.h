@@ -24,7 +24,12 @@ public:
         z -= v.z;
         return *this;
     }
-    
+	
+    // unary minus operator:
+    Vector3_f operator-() const {
+        return Vector3_f(-x, -y, -z);
+    }
+
     Vector3_f& operator*=(float f); // physics math used for movement physics
     Vector3_f& operator/=(float f); // physics math
     Vector3_f ProjectOnto(const Vector3_f& other) const; // (used for friction, sliding, etc)

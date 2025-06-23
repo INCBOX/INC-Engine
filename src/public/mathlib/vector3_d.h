@@ -25,9 +25,9 @@ public:
         return *this;
     }
 
-    Vector3_d& operator*=(double f); // physics math used for movement physics
-    Vector3_d& operator/=(double f); // physics math
-    Vector3_d ProjectOnto(const Vector3_d& other) const; // (used for friction, sliding, etc):
+    Vector3_d& operator*=(double f);
+    Vector3_d& operator/=(double f);
+    Vector3_d ProjectOnto(const Vector3_d& other) const;
 
     double* Base() { return &x; }
     const double* Base() const { return &x; }
@@ -37,7 +37,7 @@ public:
     Vector3_d Cross(const Vector3_d& other) const;
     Vector3_d Normalize() const;
 
-    bool IsZero(double epsilon = 1e-12) const; // smaller epsilon due to double precision
+    bool IsZero(double epsilon = 1e-12) const;
 };
 
-using Vec3_d = Vector3_d; // Alias for double precision vector3
+using Vec3_d = Vector3_d;

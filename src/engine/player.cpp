@@ -1,40 +1,45 @@
-// Player.cpp
-#include "mathlib/vector3_f.h"
 #include "player.h"
-#include <SDL.h>
+#include "camera_manager.h"
 
+extern CameraManager g_CameraManager; // Defined somewhere globally
 
-// m_Movement.m_OnGround = true;  
-// m_OnGround = true; 
-
-Player::Player() : m_Position(0, 0, 0), m_Velocity(0, 0, 0) {
-    m_Camera_f.SetPosition(m_Position + Vector3_f(0, m_PlayerHeight, 0));
-    m_Movement.m_OnGround = true; // Initialize here (Player is friend of MovementPhysics)
+Player::Player()
+    : m_Position(0, 0, 0),
+      m_Velocity(0, 0, 0),
+      m_Position_d(0.0, 0.0, 0.0),
+      m_Velocity_d(0.0, 0.0, 0.0),
+      m_PlayerHeight(1.8f),
+      m_MouseSensitivity(0.1f)
+{
+    // Set initial camera position for float camera by default
+    g_CameraManager.GetCamera_f().SetPosition(m_Position + Vector3_f(0, m_PlayerHeight, 0));
 }
 
-void Player::Update(float dt, const Input& input) {
-    // For now, set on ground status before update
-    m_Movement.m_OnGround = true;  // or update properly with collision later
+void Player::Update(float dt, const Input& input)
+{
+    auto& cam = g_CameraManager.GetCamera_d(); // High-precision world camera
 
-    // Handle rotation from mouse deltas
-    int mouseDX = input.GetMouseDeltaX();
-    int mouseDY = input.GetMouseDeltaY();
+    // Compute camera-relative directions
+    Vector3_d fwd_d = cam.GetForwardVector();
+    Vector3_d right_d = cam.GetRightVector();
 
-    m_Camera_f.AddYaw(mouseDX * m_MouseSensitivity);
-    m_Camera_f.AddPitch(-mouseDY * m_MouseSensitivity); // invert Y if desired
+    Vector3_f fwd_f = Vector3_f(float(fwd_d.x), 0.0f, float(fwd_d.z)).Normalize();
+    Vector3_f right_f = Vector3_f(float(right_d.x), 0.0f, float(right_d.z)).Normalize();
 
-    // Clamp pitch to prevent flipping
-    m_Camera_f.ClampPitch(-89.9f, 89.9f);
+    Vector3_f pos_f(float(m_Position_d.x), float(m_Position_d.y), float(m_Position_d.z));
+    Vector3_f vel_f(float(m_Velocity_d.x), float(m_Velocity_d.y), float(m_Velocity_d.z));
 
-    // Calculate forward/right vectors
-    Vector3_f forward = m_Camera_f.GetForwardVector();
-    Vector3_f right = m_Camera_f.GetRightVector();
+    // Simulate movement (assume always grounded for now)
+    m_Movement.Update(dt, input, pos_f, vel_f, fwd_f, right_f, true);
 
-    // Apply movement input, passing the m_OnGround state from MovementPhysics
-    m_Movement.Update(dt, input, m_Position, m_Velocity, forward, right, m_Movement.m_OnGround);
+    // Update back to double-precision
+    m_Position_d = Vector3_d(pos_f.x, pos_f.y, pos_f.z);
+    m_Velocity_d = Vector3_d(vel_f.x, vel_f.y, vel_f.z);
 
-    // Update camera position to match player head
-    m_Camera_f.SetPosition(m_Position + Vector3_f(0, m_PlayerHeight, 0));
+    // Move the world-space camera to match the player
+    Vector3_d eyePos = m_Position_d + Vector3_d(0.0, m_PlayerHeight, 0.0);
+    g_CameraManager.GetCamera_d().SetPosition(eyePos);
 
-    m_Camera_f.UpdateOrientation(); // PLAYER CONTROLS CAMERA NOW
+    // Rotate camera from input (but don't move it here)
+    g_CameraManager.UpdateRotationOnly(dt, input.GetMouseDeltaX(), input.GetMouseDeltaY());
 }
