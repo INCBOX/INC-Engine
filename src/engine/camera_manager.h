@@ -36,6 +36,12 @@ public:
 	
 	// IMPLEMENTED LATER!
 	void ApplyFloatingOrigin(Vector3_d newOrigin);
+	
+	
+	// FLOATING ORIGIN LOGIC
+	Vector3_d GetWorldOrigin() const;
+    void UpdateFloatingOrigin(const Vector3_d& playerPosition);
+    void ApplyFloatingOriginShift(const Vector3_d& delta);
 
 
 private:
@@ -45,7 +51,13 @@ private:
 	
     Camera_f m_Camera_f;    // float precision camera
     Camera_d m_Camera_d;    // double precision camera
+	
+	// FLOATING ORIGIN LOGIC
 	Vector3_d m_WorldOrigin = Vector3_d(0.0, 0.0, 0.0);
+	const double FloatingOriginThreshold = 1000.0; // meters; tune as needed
+
+	//////////
 	
     CameraPrecision activePrecision;
+
 };

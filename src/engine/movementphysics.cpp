@@ -16,6 +16,7 @@ MovementPhysics::MovementPhysics()
 void MovementPhysics::Update(float dt, const Input& input, Vector3_f& position, Vector3_f& velocity, const Vector3_f& forward, const Vector3_f& right, bool onGround)
 {
     m_OnGround = onGround;
+
     const Uint8* keys = input.GetKeyState();
 
     Vector3_f wishDir(0, 0, 0);
@@ -34,7 +35,6 @@ void MovementPhysics::Update(float dt, const Input& input, Vector3_f& position, 
         ApplyFriction(dt, velocity);
         ApplyAcceleration(dt, wishDir, wishSpeed, velocity);
 
-        // Jumping
         bool jumpPressed = keys[SDL_SCANCODE_SPACE];
         if (jumpPressed && !m_JumpPressedLastFrame)
             HandleJump(velocity);
@@ -44,12 +44,13 @@ void MovementPhysics::Update(float dt, const Input& input, Vector3_f& position, 
     else
     {
         ApplyGravity(dt, velocity);
-        ApplyAcceleration(dt, wishDir, wishSpeed, velocity); // air control
+        ApplyAcceleration(dt, wishDir, wishSpeed, velocity);
     }
 
     // Apply final velocity
     position += velocity * dt;
 }
+
 
 void MovementPhysics::ApplyFriction(float dt, Vector3_f& velocity)
 {

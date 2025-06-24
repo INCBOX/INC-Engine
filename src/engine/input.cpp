@@ -13,7 +13,7 @@ void Input::Shutdown() {
 }
 
 void Input::Update() {
-    SDL_PumpEvents();
+    SDL_PumpEvents(); // MOUSE MOVEMENT STUFF
     m_Keystate = SDL_GetKeyboardState(nullptr);
 
     // This gives smooth relative deltas regardless of screen edge

@@ -38,14 +38,20 @@ public:
     // Get the normalized right direction vector relative to the camera's forward vector
     Vector3_f GetRightVector() const;
 	
-	// PLAYER CONTROLS CAMERA
-	void UpdateOrientation(); // orientation only
-	///////////////////////////////////////////////
+
 	
 	// CAMERA MVP SETUP
 	Matrix4x4_f GetProjectionMatrix(float aspectRatio) const;
 
 	void UpdateRotationOnly(float deltaTime, int mouseDX, int mouseDY);
+	
+	// NEW
+	float GetYaw() const { return yaw; }
+	float GetPitch() const { return pitch; }
+	void SetYaw(float y) { yaw = y; }
+	void SetPitch(float p) { pitch = p; }
+	
+	void UpdateOrientation(); // recalculates forward/right/up
 
 private:
     Vector3_f position;       // Camera position in world space

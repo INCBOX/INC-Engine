@@ -214,17 +214,30 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
         }
     }
 
-    // Get current input states
+    // Force double precision camera for large scale
+    g_CameraManager.SetPrecision(CameraPrecision::Double);
+
+    // Get mouse deltas once after input update
     const Uint8* keystate = g_Input.GetKeyState();
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
 
-    // Update player position and velocity (handles movement physics and syncs camera position)
-    g_Player.Update(deltaTime, g_Input);
-
-    // Update only the camera rotation (yaw/pitch) using mouse deltas
-    // This keeps the camera orientation responsive to mouse movement
+    // Update camera rotation only on double camera
     g_CameraManager.UpdateRotationOnly(deltaTime, mouseDeltaX, mouseDeltaY);
+
+    // Sync float camera rotation from double camera once per frame
+    {
+        auto& cam_d = g_CameraManager.GetCamera_d();
+        auto& cam_f = g_CameraManager.GetCamera_f();
+
+        cam_f.SetYaw(static_cast<float>(cam_d.GetYaw()));
+        cam_f.SetPitch(static_cast<float>(cam_d.GetPitch()));
+        cam_f.ClampPitch(-89.9f, 89.9f);
+        cam_f.UpdateOrientation();
+    }
+
+    // Update player (movement and position syncing)
+    g_Player.Update(deltaTime, g_Input);
 
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);

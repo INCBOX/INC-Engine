@@ -20,33 +20,12 @@ Camera_f::Camera_f()
 // Update camera orientation and position based on input
 void Camera_f::Update(float deltaTime, const Uint8* keystate, int mouseDX, int mouseDY)
 {
-    // Update yaw and pitch based on mouse movement
-    yaw += mouseDX * mouseSensitivity;
-    pitch -= mouseDY * mouseSensitivity; // Subtract for natural up/down movement
-
-    // Clamp pitch to prevent the camera from flipping over
-    ClampPitch(-89.0f, 89.0f);
-
-    // Calculate the new forward vector from yaw and pitch
-    float radYaw = yaw * DEG2RAD;
-    float radPitch = pitch * DEG2RAD;
-    forward = Vector3_f(
-        cosf(radYaw) * cosf(radPitch),
-        sinf(radPitch),
-        sinf(radYaw) * cosf(radPitch)
-    ).Normalize();
-
-    // Calculate flat forward vector for movement (ignore vertical component)
-    Vector3_f flatForward = Vector3_f(forward.x, 0.0f, forward.z).Normalize();
-
-    // Calculate right vector as perpendicular to flat forward
-    Vector3_f right = flatForward.Cross(Vector3_f(0.0f, 1.0f, 0.0f)).Normalize();
-
-    // Movement input - WASD keys
-    if (keystate[SDL_SCANCODE_W]) position += flatForward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_S]) position -= flatForward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_A]) position -= right * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_D]) position += right * cameraSpeed * deltaTime;
+    // You don't use 'keystate' anymore because camera movement from keyboard is disabled
+    // To avoid warnings, mark unused:
+    (void)keystate;
+    (void)deltaTime; // If unused too
+    // Or simply remove parameters if safe to do so
+    UpdateRotationOnly(deltaTime, mouseDX, mouseDY);
 }
 
 // Get the view matrix used for rendering the scene from the camera's perspective
@@ -112,6 +91,11 @@ void Camera_f::UpdateOrientation()
         sinf(radPitch),
         sinf(radYaw) * cosf(radPitch)
     ).Normalize();
+
+    // Compute right and up vectors on the fly as needed
+    Vector3_f right = forward.Cross(Vector3_f(0.0f, 1.0f, 0.0f)).Normalize();
+    Vector3_f up = right.Cross(forward).Normalize();
+    // Store right/up if needed in class members
 }
 
 // MVP Setup FOR camera

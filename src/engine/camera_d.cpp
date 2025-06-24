@@ -15,27 +15,12 @@ Camera_d::Camera_d()
 
 void Camera_d::Update(double deltaTime, const Uint8* keystate, int mouseDX, int mouseDY)
 {
-    yaw += mouseDX * mouseSensitivity;
-    pitch -= mouseDY * mouseSensitivity;
-
-    ClampPitch(-89.0, 89.0);
-
-    double radYaw = yaw * DEG2RAD;
-    double radPitch = pitch * DEG2RAD;
-    forward = Vector3_d(
-        cos(radYaw) * cos(radPitch),
-        sin(radPitch),
-        sin(radYaw) * cos(radPitch)
-    ).Normalize();
-
-    Vector3_d flatForward = Vector3_d(forward.x, 0.0, forward.z).Normalize();
-
-    Vector3_d right = flatForward.Cross(Vector3_d(0.0, 1.0, 0.0)).Normalize();
-
-    if (keystate[SDL_SCANCODE_W]) position += flatForward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_S]) position -= flatForward * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_A]) position -= right * cameraSpeed * deltaTime;
-    if (keystate[SDL_SCANCODE_D]) position += right * cameraSpeed * deltaTime;
+    // You don't use 'keystate' anymore because camera movement from keyboard is disabled
+    // To avoid warnings, mark unused:
+    (void)keystate;
+    (void)deltaTime; // If unused too
+    // Or simply remove parameters if safe to do so
+    UpdateRotationOnly(deltaTime, mouseDX, mouseDY);
 }
 
 Matrix4x4_d Camera_d::GetViewMatrix() const
@@ -79,6 +64,7 @@ Vector3_d Camera_d::GetRightVector() const
     return forward.Cross(Vector3_d(0.0, 1.0, 0.0)).Normalize();
 }
 
+// PLAYER USES CAMERA
 void Camera_d::UpdateOrientation()
 {
     double radYaw = yaw * DEG2RAD;
@@ -89,8 +75,14 @@ void Camera_d::UpdateOrientation()
         sin(radPitch),
         sin(radYaw) * cos(radPitch)
     ).Normalize();
+
+    // Compute right and up vectors on the fly as needed
+    Vector3_d right = forward.Cross(Vector3_d(0.0, 1.0, 0.0)).Normalize();
+    Vector3_d up = right.Cross(forward).Normalize();
+    // If you need to store right/up, add members to the class for them
 }
 
+// MVP Setup FOR camera
 Matrix4x4_d Camera_d::GetProjectionMatrix(double aspect) const
 {
     double fovY = 2.0 * atan(tan(m_fovDegrees * 0.5 * DEG2RAD) / aspect) * (180.0 / 3.14159265358979323846);
@@ -99,8 +91,16 @@ Matrix4x4_d Camera_d::GetProjectionMatrix(double aspect) const
 
 void Camera_d::UpdateRotationOnly(double deltaTime, int mouseDX, int mouseDY)
 {
+    double sensitivity = 0.1; // adjust or pull from player
+
+    // Apply to internal yaw/pitch
     yaw += mouseDX * mouseSensitivity;
     pitch -= mouseDY * mouseSensitivity;
-    ClampPitch(-89.0, 89.0);
-    UpdateOrientation(); // recompute forward vector
+
+    // Clamp pitch if needed
+	if (pitch < -89.0) pitch = -89.0;
+	if (pitch > 89.0) pitch = 89.0;
+
+    // Recompute forward/right/up
+    UpdateOrientation();
 }

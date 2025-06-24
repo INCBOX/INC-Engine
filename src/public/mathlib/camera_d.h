@@ -23,13 +23,18 @@ public:
     Vector3_d GetForwardVector() const;
     Vector3_d GetRightVector() const;
 
-    // PLAYER CONTROLS CAMERA
-    void UpdateOrientation();
-
     // CAMERA MVP SETUP
     Matrix4x4_d GetProjectionMatrix(double aspectRatio) const;
 	
 	void UpdateRotationOnly(double dt, int mouseDX, int mouseDY);
+	
+	// NEW
+	double GetYaw() const { return yaw; }
+	double GetPitch() const { return pitch; }
+	void SetYaw(double y) { yaw = y; }
+	void SetPitch(double p) { pitch = p; }
+	
+	void UpdateOrientation(); // recalculates forward/right/up
 
 private:
     Vector3_d position;
