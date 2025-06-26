@@ -15,14 +15,18 @@
 #include "nlohmann/json.hpp"
 
 #include "engine_api.h"
-#include "engine_globals.h"				// access the main camera from anywhere in engine
+#include "engine_globals.h"              // access the main camera from anywhere in engine
 #include "engine_log.h"
-#include "shaderapi/gpu_render_backend.h" 		// Modular GPU Render Backendd
 
-#include "world/static_mesh_loader.h" 		// Static geometry loader (JSON)
+
+#include "shaderapi/gpu_render_interface.h"
+#include "shaderapi/gpu_render_backend.h"
+#include "world/static_mesh_loader.h"    // Static geometry loader (JSON)
 
 #include "input.h"
 #include "camera_manager.h"
+#include "mathlib/matrix4x4_f.h"
+
 #include "player.h"
 
 using json = nlohmann::json;
@@ -47,6 +51,7 @@ CameraManager& GetCameraManager() {
 //-----------------------------------------------------------------------------
 static Input g_Input;
 static Player g_Player;
+static SDL_Window* g_Window = nullptr;
 
 //-----------------------------------------------------------------------------
 // FileSystem DLL dynamic loading
@@ -59,10 +64,18 @@ static FS_GetGameDirFn FS_GetGameDir = nullptr;
 static FS_ResolvePathFn FS_ResolvePath = nullptr;
 
 //-----------------------------------------------------------------------------
-// SDL + ShaderAPI
+// ShaderAPI DLL dynamic loading
 //-----------------------------------------------------------------------------
-static SDL_Window* g_Window = nullptr;
-static IGPURenderInterface* g_Renderer = nullptr;
+static HMODULE g_ShaderAPIDLL = nullptr;
+
+typedef IGPURenderInterface* (*CreateGPUAPI_t)();
+typedef void (*DestroyGPUAPI_t)();
+
+static CreateGPUAPI_t pCreateGPUAPI = nullptr;
+static DestroyGPUAPI_t pDestroyGPUAPI = nullptr;
+// Don't extern from the DLL — define your own pointer here:
+static IGPURenderInterface* s_pGPURender = nullptr;
+
 
 //-----------------------------------------------------------------------------
 // Cross-platform export macros
@@ -93,8 +106,8 @@ bool LoadFileSystem() {
         return false;
     }
 
-    FS_GetGameDir = (FS_GetGameDirFn)GetProcAddress(g_FileSystemDLL, "FS_GetGameDir");
-    FS_ResolvePath = (FS_ResolvePathFn)GetProcAddress(g_FileSystemDLL, "FS_ResolvePath");
+    FS_GetGameDir = reinterpret_cast<FS_GetGameDirFn>(GetProcAddress(g_FileSystemDLL, "FS_GetGameDir"));
+    FS_ResolvePath = reinterpret_cast<FS_ResolvePathFn>(GetProcAddress(g_FileSystemDLL, "FS_ResolvePath"));
 
     if (!FS_GetGameDir || !FS_ResolvePath) {
         std::cerr << "[Engine] Failed to resolve FileSystem exports\n";
@@ -104,6 +117,29 @@ bool LoadFileSystem() {
     }
 
     std::cout << "[Engine] FileSystem loaded\n";
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// Load shaderapi.dll and get function pointers + global pointer
+//-----------------------------------------------------------------------------
+bool LoadShaderAPIDLL() {
+    g_ShaderAPIDLL = LoadLibraryA("bin/shaderapi.dll");
+    if (!g_ShaderAPIDLL) {
+        std::cerr << "[Engine] Failed to load shaderapi.dll\n";
+        return false;
+    }
+
+    pCreateGPUAPI = reinterpret_cast<CreateGPUAPI_t>(GetProcAddress(g_ShaderAPIDLL, "CreateGPUAPI"));
+    pDestroyGPUAPI = reinterpret_cast<DestroyGPUAPI_t>(GetProcAddress(g_ShaderAPIDLL, "DestroyGPUAPI"));
+
+    if (!pCreateGPUAPI || !pDestroyGPUAPI) {
+        std::cerr << "[Engine] Failed to get shaderapi exports\n";
+        FreeLibrary(g_ShaderAPIDLL);
+        g_ShaderAPIDLL = nullptr;
+        return false;
+    }
+
     return true;
 }
 
@@ -163,49 +199,43 @@ DLL_EXPORT void STDCALL Engine_Init() {
         1280, 720,
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
     );
-	
+
     if (!g_Window) {
         std::cerr << "[Engine] SDL_CreateWindow failed: " << SDL_GetError() << "\n";
         SDL_Quit();
         return;
     }
 
-    // Enable VSync for stable FPS and reduce tearing
-    // SDL_GL_SetSwapInterval(1); VSync
-
     // Enable relative mouse mode: grab and hide cursor for FPS controls
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-	SDL_SetWindowGrab(g_Window, SDL_TRUE);
-	SDL_ShowCursor(SDL_DISABLE);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_SetWindowGrab(g_Window, SDL_TRUE);
+    SDL_ShowCursor(SDL_DISABLE);
 
-    g_Renderer = CreateGPUAPI(); // Modular backend creation
-    if (!g_Renderer || !g_Renderer->Init(g_Window, 1280, 720)) {
-        std::cerr << "[Engine] ShaderAPI Init failed\n";
-		Engine_Shutdown(); // make sure SDL is cleaned
+    if (!LoadShaderAPIDLL()) {
+        std::cerr << "[Engine] Failed to load ShaderAPI DLL\n";
+        Engine_Shutdown();
         return;
     }
+	
+    // **THIS IS THE MEAL TIME: Create GPU render interface**
+    s_pGPURender = pCreateGPUAPI(); // Set it after loading the DLL
+	
+	if (!s_pGPURender || !s_pGPURender->Init(g_Window, 1280, 720)) {
+		printf("Failed to initialize GPU backend!\n");
+		return;
+	}
 
-    g_Input.Init();  // Initialize our input system
+    g_Input.Init();  // Initialize input system
 
     std::cout << "[Engine] SDL + ShaderAPI initialized\n";
 }
-
-//---FPS ------------------------------------------------------------------
-// Uint64 now = SDL_GetPerformanceCounter(); // REMOVE IT 
-// Uint64 last = now;
-// double deltaTime = 0.0;
-
-// FPS tracking
-int frameCount = 0;
-double fpsTimer = 0.0;
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // Engine Frame: Main per-frame update and rendering
 //-----------------------------------------------------------------------------
 DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     SDL_Event event;
-    g_Input.Update(); // Update input states and mouse deltas
+    g_Input.Update();
 
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
@@ -214,18 +244,19 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
         }
     }
 
-    // Force double precision camera for large scale
+    // Force double precision camera
     g_CameraManager.SetPrecision(CameraPrecision::Double);
 
-    // Get mouse deltas once after input update
+    // Get mouse deltas
     const Uint8* keystate = g_Input.GetKeyState();
+    (void)keystate; // unused to silence warning
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
 
-    // Update camera rotation only on double camera
+    // Update camera rotation (double precision)
     g_CameraManager.UpdateRotationOnly(deltaTime, mouseDeltaX, mouseDeltaY);
 
-    // Sync float camera rotation from double camera once per frame
+    // Sync float camera rotation from double camera
     {
         auto& cam_d = g_CameraManager.GetCamera_d();
         auto& cam_f = g_CameraManager.GetCamera_f();
@@ -236,49 +267,48 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
         cam_f.UpdateOrientation();
     }
 
-    // Update player (movement and position syncing)
     g_Player.Update(deltaTime, g_Input);
 
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
 
-    if (!g_Renderer) return false;
-
-    g_Renderer->BeginFrame();
-    g_Renderer->PrepareFrame(width, height);
-
-    // --- STARFIELD RENDERING ---
-    static float totalTime = 0.0f;
-    totalTime += deltaTime;
-
-    g_Renderer->SetDepthMaskEnabled(false);
-    g_Renderer->SetDepthTestEnabled(false);
-    g_Renderer->RenderStarfield(totalTime);
-    g_Renderer->SetDepthMaskEnabled(true);
-    g_Renderer->SetDepthTestEnabled(true);
-
-    // Use floating origin local view matrix from CameraManager for rendering
-    g_Renderer->SetViewMatrix(g_CameraManager.GetLocalViewMatrix());
-
-    // Render static geometry
-    const auto& staticGeometry = GetStaticGeometry();
-    for (const auto& instance : staticGeometry) {
-        g_Renderer->DrawMesh(*instance.mesh, instance.transform);
-    }
-
-    g_Renderer->EndFrame();
+	if (!s_pGPURender) return false;
+	
+	s_pGPURender->BeginFrame();
+	s_pGPURender->PrepareFrame(width, height);
+	
+	// Starfield rendering
+	static float totalTime = 0.0f;
+	totalTime += deltaTime;
+	
+	s_pGPURender->SetDepthMaskEnabled(false);
+	s_pGPURender->SetDepthTestEnabled(false);
+	s_pGPURender->RenderStarfield(totalTime);
+	s_pGPURender->SetDepthMaskEnabled(true);
+	s_pGPURender->SetDepthTestEnabled(true);
+	
+	s_pGPURender->SetViewMatrix(g_CameraManager.GetLocalViewMatrix());
+	
+	Matrix4x4_f projMatrix = Matrix4x4_f::Perspective(70.0f, (float)width / height, 0.01f, 1000.0f);
+	s_pGPURender->SetProjectionMatrix(projMatrix);
+	
+	const auto& staticGeometry = GetStaticGeometry();
+	for (const auto& instance : staticGeometry) {
+		s_pGPURender->DrawMesh(*instance.mesh, instance.transform);
+	}
+	
+	s_pGPURender->EndFrame();
     return true;
 }
 
 //-----------------------------------------------------------------------------
-// Engine Shutdown: Clean up resources and shutdown SDL + Renderer + DLL
+// Engine Shutdown: Cleanup SDL + Renderer + DLL
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
-    if (g_Renderer) {
-        g_Renderer->Shutdown();
-        DestroyGPUAPI();
-        g_Renderer = nullptr;
-    }
+	if (s_pGPURender) {
+		s_pGPURender->Shutdown();
+		s_pGPURender = nullptr;
+	}
 
     if (g_Window) {
         SDL_DestroyWindow(g_Window);
@@ -291,6 +321,11 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
     if (g_FileSystemDLL) {
         FreeLibrary(g_FileSystemDLL);
         g_FileSystemDLL = nullptr;
+    }
+
+    if (g_ShaderAPIDLL) {
+        FreeLibrary(g_ShaderAPIDLL);
+        g_ShaderAPIDLL = nullptr;
     }
 
     std::cout << "[Engine] Shutdown complete\n";
@@ -324,24 +359,24 @@ DLL_EXPORT void STDCALL Engine_Run() {
     while (true) {
         last = now;
         now = SDL_GetPerformanceCounter();
-		
+
         // Convert performance counter difference to milliseconds
         deltaTime = (double)((now - last) * 1000 / (double)SDL_GetPerformanceFrequency());
-		
-		// Run one frame (deltaTime converted to seconds)
-        bool keepRunning = Engine_RunFrame(static_cast<float>(deltaTime / 1000.0)); // seconds
-		
+
+        // Run one frame (deltaTime converted to seconds)
+        bool keepRunning = Engine_RunFrame(static_cast<float>(deltaTime / 1000.0f));
+
         if (!keepRunning) {
             std::cout << "[Engine] Engine_RunFrame returned false, exiting loop\n";
             break;
         }
-		
+
         // Yield CPU briefly
         SDL_Delay(1);
     }
 
-	EngineLog("[Engine] Shutdown complete");
-	EngineLog_Shutdown();
+    EngineLog("[Engine] Shutdown complete");
+    EngineLog_Shutdown();
 }
 
 //-----------------------------------------------------------------------------
@@ -349,4 +384,8 @@ DLL_EXPORT void STDCALL Engine_Run() {
 //-----------------------------------------------------------------------------
 Camera_f& GetMainCamera_f() {
     return g_CameraManager.GetCamera_f();
+}
+
+IGPURenderInterface* GetRenderInterface() {
+    return s_pGPURender;
 }

@@ -6,3 +6,4 @@
 [LoadStaticGeometryFromMap] Mesh added. Total static meshes: 2
 [LoadStaticGeometryFromMap] Creating sphere at (-60.00, 20.00, -60.00) with radius 12.00, slices 32, stacks 32.
 [LoadStaticGeometryFromMap] Mesh added. Total static meshes: 3
+[Engine] Shutdown complete

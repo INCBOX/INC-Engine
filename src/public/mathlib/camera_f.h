@@ -1,7 +1,7 @@
 #pragma once
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
-#include <SDL.h>
+#include <SDL.h> // SHOULD BE REMOVED AND UPDATED WITHOUT IT. Uint8
 
 // Camera class for handling position, rotation, and view matrix calculations.
 // Supports mouse look and WASD movement on a flat plane.

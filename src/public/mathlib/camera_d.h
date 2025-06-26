@@ -1,7 +1,7 @@
 #pragma once
 #include "mathlib/vector3_d.h"
 #include "mathlib/matrix4x4_d.h"
-#include <SDL.h>
+#include <SDL.h> // SHOULD BE REMOVED AND UPDATED WITHOUT IT. Uint8
 
 class Camera_d
 {

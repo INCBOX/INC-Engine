@@ -18,17 +18,16 @@ GLOBAL_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include -Isrc/public
 
 # Per-module includes
 LAUNCHER_INCLUDES = $(GLOBAL_INCLUDES)
-ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/engine -Isrc/thirdparty/sdl2/include/SDL2
-
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) \
+                  -Isrc/engine \
+                  -Isrc/thirdparty/sdl2/include/SDL2 \
+                  -Isrc/thirdparty/glad/include \
+                  -Isrc/thirdparty/vulkan/Include
 				  
 MATHLIB_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/mathlib
+
 FILESYSTEM_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/filesystem
 GAME_INCLUDES = $(GLOBAL_INCLUDES)  # Added game includes same as global
-SHADERAPI_INCLUDES = $(GLOBAL_INCLUDES) \
-                     -Isrc/shaderapi \
-					 -Isrc/thirdparty/sdl2/include/SDL2 \
-                     -Isrc/thirdparty/glad/include \
-                     -Isrc/thirdparty/vulkan/Include
 
 # Output directory
 BIN_DIR = bin
@@ -41,8 +40,6 @@ ENGINE_SRC = $(shell find src/engine -name "*.cpp") \
 MATHLIB_SRC = $(shell find src/mathlib -name "*.cpp")
 LAUNCHER_SRC = $(shell find src/launcher -name "*.cpp")
 GAME_SRC = $(shell find src/game -name "*.cpp")  # Added game sources
-SHADERAPI_SRC = $(shell find src/shaderapi -name "*.cpp") \
-             $(shell find src/thirdparty/glad/src -name "*.c")
 
 # Preserve directory structure inside bin/ for all modules
 
@@ -55,17 +52,12 @@ MATHLIB_OBJ = $(patsubst src/mathlib/%.cpp, $(BIN_DIR)/mathlib/%.o, $(MATHLIB_SR
 LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher/%.o, $(LAUNCHER_SRC))
 GAME_OBJ = $(patsubst src/game/%.cpp, $(BIN_DIR)/game/%.o, $(GAME_SRC))  # Added game objects
 
-SHADERAPI_OBJ = \
-    $(patsubst src/shaderapi/%.cpp, $(BIN_DIR)/shaderapi/%.o, $(filter %.cpp, $(SHADERAPI_SRC))) \
-    $(patsubst src/shaderapi/%.c,   $(BIN_DIR)/shaderapi/%.o, $(filter %.c,   $(SHADERAPI_SRC)))
-
 # Create directories for all .o files before compiling
 $(shell mkdir -p $(sort $(dir $(FILESYSTEM_OBJ))))
 $(shell mkdir -p $(sort $(dir $(ENGINE_OBJ))))
 $(shell mkdir -p $(sort $(dir $(MATHLIB_OBJ))))
 $(shell mkdir -p $(sort $(dir $(LAUNCHER_OBJ))))
 $(shell mkdir -p $(sort $(dir $(GAME_OBJ))))  # Added game dirs
-$(shell mkdir -p $(sort $(dir $(SHADERAPI_OBJ))))
 $(shell mkdir -p $(BIN_DIR))
 
 # Generic compile rules
@@ -88,16 +80,15 @@ $(BIN_DIR)/mathlib/%.o: src/mathlib/%.cpp
 $(BIN_DIR)/game/%.o: src/game/%.cpp   # Added compile rule for game
 	$(CXX) $(CXXFLAGS) $(GAME_INCLUDES) -c $< -o $@
 
-$(BIN_DIR)/shaderapi/%.o: src/shaderapi/%.cpp
-	$(CXX) $(CXXFLAGS) $(SHADERAPI_INCLUDES) -DBUILDING_SHADERAPI_DLL -c $< -o $@
-
 # Targets
-all: INC.exe $(BIN_DIR)/libmathlib.a $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll $(BIN_DIR)/game.dll $(BIN_DIR)/shaderapi.dll
+all: INC.exe $(BIN_DIR)/libmathlib.a $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll $(BIN_DIR)/game.dll
 
 $(BIN_DIR)/engine.dll: $(ENGINE_OBJ) $(BIN_DIR)/libmathlib.a
 	$(CXX) -shared -o $@ $^ \
 		$(ENGINE_INCLUDES) $(LINKFLAGS) \
-		-Lsrc/thirdparty/sdl2/lib -lSDL2
+		-lopengl32 \
+		-Lsrc/thirdparty/sdl2/lib -lSDL2 \
+		-Lsrc/thirdparty/vulkan/lib -lvulkan-1
 
 $(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
 	$(CXX) -shared -o $@ $^ $(FILESYSTEM_INCLUDES) $(LINKFLAGS)
@@ -107,13 +98,6 @@ $(BIN_DIR)/libmathlib.a: $(MATHLIB_OBJ)
 
 $(BIN_DIR)/game.dll: $(GAME_OBJ) $(BIN_DIR)/libmathlib.a
 	$(CXX) -shared -o $@ $^ $(GAME_INCLUDES) $(LINKFLAGS)
-
-$(BIN_DIR)/shaderapi.dll: $(SHADERAPI_OBJ) $(BIN_DIR)/libmathlib.a
-	$(CXX) -shared -o $@ $^ \
-		$(SHADERAPI_INCLUDES) $(LINKFLAGS) \
-		-lopengl32 \
-		-Lsrc/thirdparty/sdl2/lib -lSDL2 \
-		-Lsrc/thirdparty/vulkan/lib -lvulkan-1
 
 INC.exe: $(LAUNCHER_OBJ) $(BIN_DIR)/libmathlib.a
 	$(CXX) -o $@ $^ $(LAUNCHER_INCLUDES) $(LINKFLAGS)

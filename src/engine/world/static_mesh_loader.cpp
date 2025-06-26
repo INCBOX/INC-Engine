@@ -1,4 +1,8 @@
-#include "shaderapi/gpu_render_backend.h"
+#include "engine_globals.h"  // for CreateGPUAPI, DestroyGPUAPI declarations
+
+
+
+
 #include "mathlib/vector3_f.h"
 #include "mathlib/matrix4x4_f.h"
 #include "world/static_mesh_loader.h"
@@ -6,6 +10,7 @@
 #include "mathlib/math_constants.h"
 #include <nlohmann/json.hpp>
 #include "engine_log.h"
+
 
 static std::vector<StaticMeshInstance> g_StaticMeshes;
 
@@ -66,7 +71,7 @@ void LoadStaticGeometryFromMap(const nlohmann::json& mapData) {
         }
 
         StaticMeshInstance instance;
-        instance.mesh.reset(g_pGPURender->CreateMesh());
+		instance.mesh.reset(GetRenderInterface()->CreateMesh());
 
         try {
             instance.mesh->Upload(verts, indices);
