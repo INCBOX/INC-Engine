@@ -14,8 +14,36 @@
 	
 	
 	
+	
+🧠 ENGINE.CPP MODULARIZATION REMINDER
+To move rendering out of engine.cpp, do this:
+
+Remove all direct GPU calls (BeginFrame, Render, EndFrame) from Engine_RunFrame()
+Call Renderer_RunFrame(deltaTime) instead
+In Renderer_RunFrame() (inside engine_renderer.cpp):
+Handle BeginFrame(), PrepareFrame()
+Call StarfieldRenderer, PlanetRenderer, Map::DrawStaticGeometry
+End with EndFrame()
+Keep engine.cpp focused on input, camera, and player — not rendering.
 
 
+Modular Engine To-Do — Short Version
+Extract Renderer: Move all GPU and draw calls to engine_renderer.cpp
+Create Renderer API: Provide Renderer_Init(), Renderer_RunFrame(), Renderer_Shutdown()
+Keep engine.cpp: Handle input, camera, player, game logic only
+Plan Next: Modularize Audio, Movement, Game Logic next — separate each subsystem with clear APIs
+Debug: When visuals break, check only renderer; when logic breaks, check engine/game files
+
+example
+void Host_Frame(float deltaTime) {
+    HandleInput();
+    UpdateGameLogic(deltaTime);
+    UpdatePhysics(deltaTime);
+    UpdateAI(deltaTime);
+    RenderFrame();
+    UpdateAudio();
+    SyncNetworking();
+}
 
 
 DONE KINDA!
@@ -247,4 +275,73 @@ Planet definitions via parameterized assets (like planet_data.xml, not JSON geom
 Each planet: procedural seed, radius, material layers, gravity, atmosphere params
 
 Level editor is only used for space stations or interiors — not planetary layout
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////
+Star Citizen Style Engine: Ultra-Short Must-Have Checklist
+1. MathLib (Core Precision)
+Vector3_d, Matrix4x4_d (double precision)
+
+Vector3_f, Matrix4x4_f (float precision)
+
+Conversion functions ToFloat(), ToDouble()
+
+AABB_d, Frustum_d for culling
+
+Quaternion and Transform types in double precision
+
+2. Floating Origin System
+Store all world positions in Vector3_d
+
+Subtract camera position Vector3_d from entities each frame
+
+Convert resulting local positions to Vector3_f for rendering
+
+3. Renderer
+Accepts only float-precision positions for rendering
+
+Uses floating origin-adjusted positions to avoid precision loss
+
+Supports point/star rendering with large-scale offsets
+
+Frustum culling in double precision before converting to float
+
+4. Scene & Entity System
+Entities keep Transform_d (double precision world transform)
+
+Sync double precision transform to float precision transform for renderer each frame
+
+Support LOD systems that use distance in double precision
+
+5. Terrain & Planet System
+Streaming terrain chunks with world origin in double precision
+
+Terrain mesh vertices are float precision relative to chunk origin
+
+Async patch loading/unloading
+
+6. Physics & Movement
+Physics simulation in double precision near planets/large scales
+
+Gravity wells computed with double precision vectors
+
+Player movement synchronized with floating origin
+
+7. Streaming & LOD
+Async streaming of terrain and entities
+
+Distance-based LOD calculated using double precision distances
+
+Efficient culling and draw calls batching
 

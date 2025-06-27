@@ -5,6 +5,8 @@ layout(location = 1) in vec2 aTexCoords; // texcoords
 
 out vec2 TexCoords;
 
+// uniform mat4 u_MVP;  // THIS IS NEED FOR STAR CITIZEN STYLE STARFIELD
+
 void main()
 {
     TexCoords = aTexCoords;

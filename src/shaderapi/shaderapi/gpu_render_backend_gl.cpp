@@ -18,26 +18,62 @@ IGPUMesh* GPURenderBackendGL::CreateMesh() {
 bool GPURenderBackendGL::Init(void* windowHandle, int /*width*/, int /*height*/) {
     m_Window = static_cast<SDL_Window*>(windowHandle);
 
-    // Set GL context attributes
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    // Try context versions from high to low
+    struct GLVersion {
+        int major, minor;
+    };
 
-    m_GLContext = SDL_GL_CreateContext(m_Window);
-    if (!m_GLContext) {
-        std::cerr << "[GL] Failed to create GL context\n";
+    GLVersion versionsToTry[] = {
+        {4, 6},
+        {4, 5},
+        {4, 4},
+        {4, 3},
+        {4, 2},
+        {4, 1},
+        {4, 0},
+        {3, 3}, // fallback
+        {3, 2},
+        {3, 1},
+        {3, 0},
+        {2, 1}  // last resort
+    };
+
+    SDL_GLContext ctx = nullptr;
+
+    for (const auto& v : versionsToTry) {
+		// Set GL context attributes
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, v.major);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, v.minor);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+        ctx = SDL_GL_CreateContext(m_Window);
+        if (ctx) {
+            std::cout << "[GL] Created context " << v.major << "." << v.minor << "\n";
+            break;
+        }
+    }
+
+    if (!ctx) {
+        std::cerr << "[GL] Failed to create any GL context\n";
         return false;
     }
+
+    m_GLContext = ctx;
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         std::cerr << "[GL] Failed to load GL functions\n";
         return false;
     }
 
+    // Query actual version to confirm
+    int major = 0, minor = 0;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    std::cout << "[GL] Running OpenGL version " << major << "." << minor << "\n";
+
     SDL_GL_SetSwapInterval(0); // Disable vsync for benchmarking Defaukt: (1)
-    std::cout << "[GL] OpenGL initialized\n";
 
 	// Disable face culling to check if it's the cause of invisible spheres
     glDisable(GL_CULL_FACE); // FOR DEBUG MESH N SHIT, REMOVE LATER..

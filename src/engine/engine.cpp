@@ -18,9 +18,8 @@
 #include "engine_globals.h"              // access the main camera from anywhere in engine
 #include "engine_log.h"
 
+#include "engine_renderer.h"
 
-#include "shaderapi/gpu_render_interface.h"
-#include "shaderapi/gpu_render_backend.h"
 #include "world/static_mesh_loader.h"    // Static geometry loader (JSON)
 
 #include "input.h"
@@ -225,6 +224,8 @@ DLL_EXPORT void STDCALL Engine_Init() {
 		return;
 	}
 
+	Renderer_Init(s_pGPURender, g_Window);
+
     g_Input.Init();  // Initialize input system
 
     std::cout << "[Engine] SDL + ShaderAPI initialized\n";
@@ -268,36 +269,20 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     }
 
     g_Player.Update(deltaTime, g_Input);
-
-    int width, height;
-    SDL_GetWindowSize(g_Window, &width, &height);
-
-	if (!s_pGPURender) return false;
 	
-	s_pGPURender->BeginFrame();
-	s_pGPURender->PrepareFrame(width, height);
 	
-	// Starfield rendering
+	int width, height;
+	SDL_GetWindowSize(g_Window, &width, &height);
+	
 	static float totalTime = 0.0f;
 	totalTime += deltaTime;
 	
-	s_pGPURender->SetDepthMaskEnabled(false);
-	s_pGPURender->SetDepthTestEnabled(false);
-	s_pGPURender->RenderStarfield(totalTime);
-	s_pGPURender->SetDepthMaskEnabled(true);
-	s_pGPURender->SetDepthTestEnabled(true);
-	
-	s_pGPURender->SetViewMatrix(g_CameraManager.GetLocalViewMatrix());
-	
+	Matrix4x4_f viewMatrix = g_CameraManager.GetLocalViewMatrix();
 	Matrix4x4_f projMatrix = Matrix4x4_f::Perspective(70.0f, (float)width / height, 0.01f, 1000.0f);
-	s_pGPURender->SetProjectionMatrix(projMatrix);
 	
-	const auto& staticGeometry = GetStaticGeometry();
-	for (const auto& instance : staticGeometry) {
-		s_pGPURender->DrawMesh(*instance.mesh, instance.transform);
-	}
-	
-	s_pGPURender->EndFrame();
+	Renderer_RenderFrame(viewMatrix, projMatrix, totalTime);
+
+
     return true;
 }
 
@@ -305,10 +290,7 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
 // Engine Shutdown: Cleanup SDL + Renderer + DLL
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
-	if (s_pGPURender) {
-		s_pGPURender->Shutdown();
-		s_pGPURender = nullptr;
-	}
+	Renderer_Shutdown();
 
     if (g_Window) {
         SDL_DestroyWindow(g_Window);

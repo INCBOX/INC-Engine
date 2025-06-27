@@ -3,6 +3,8 @@ CXX = g++
 # Default to Debug mode if not specified
 # make -f makefile.win64 MODE=Release
 # make -f makefile.win64 MODE=Debug
+# make -f makefile.win64 MODE=Release bin/engine.dll
+# make -f makefile.win64 MODE=Release bin/filesystem_stdio.dll -B or --always-make
 MODE ?= Debug
 
 ifeq ($(MODE),Debug)
@@ -11,65 +13,61 @@ else ifeq ($(MODE),Release)
     CXXFLAGS = -std=c++17 -Wall -Wextra -O3 -DNDEBUG -march=native
 endif
 
-LINKFLAGS = -static-libstdc++ -static-libgcc -Lbin -lmathlib
+# Only static link libstdc++/libgcc into the EXE, not into DLLs
+EXE_LINKFLAGS = -static-libstdc++ -static-libgcc
+DLL_MATHLIB_FLAGS = -Lbin -lmathlib
 
-# Shared global includes
+# === GLOBAL INCLUDE PATH === (shared by all modules)
 GLOBAL_INCLUDES = -Isrc -Isrc/thirdparty/nlohmann/include -Isrc/public
 
-# Per-module includes
+# --- LAUNCHER MODULE ---
 LAUNCHER_INCLUDES = $(GLOBAL_INCLUDES)
-ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/engine -Isrc/thirdparty/sdl2/include/SDL2
+LAUNCHER_SRC = $(shell find src/launcher -name "*.cpp")
+LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher/%.o, $(LAUNCHER_SRC))
 
-				  
-MATHLIB_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/mathlib
+# --- FILESYSTEM MODULE ---
 FILESYSTEM_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/filesystem
-GAME_INCLUDES = $(GLOBAL_INCLUDES)  # Added game includes same as global
+FILESYSTEM_SRC = $(shell find src/filesystem -name "*.cpp")
+FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem/%.o, $(FILESYSTEM_SRC))
+
+# --- ENGINE MODULE ---
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/engine -Isrc/thirdparty/sdl2/include/SDL2
+ENGINE_SRC = $(shell find src/engine -name "*.cpp" -o -name "*.c")
+ENGINE_OBJ = \
+    $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine/%.o, $(filter %.cpp, $(ENGINE_SRC))) \
+    $(patsubst src/engine/%.c,   $(BIN_DIR)/engine/%.o, $(filter %.c,   $(ENGINE_SRC)))
+
+# --- MATHLIB MODULE ---
+MATHLIB_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/mathlib
+MATHLIB_SRC = $(shell find src/mathlib -name "*.cpp")
+MATHLIB_OBJ = $(patsubst src/mathlib/%.cpp, $(BIN_DIR)/mathlib/%.o, $(MATHLIB_SRC))
+
+# --- GAME MODULE ---
+GAME_INCLUDES = $(GLOBAL_INCLUDES)
+GAME_SRC = $(shell find src/game -name "*.cpp")
+GAME_OBJ = $(patsubst src/game/%.cpp, $(BIN_DIR)/game/%.o, $(GAME_SRC))  # Added game objects
+
+# --- SHADERAPI MODULE ---
 SHADERAPI_INCLUDES = $(GLOBAL_INCLUDES) \
                      -Isrc/shaderapi \
 					 -Isrc/thirdparty/sdl2/include/SDL2 \
                      -Isrc/thirdparty/glad/include \
                      -Isrc/thirdparty/vulkan/Include
-
-# Output directory
-BIN_DIR = bin
-$(shell mkdir -p $(BIN_DIR))
-
-# Auto-discover sources
-FILESYSTEM_SRC = $(shell find src/filesystem -name "*.cpp")
-ENGINE_SRC = $(shell find src/engine -name "*.cpp") \
-             $(shell find src/thirdparty/glad/src -name "*.c")
-MATHLIB_SRC = $(shell find src/mathlib -name "*.cpp")
-LAUNCHER_SRC = $(shell find src/launcher -name "*.cpp")
-GAME_SRC = $(shell find src/game -name "*.cpp")  # Added game sources
 SHADERAPI_SRC = $(shell find src/shaderapi -name "*.cpp") \
              $(shell find src/thirdparty/glad/src -name "*.c")
-
-# Preserve directory structure inside bin/ for all modules
-
-FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem/%.o, $(FILESYSTEM_SRC))
-ENGINE_OBJ = \
-    $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine/%.o, $(filter %.cpp, $(ENGINE_SRC))) \
-    $(patsubst src/engine/%.c,   $(BIN_DIR)/engine/%.o, $(filter %.c,   $(ENGINE_SRC)))
-
-MATHLIB_OBJ = $(patsubst src/mathlib/%.cpp, $(BIN_DIR)/mathlib/%.o, $(MATHLIB_SRC))
-LAUNCHER_OBJ = $(patsubst src/launcher/%.cpp, $(BIN_DIR)/launcher/%.o, $(LAUNCHER_SRC))
-GAME_OBJ = $(patsubst src/game/%.cpp, $(BIN_DIR)/game/%.o, $(GAME_SRC))  # Added game objects
-
 SHADERAPI_OBJ = \
     $(patsubst src/shaderapi/%.cpp, $(BIN_DIR)/shaderapi/%.o, $(filter %.cpp, $(SHADERAPI_SRC))) \
     $(patsubst src/shaderapi/%.c,   $(BIN_DIR)/shaderapi/%.o, $(filter %.c,   $(SHADERAPI_SRC)))
 
-# Create directories for all .o files before compiling
-$(shell mkdir -p $(sort $(dir $(FILESYSTEM_OBJ))))
-$(shell mkdir -p $(sort $(dir $(ENGINE_OBJ))))
-$(shell mkdir -p $(sort $(dir $(MATHLIB_OBJ))))
-$(shell mkdir -p $(sort $(dir $(LAUNCHER_OBJ))))
-$(shell mkdir -p $(sort $(dir $(GAME_OBJ))))  # Added game dirs
-$(shell mkdir -p $(sort $(dir $(SHADERAPI_OBJ))))
+# === OUTPUT DIR ===
+BIN_DIR = bin
 $(shell mkdir -p $(BIN_DIR))
 
-# Generic compile rules
+# Prepare directories
+OBJ_DIRS := $(sort $(dir $(LAUNCHER_OBJ) $(FILESYSTEM_OBJ) $(ENGINE_OBJ) $(MATHLIB_OBJ) $(GAME_OBJ) $(SHADERAPI_OBJ)))
+$(shell mkdir -p $(OBJ_DIRS) $(BIN_DIR))
 
+# === Compilation rules ===
 $(BIN_DIR)/launcher/%.o: src/launcher/%.cpp
 	$(CXX) $(CXXFLAGS) $(LAUNCHER_INCLUDES) -c $< -o $@
 
@@ -79,44 +77,41 @@ $(BIN_DIR)/filesystem/%.o: src/filesystem/%.cpp
 $(BIN_DIR)/engine/%.o: src/engine/%.cpp
 	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
 
+# Glad C source compile rule
 $(BIN_DIR)/glad_%.o: src/thirdparty/glad/src/%.c
 	$(CXX) $(CXXFLAGS) $(ENGINE_INCLUDES) -c $< -o $@
 
 $(BIN_DIR)/mathlib/%.o: src/mathlib/%.cpp
 	$(CXX) $(CXXFLAGS) $(MATHLIB_INCLUDES) -c $< -o $@
 
-$(BIN_DIR)/game/%.o: src/game/%.cpp   # Added compile rule for game
+$(BIN_DIR)/game/%.o: src/game/%.cpp
 	$(CXX) $(CXXFLAGS) $(GAME_INCLUDES) -c $< -o $@
 
 $(BIN_DIR)/shaderapi/%.o: src/shaderapi/%.cpp
 	$(CXX) $(CXXFLAGS) $(SHADERAPI_INCLUDES) -DBUILDING_SHADERAPI_DLL -c $< -o $@
 
-# Targets
+# === Final targets ===
 all: INC.exe $(BIN_DIR)/libmathlib.a $(BIN_DIR)/engine.dll $(BIN_DIR)/filesystem_stdio.dll $(BIN_DIR)/game.dll $(BIN_DIR)/shaderapi.dll
 
-$(BIN_DIR)/engine.dll: $(ENGINE_OBJ) $(BIN_DIR)/libmathlib.a
-	$(CXX) -shared -o $@ $^ \
-		$(ENGINE_INCLUDES) $(LINKFLAGS) \
-		-Lsrc/thirdparty/sdl2/lib -lSDL2
+$(BIN_DIR)/engine.dll: $(ENGINE_OBJ)
+	$(CXX) -shared -o $@ $^ $(ENGINE_INCLUDES) $(DLL_MATHLIB_FLAGS) -Lsrc/thirdparty/sdl2/lib -lSDL2
 
 $(BIN_DIR)/filesystem_stdio.dll: $(FILESYSTEM_OBJ)
-	$(CXX) -shared -o $@ $^ $(FILESYSTEM_INCLUDES) $(LINKFLAGS)
+	$(CXX) -shared -o $@ $^ $(FILESYSTEM_INCLUDES)
 	
 $(BIN_DIR)/libmathlib.a: $(MATHLIB_OBJ)
 	ar rcs $@ $^
 
-$(BIN_DIR)/game.dll: $(GAME_OBJ) $(BIN_DIR)/libmathlib.a
-	$(CXX) -shared -o $@ $^ $(GAME_INCLUDES) $(LINKFLAGS)
+$(BIN_DIR)/game.dll: $(GAME_OBJ)
+	$(CXX) -shared -o $@ $^ $(GAME_INCLUDES) $(DLL_MATHLIB_FLAGS)
 
-$(BIN_DIR)/shaderapi.dll: $(SHADERAPI_OBJ) $(BIN_DIR)/libmathlib.a
-	$(CXX) -shared -o $@ $^ \
-		$(SHADERAPI_INCLUDES) $(LINKFLAGS) \
-		-lopengl32 \
-		-Lsrc/thirdparty/sdl2/lib -lSDL2 \
+$(BIN_DIR)/shaderapi.dll: $(SHADERAPI_OBJ)
+	$(CXX) -shared -o $@ $^ $(SHADERAPI_INCLUDES) $(DLL_MATHLIB_FLAGS) \
+		-lopengl32 -Lsrc/thirdparty/sdl2/lib -lSDL2 \
 		-Lsrc/thirdparty/vulkan/lib -lvulkan-1
 
-INC.exe: $(LAUNCHER_OBJ) $(BIN_DIR)/libmathlib.a
-	$(CXX) -o $@ $^ $(LAUNCHER_INCLUDES) $(LINKFLAGS)
+INC.exe: $(LAUNCHER_OBJ)
+	$(CXX) -o $@ $^ $(LAUNCHER_INCLUDES) $(EXE_LINKFLAGS)
 
 clean:
 	find $(BIN_DIR) -name '*.o' -delete

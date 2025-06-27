@@ -7,9 +7,9 @@
 
 extern "C" {
 
-__declspec(dllexport) IGPURenderInterface* CreateGPUAPI();
-__declspec(dllexport) void DestroyGPUAPI();
-__declspec(dllexport) extern IGPURenderInterface* g_pGPURender;
+	__declspec(dllexport) IGPURenderInterface* CreateGPUAPI();
+	__declspec(dllexport) void DestroyGPUAPI();
+	__declspec(dllexport) extern IGPURenderInterface* g_pGPURender;
 
 }
 
