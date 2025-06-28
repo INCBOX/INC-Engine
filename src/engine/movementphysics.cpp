@@ -1,6 +1,6 @@
 #include "mathlib/vector3_f.h"
 #include "movementphysics.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 MovementPhysics::MovementPhysics()
     : m_Speed(10.0f),

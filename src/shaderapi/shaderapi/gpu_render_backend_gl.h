@@ -7,7 +7,7 @@
 #include "renderer/gl_starfield_renderer.h"
 #include "mathlib/matrix4x4_f.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <memory>
 

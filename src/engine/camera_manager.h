@@ -1,7 +1,7 @@
 #pragma once
 #include "mathlib/camera_f.h"
 #include "mathlib/camera_d.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 enum class CameraPrecision {
     Float,

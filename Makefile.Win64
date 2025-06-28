@@ -31,7 +31,7 @@ FILESYSTEM_SRC = $(shell find src/filesystem -name "*.cpp")
 FILESYSTEM_OBJ = $(patsubst src/filesystem/%.cpp, $(BIN_DIR)/filesystem/%.o, $(FILESYSTEM_SRC))
 
 # --- ENGINE MODULE ---
-ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/engine -Isrc/thirdparty/sdl2/include/SDL2
+ENGINE_INCLUDES = $(GLOBAL_INCLUDES) -Isrc/engine -Isrc/thirdparty/sdl2/include
 ENGINE_SRC = $(shell find src/engine -name "*.cpp" -o -name "*.c")
 ENGINE_OBJ = \
     $(patsubst src/engine/%.cpp, $(BIN_DIR)/engine/%.o, $(filter %.cpp, $(ENGINE_SRC))) \
@@ -50,7 +50,7 @@ GAME_OBJ = $(patsubst src/game/%.cpp, $(BIN_DIR)/game/%.o, $(GAME_SRC))  # Added
 # --- SHADERAPI MODULE ---
 SHADERAPI_INCLUDES = $(GLOBAL_INCLUDES) \
                      -Isrc/shaderapi \
-					 -Isrc/thirdparty/sdl2/include/SDL2 \
+					 -Isrc/thirdparty/sdl2/include \
                      -Isrc/thirdparty/glad/include \
                      -Isrc/thirdparty/vulkan/Include
 SHADERAPI_SRC = $(shell find src/shaderapi -name "*.cpp") \

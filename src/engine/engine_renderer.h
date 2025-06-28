@@ -2,7 +2,7 @@
 #include "shaderapi/gpu_render_interface.h"
 #include "mathlib/matrix4x4_f.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 // Initialize the renderer module with the GPU interface pointer
 void Renderer_Init(IGPURenderInterface* gpuRender, SDL_Window* window);

@@ -1,5 +1,5 @@
 #include "input.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 void Input::Init() {
     SDL_PumpEvents();
