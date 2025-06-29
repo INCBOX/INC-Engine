@@ -1,0 +1,3 @@
+SDL2-devel-2.26.5-mingw.zip
+
+https://github.com/libsdl-org/SDL/releases/tag/release-2.26.5

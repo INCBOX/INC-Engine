@@ -1,3 +1,6 @@
+BUILD INC ENGINE FOR LINUX USING (WSL2 + Ubuntu 22.04) on WIN1064
+
+engine.cpp move engine_render related codes to engine_render
 
 
 	IMPROVE ENGINE GLOBALS.. OR GET RID OF IT?..

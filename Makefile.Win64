@@ -115,4 +115,5 @@ INC.exe: $(LAUNCHER_OBJ)
 
 clean:
 	find $(BIN_DIR) -name '*.o' -delete
-	rm -f $(BIN_DIR)/*.dll $(BIN_DIR)/*.a INC.exe
+	find $(BIN_DIR) -type f -name '*.dll' ! -name 'SDL2.dll' -delete
+	rm -f $(BIN_DIR)/*.a INC.exe
