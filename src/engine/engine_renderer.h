@@ -4,6 +4,8 @@
 
 #include <SDL2/SDL.h>
 
+IGPURenderInterface* GetRenderInterface();
+
 // Initialize the renderer module with the GPU interface pointer
 void Renderer_Init(IGPURenderInterface* gpuRender, SDL_Window* window);
 
@@ -12,3 +14,7 @@ void Renderer_RenderFrame(const Matrix4x4_f& viewMatrix, const Matrix4x4_f& proj
 
 // Shutdown renderer
 void Renderer_Shutdown();
+
+// New functions:
+bool Renderer_LoadAndInit(SDL_Window* window);
+void Renderer_Unload();

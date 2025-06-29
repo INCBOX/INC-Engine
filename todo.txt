@@ -1,6 +1,7 @@
 BUILD INC ENGINE FOR LINUX USING (WSL2 + Ubuntu 22.04) on WIN1064
 
-engine.cpp move engine_render related codes to engine_render
+ditch SDL2, write own
+-lopengl32 make sure it works properly, or ship DLL.
 
 
 	IMPROVE ENGINE GLOBALS.. OR GET RID OF IT?..
@@ -17,8 +18,8 @@ engine.cpp move engine_render related codes to engine_render
 	
 	
 	
-	
-🧠 ENGINE.CPP MODULARIZATION REMINDER
+/////////////////////////////////////
+ENGINE.CPP MODULARIZATION REMINDER
 To move rendering out of engine.cpp, do this:
 
 Remove all direct GPU calls (BeginFrame, Render, EndFrame) from Engine_RunFrame()
@@ -47,7 +48,7 @@ void Host_Frame(float deltaTime) {
     UpdateAudio();
     SyncNetworking();
 }
-
+/////////////////////////////////////
 
 DONE KINDA!
 ---------------
@@ -176,15 +177,15 @@ Step 2: Sector-based space chunking for object management.
 Step 3: Procedural planets, dynamic props, etc.
 
 
-🚀 INC Planetary Engine – High-Fidelity TODO List
+INC Planetary Engine – High-Fidelity TODO List
 
-✅ PHASE 0 – Foundations (already partially done)
+PHASE 0 – Foundations (already partially done)
 - [x] Implement double-precision `Vector3_d` and `Matrix4x4_d`
 - [x] Add camera-relative rendering system to eliminate float errors
 - [x] Create working `GLStarfieldRenderer` API and render pass
 - [x] Replace map’s static geometry with floating planets/spheres
 
-🪐 PHASE 1 – Planet System Runtime Replacement
+PHASE 1 – Planet System Runtime Replacement
 - [ ] Remove JSON-defined planets from level system
 - [ ] Create `PlanetSystem` class to manage all planets
 - [ ] Implement `Planet` class with:

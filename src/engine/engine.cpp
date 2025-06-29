@@ -63,20 +63,6 @@ static FS_GetGameDirFn FS_GetGameDir = nullptr;
 static FS_ResolvePathFn FS_ResolvePath = nullptr;
 
 //-----------------------------------------------------------------------------
-// ShaderAPI DLL dynamic loading
-//-----------------------------------------------------------------------------
-static HMODULE g_ShaderAPIDLL = nullptr;
-
-typedef IGPURenderInterface* (*CreateGPUAPI_t)();
-typedef void (*DestroyGPUAPI_t)();
-
-static CreateGPUAPI_t pCreateGPUAPI = nullptr;
-static DestroyGPUAPI_t pDestroyGPUAPI = nullptr;
-// Don't extern from the DLL — define your own pointer here:
-static IGPURenderInterface* s_pGPURender = nullptr;
-
-
-//-----------------------------------------------------------------------------
 // Cross-platform export macros
 //-----------------------------------------------------------------------------
 #if defined(_WIN32)
@@ -116,29 +102,6 @@ bool LoadFileSystem() {
     }
 
     std::cout << "[Engine] FileSystem loaded\n";
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-// Load shaderapi.dll and get function pointers + global pointer
-//-----------------------------------------------------------------------------
-bool LoadShaderAPIDLL() {
-    g_ShaderAPIDLL = LoadLibraryA("bin/shaderapi.dll");
-    if (!g_ShaderAPIDLL) {
-        std::cerr << "[Engine] Failed to load shaderapi.dll\n";
-        return false;
-    }
-
-    pCreateGPUAPI = reinterpret_cast<CreateGPUAPI_t>(GetProcAddress(g_ShaderAPIDLL, "CreateGPUAPI"));
-    pDestroyGPUAPI = reinterpret_cast<DestroyGPUAPI_t>(GetProcAddress(g_ShaderAPIDLL, "DestroyGPUAPI"));
-
-    if (!pCreateGPUAPI || !pDestroyGPUAPI) {
-        std::cerr << "[Engine] Failed to get shaderapi exports\n";
-        FreeLibrary(g_ShaderAPIDLL);
-        g_ShaderAPIDLL = nullptr;
-        return false;
-    }
-
     return true;
 }
 
@@ -210,21 +173,12 @@ DLL_EXPORT void STDCALL Engine_Init() {
     SDL_SetWindowGrab(g_Window, SDL_TRUE);
     SDL_ShowCursor(SDL_DISABLE);
 
-    if (!LoadShaderAPIDLL()) {
-        std::cerr << "[Engine] Failed to load ShaderAPI DLL\n";
-        Engine_Shutdown();
-        return;
-    }
-	
-    // **THIS IS THE MEAL TIME: Create GPU render interface**
-    s_pGPURender = pCreateGPUAPI(); // Set it after loading the DLL
-	
-	if (!s_pGPURender || !s_pGPURender->Init(g_Window, 1280, 720)) {
-		printf("Failed to initialize GPU backend!\n");
+	// RendererAPI
+	if (!Renderer_LoadAndInit(g_Window)) {
+		std::cerr << "[Engine] Failed to initialize Renderer\n";
+		Engine_Shutdown();
 		return;
 	}
-
-	Renderer_Init(s_pGPURender, g_Window);
 
     g_Input.Init();  // Initialize input system
 
@@ -234,23 +188,39 @@ DLL_EXPORT void STDCALL Engine_Init() {
 //-----------------------------------------------------------------------------
 // Engine Frame: Main per-frame update and rendering
 //-----------------------------------------------------------------------------
-DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
-    SDL_Event event;
-    g_Input.Update();
+// Forward declarations
+bool HandleEvents();
+void UpdateInputAndCamera(float deltaTime);
+void RenderFrame(float deltaTime);
 
+DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
+    if (!HandleEvents()) return false;
+
+    UpdateInputAndCamera(deltaTime);
+
+    g_Player.Update(deltaTime, g_Input);
+
+    RenderFrame(deltaTime);
+
+    return true;
+}
+
+bool HandleEvents() {
+    SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cout << "[Engine] SDL_QUIT event received\n";
             return false;
         }
     }
+    g_Input.Update();
+    return true;
+}
 
+void UpdateInputAndCamera(float deltaTime) {
     // Force double precision camera
     g_CameraManager.SetPrecision(CameraPrecision::Double);
 
-    // Get mouse deltas
-    const Uint8* keystate = g_Input.GetKeyState();
-    (void)keystate; // unused to silence warning
     int mouseDeltaX = g_Input.GetMouseDeltaX();
     int mouseDeltaY = g_Input.GetMouseDeltaY();
 
@@ -258,39 +228,34 @@ DLL_EXPORT bool STDCALL Engine_RunFrame(float deltaTime) {
     g_CameraManager.UpdateRotationOnly(deltaTime, mouseDeltaX, mouseDeltaY);
 
     // Sync float camera rotation from double camera
-    {
-        auto& cam_d = g_CameraManager.GetCamera_d();
-        auto& cam_f = g_CameraManager.GetCamera_f();
+    auto& cam_d = g_CameraManager.GetCamera_d();
+    auto& cam_f = g_CameraManager.GetCamera_f();
 
-        cam_f.SetYaw(static_cast<float>(cam_d.GetYaw()));
-        cam_f.SetPitch(static_cast<float>(cam_d.GetPitch()));
-        cam_f.ClampPitch(-89.9f, 89.9f);
-        cam_f.UpdateOrientation();
-    }
+    cam_f.SetYaw(static_cast<float>(cam_d.GetYaw()));
+    cam_f.SetPitch(static_cast<float>(cam_d.GetPitch()));
+    cam_f.ClampPitch(-89.9f, 89.9f);
+    cam_f.UpdateOrientation();
+}
 
-    g_Player.Update(deltaTime, g_Input);
-	
-	
-	int width, height;
-	SDL_GetWindowSize(g_Window, &width, &height);
-	
-	static float totalTime = 0.0f;
-	totalTime += deltaTime;
-	
-	Matrix4x4_f viewMatrix = g_CameraManager.GetLocalViewMatrix();
-	Matrix4x4_f projMatrix = Matrix4x4_f::Perspective(70.0f, (float)width / height, 0.01f, 1000.0f);
-	
-	Renderer_RenderFrame(viewMatrix, projMatrix, totalTime);
+void RenderFrame(float deltaTime) {
+    int width, height;
+    SDL_GetWindowSize(g_Window, &width, &height);
 
+    static float totalTime = 0.0f;
+    totalTime += deltaTime;
 
-    return true;
+    Matrix4x4_f viewMatrix = g_CameraManager.GetLocalViewMatrix();
+    Matrix4x4_f projMatrix = Matrix4x4_f::Perspective(70.0f, (float)width / height, 0.01f, 1000.0f);
+
+    Renderer_RenderFrame(viewMatrix, projMatrix, totalTime);
 }
 
 //-----------------------------------------------------------------------------
 // Engine Shutdown: Cleanup SDL + Renderer + DLL
 //-----------------------------------------------------------------------------
 DLL_EXPORT void STDCALL Engine_Shutdown() {
-	Renderer_Shutdown();
+	
+	Renderer_Unload();
 
     if (g_Window) {
         SDL_DestroyWindow(g_Window);
@@ -305,10 +270,7 @@ DLL_EXPORT void STDCALL Engine_Shutdown() {
         g_FileSystemDLL = nullptr;
     }
 
-    if (g_ShaderAPIDLL) {
-        FreeLibrary(g_ShaderAPIDLL);
-        g_ShaderAPIDLL = nullptr;
-    }
+
 
     std::cout << "[Engine] Shutdown complete\n";
 }
@@ -366,8 +328,4 @@ DLL_EXPORT void STDCALL Engine_Run() {
 //-----------------------------------------------------------------------------
 Camera_f& GetMainCamera_f() {
     return g_CameraManager.GetCamera_f();
-}
-
-IGPURenderInterface* GetRenderInterface() {
-    return s_pGPURender;
 }
