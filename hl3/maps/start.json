@@ -1,0 +1,44 @@
+{
+  "entities": [
+    {
+      "classname": "static_geometry",
+      "origin": [0, 0, -10],
+      "geometry": {
+        "type": "sphere",
+        "radius": 4.0,
+        "slices": 24,
+        "stacks": 24
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [-5, 0, -20],
+      "geometry": {
+        "type": "sphere",
+        "radius": 2.5,
+        "slices": 16,
+        "stacks": 16
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [5, 0, -30],
+      "geometry": {
+        "type": "sphere",
+        "radius": 3.0,
+        "slices": 20,
+        "stacks": 20
+      }
+    },
+    {
+      "classname": "static_geometry",
+      "origin": [0, 5, -25],
+      "geometry": {
+        "type": "sphere",
+        "radius": 6.0,
+        "slices": 32,
+        "stacks": 32
+      }
+    }
+  ]
+}

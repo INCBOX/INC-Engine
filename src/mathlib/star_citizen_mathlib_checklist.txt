@@ -1,0 +1,103 @@
+
+STAR CITIZEN–GRADE MATHLIB CHECKLIST
+
+✅ = must have
+🔶 = important but optional (for now)
+⛔ = don’t add unless you really need it
+
+Vector3_f and Vector3_d
+------------------------
+
+🎯 Core Operators
+- ✅ +, -, *, / with scalars
+- ✅ +, -, *, / with other vectors
+- ✅ ==, !=, - unary
+- ✅ Index access v[0], v[1], v[2]
+
+🎯 Length & Distance
+- ✅ Length()
+- ✅ LengthSqr()
+- ✅ Distance(const Vector3&)
+- ✅ DistanceSqr(const Vector3&)
+
+🎯 Normalization
+- ✅ Normalize() (in-place)
+- ✅ Normalized() (returns copy)
+
+🎯 Dot/Cross
+- ✅ Dot(const Vector3&)
+- ✅ Cross(const Vector3&)
+
+🎯 Utility
+- ✅ IsZero()
+- ✅ IsFinite()
+- ✅ ClampLength(float maxLen) 🔶
+- ✅ Reflect(normal) 🔶
+- ✅ Lerp(a, b, t) 🔶
+- ✅ Abs() 🔶
+
+Matrix4x4_f and Matrix4x4_d
+---------------------------
+
+🎯 Construction
+- ✅ static Identity()
+- ✅ static Translate(const Vector3&)
+- ✅ static Scale(const Vector3&)
+- ✅ static Rotate(axis, angle_rad) 🔶
+- ✅ static LookAt(eye, target, up) 🔶
+- ✅ static Perspective(fov, aspect, near, far) 🔶
+- ✅ static Ortho(left, right, bottom, top, near, far) 🔶
+
+🎯 Operators
+- ✅ operator*(const Matrix4x4&)
+- ✅ operator*(const Vector3&) (assume w = 1)
+
+🎯 Functions
+- ✅ Transpose()
+- ✅ Inverse() 🔶
+- ✅ IsIdentity() 🔶
+- ✅ ToFloat() and ToDouble()
+
+Required For Floating Origin / Streaming
+----------------------------------------
+
+Feature                        | Why it's needed
+------------------------------|-----------------------------
+Vector3_d - Vector3_d          | Star relative to camera origin
+ToFloat(Vector3_d)            | To send relative star/sphere pos to GPU
+Matrix4x4_d::Translate        | For placing planets, stations in world-space
+Matrix4x4_d::ToFloat()        | To get float MVP for rendering
+Vector3_d::Length()           | Distance checks for LOD and culling
+Vector3_d::Normalize()        | Direction vectors, normal math
+Matrix4x4_d::LookAt()         | For view matrix in double precision
+Matrix4x4_d::Perspective()    | For consistent projection
+
+BONUS: Precision Conversions
+----------------------------
+
+In precision_convert.h you already have:
+
+Vector3_f ToFloat(const Vector3_d&);
+Vector3_d ToDouble(const Vector3_f&);
+Matrix4x4_f ToFloat(const Matrix4x4_d&);
+Matrix4x4_d ToDouble(const Matrix4x4_f&);
+
+Add more if you introduce Quaternion, AABB, Ray, etc.
+
+💡 Tip: Mirror API Exactly
+
+Make Vector3_d identical in function and naming to Vector3_f.
+Same for Matrix4x4. Then:
+
+#ifdef USE_DOUBLE
+using Vector3 = Vector3_d;
+using Matrix4x4 = Matrix4x4_d;
+#else
+using Vector3 = Vector3_f;
+using Matrix4x4 = Matrix4x4_f;
+#endif
+
+⏭️ Next Step
+------------
+Build headers with all the functions (even if unimplemented).
+Ensure both float and double mathlibs mirror each other.

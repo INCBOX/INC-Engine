@@ -1,0 +1,14 @@
+# Ignore build artifacts
+build/
+bin/
+*.dll
+*.lib
+*.obj
+*.exe
+*.pdb
+*.log
+*.zip
+
+# VSCode or JetBrains junk
+.vscode/
+.idea/

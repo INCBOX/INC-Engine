@@ -1,0 +1,6 @@
+2. Engine DLL (engine.dll)
+The core engine, handles rendering, input, network, physics integration with middleware (e.g., Havok in older Source versions), file I/O, and general engine-level services.
+
+Does not implement game-specific entity logic or props directly.
+
+Communicates with the game DLL to spawn and simulate entities.

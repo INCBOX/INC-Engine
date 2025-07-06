@@ -1,0 +1,1 @@
+int dummy_spaceengine() { return 0; }

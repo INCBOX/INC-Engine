@@ -1,0 +1,16 @@
+Game DLL (game.dll / server.dll)
+The main DLL responsible for game logic and entity behavior.
+
+Contains code for:
+
+Static props (e.g. prop_static)
+
+Dynamic props (e.g. prop_dynamic)
+
+Physics props (e.g. prop_physics, prop_ragdoll)
+
+NPCs, weapons, and gameplay rules.
+
+On a dedicated server, the equivalent is server.dll — which runs without rendering.
+
+On the client, the equivalent is client.dll — handling client-side rendering, prediction, and UI.
