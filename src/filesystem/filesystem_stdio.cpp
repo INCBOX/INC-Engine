@@ -1,4 +1,5 @@
-#include "inc_dll_utils.h"
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
 #include "filesystem.h"
 #include <vector>
 #include <fstream>

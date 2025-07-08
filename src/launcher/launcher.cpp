@@ -11,68 +11,76 @@
 // Note:
 // - No SDL or rendering code here — that belongs to platform_host and engine DLL.
 //
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
+#include "dll_loader.h"
 
-#include "platform_host.h" 	// MAIN LOOP MODULE
-#include "fs_launcher.h" 	// FILESYSTEM
-#include "inc_dll_utils.h" // Defines LibHandle, LoadLib, etc. FILESYSTEM FOR
+
+#include "platform_host.h"   // MAIN LOOP MODULE
+#include "fs_launcher.h"     // FILESYSTEM
 
 
 #if defined(_WIN32)
-    #include <Windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #endif
 
+#include <string>
+#include <optional>
 #include <iostream>
 
-using FSInitFn = bool(*)(const std::string&);
-
-static void ShowError(const char* message) {
+// Show error message appropriately depending on platform
+static void ShowError(const char* message) noexcept {
 #if defined(_WIN32)
-    MessageBoxA(nullptr, message, "Fatal Error", MB_ICONERROR);
+    MessageBoxA(nullptr, message, "Fatal Error", MB_ICONERROR | MB_OK);
 #else
-    std::cerr << "[Launcher] " << message << "\n";
+    std::cerr << "[Launcher] " << message << std::endl;
 #endif
 }
 
+using FSInitFn = bool(*)(const std::string&);
+
 int main(int argc, char* argv[]) {
-    // Step 1: Resolve launch info (gameinfo path, DLL paths)
-    auto launchInfoOpt = ResolveFilesystemLaunchInfo(argc, argv);
+    // Resolve launch information (gameinfo path, DLL paths)
+    const auto launchInfoOpt = ResolveFilesystemLaunchInfo(argc, argv);
     if (!launchInfoOpt) {
         ShowError("Failed to resolve filesystem launch info");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     const auto& info = *launchInfoOpt;
 
-    // Step 2: Load the filesystem DLL
-    LibHandle fsLib = LoadLib(info.fsDllPath.c_str());
+    // Load the filesystem DLL
+    const LibHandle fsLib = LoadLib(info.fsDllPath.c_str());
     if (!fsLib) {
         ShowError("Failed to load filesystem DLL");
-        return -2;
+        return EXIT_FAILURE;
     }
 
-    // Step 3: Load and call FS_Init
-    auto FS_Init = reinterpret_cast<FSInitFn>(GetLibProc(fsLib, "FS_Init"));
+    // Obtain FS_Init function pointer from the DLL
+    const auto FS_Init = reinterpret_cast<FSInitFn>(GetLibProc(fsLib, "FS_Init"));
     if (!FS_Init) {
         ShowError("FS_Init symbol not found in filesystem DLL");
         CloseLib(fsLib);
-        return -3;
+        return EXIT_FAILURE;
     }
 
+    // Initialize filesystem with gameinfo path
     if (!FS_Init(info.gameinfoPath.string())) {
         ShowError("FS_Init failed during initialization");
         CloseLib(fsLib);
-        return -3;
+        return EXIT_FAILURE;
     }
 
-    // Step 4: Run the engine
-    int result = PlatformHost_Run(
+    // Run the engine main loop
+    const int result = PlatformHost_Run(
         info.engineDllPath,
         fsLib,
         info.gameinfoPath.string(),
         "INC Engine"
     );
 
-    // Step 5: Clean up
+    // Clean up the filesystem DLL
     CloseLib(fsLib);
 
     return result;

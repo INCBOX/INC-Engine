@@ -3,7 +3,9 @@
 
 #include <string>
 
-#include "inc_dll_utils.h" // for LibHandle
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
+#include "dll_loader.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,0 +1,35 @@
+	
+	
+	
+	interfaces and shared internals ONLY!
+	
+	What is internal?
+	internal is a static library or shared code module compiled into DLLs but not exported as a standalone DLL.
+	
+	It contains shared engine/core implementation code not meant to be exposed via public DLL APIs.
+	
+	What should go into internal?
+	Core utility code, math, data structures, and logic used internally by multiple DLLs.
+	
+	Implementation details that do not need to be directly accessed outside their host DLL.
+	
+	Common code that can be safely compiled into multiple DLLs without duplication issues.
+	
+	What should NOT go into internal?
+	Any public API functions or symbols that other DLLs or the launcher must call directly.
+	
+	Platform or module-specific code that requires a clear DLL boundary.
+	
+	Code that depends on DLL-exported interfaces unless carefully linked.
+	
+	Things to be careful about:
+	Linkage: Every DLL that uses internal code must link against internal to avoid missing symbols.
+	
+	Duplication: If internal is compiled into multiple DLLs, watch out for duplicate symbols or static/global state conflicts.
+	
+	API boundaries: Do not move exported DLL API functions into internal unless you keep thin exported wrappers in the DLL.
+	
+	Dependencies: Keep internal self-contained or with minimal dependencies to avoid complex build order issues.
+
+
+	engine_renderer_dll/h will be moved to renderer.dll

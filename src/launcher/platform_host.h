@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
-#include "inc_dll_utils.h"  // defines LibHandle
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
+#include "dll_loader.h"
 
 // Runs the platform host (window, SDL, engine DLL loading, main loop)
 // - engineDllPath: path to the engine DLL/shared lib

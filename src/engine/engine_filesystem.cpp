@@ -1,6 +1,8 @@
 #include "engine_filesystem.h"
 #include "filesystem.h"
-#include "inc_dll_utils.h"
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
+#include "dll_loader.h"
 #include <iostream>
 
 typedef IFileSystem* (*GetFileSystemInterfaceFn)();

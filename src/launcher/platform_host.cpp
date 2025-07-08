@@ -3,7 +3,9 @@
 
 #include <string>
 #include <iostream>
-#include "inc_dll_utils.h" // for LoadLib, GetLibProc, CloseLib, LibHandle
+#include "dll_exports.h"   // LibHandle, LoadLib, etc.
+#include "dll_platform.h"
+#include "dll_loader.h"
 
 // Optional error message helper
 inline void ShowError(const std::string& msg) {
