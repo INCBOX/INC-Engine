@@ -19,9 +19,9 @@ extern "C" {
 	}
 	
 	// Keep existing Engine_Init to just call Engine_Internal_Init as before (FILESYSTEM FOR)
-    DLL_EXPORT bool STDCALL Engine_InitWithFS(void* fsDllHandle) {
-        return LoadFileSystem(fsDllHandle);
-    }
+	DLL_EXPORT bool STDCALL Engine_InitWithFS(LibHandle fsDllHandle) {
+		return LoadFileSystem(fsDllHandle);
+	}
 	
 	DLL_EXPORT void STDCALL Engine_Shutdown() {
 		Engine_Internal_Shutdown();

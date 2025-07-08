@@ -9,3 +9,5 @@ public:
 
 // This is the exported getter used by engine or other DLLs to retrieve the interface.
 extern "C" __declspec(dllexport) IFileSystem* GetFileSystemInterface();
+extern "C" __declspec(dllexport) bool FS_Init(const std::string& path);
+// extern "C" __declspec(dllexport) void FS_Shutdown(); // ADD THIS LATER FOR CLEANER EXIT..

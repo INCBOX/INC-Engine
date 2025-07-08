@@ -1,50 +1,32 @@
-// filesystem.cpp
+#include "engine_filesystem.h"
 #include "filesystem.h"
-#include <Windows.h>
+#include "inc_dll_utils.h"
 #include <iostream>
 
-// DLL handle and function pointers
-static HMODULE g_FileSystemDLL = nullptr;
+typedef IFileSystem* (*GetFileSystemInterfaceFn)();
+static IFileSystem* g_pFS = nullptr;
 
-typedef const std::string& (*FS_GetGameDirFn)();
-typedef std::string (*FS_ResolvePathFn)(const std::string&);
-static FS_GetGameDirFn FS_GetGameDirPtr = nullptr;
-static FS_ResolvePathFn FS_ResolvePathPtr = nullptr;
-
-bool LoadFileSystem(void* dllHandle) {
-    g_FileSystemDLL = static_cast<HMODULE>(dllHandle);
-    if (!g_FileSystemDLL) {
-        std::cerr << "[FileSystem] Null handle passed to LoadFileSystem()\n";
+bool LoadFileSystem(LibHandle dllHandle) {
+    if (!dllHandle) {
+        std::cerr << "[FileSystem] Null handle\n";
         return false;
     }
 
-    FS_GetGameDirPtr = reinterpret_cast<FS_GetGameDirFn>(GetProcAddress(g_FileSystemDLL, "FS_GetGameDir"));
-    FS_ResolvePathPtr = reinterpret_cast<FS_ResolvePathFn>(GetProcAddress(g_FileSystemDLL, "FS_ResolvePath"));
-
-    if (!FS_GetGameDirPtr || !FS_ResolvePathPtr) {
-        std::cerr << "[FileSystem] Failed to resolve FileSystem exports\n";
+    auto GetFS = reinterpret_cast<GetFileSystemInterfaceFn>(GetLibProc(dllHandle, "GetFileSystemInterface"));
+    if (!GetFS) {
+        std::cerr << "[FileSystem] Failed to get GetFileSystemInterface()\n";
         return false;
     }
 
-    std::cout << "[FileSystem] FileSystem DLL interface loaded successfully\n";
+    g_pFS = GetFS();
+    std::cout << "[FileSystem] Loaded IFileSystem from DLL\n";
     return true;
 }
 
-
 void UnloadFileSystem() {
-    // Don't free the DLL here! Platform host owns DLL lifetime.
-    FS_GetGameDirPtr = nullptr;
-    FS_ResolvePathPtr = nullptr;
-    std::cout << "[FileSystem] FileSystem interface pointers cleared\n";
+    g_pFS = nullptr;
 }
 
-const std::string& FS_GetGameDir() {
-    if (FS_GetGameDirPtr) return FS_GetGameDirPtr();
-    static std::string empty;
-    return empty;
-}
-
-std::string FS_ResolvePath(const std::string& relative_path) {
-    if (FS_ResolvePathPtr) return FS_ResolvePathPtr(relative_path);
-    return "";
+std::string FS_ResolvePath(const std::string& relative) {
+    return g_pFS ? g_pFS->ResolvePath(relative) : "";
 }

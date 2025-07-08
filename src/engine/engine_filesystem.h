@@ -3,8 +3,18 @@
 
 #include <string>
 
-bool LoadFileSystem(void* dllHandle);
+#include "inc_dll_utils.h" // for LibHandle
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool LoadFileSystem(LibHandle dllHandle);
 void UnloadFileSystem();
 
-const std::string& FS_GetGameDir();
+const char* FS_GetGameDir();
 std::string FS_ResolvePath(const std::string& relative_path);
+
+#ifdef __cplusplus
+}
+#endif

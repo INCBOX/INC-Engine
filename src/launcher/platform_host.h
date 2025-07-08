@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "inc_dll_utils.h"  // defines LibHandle
 
 // Runs the platform host (window, SDL, engine DLL loading, main loop)
 // - engineDllPath: path to the engine DLL/shared lib
@@ -10,8 +11,6 @@
 // Returns 0 on success, negative error code on failure.
 int PlatformHost_Run(
     const std::string& engineDllPath,
-    const std::string& fsDllPath,
+    LibHandle fsLib,
     const std::string& gameInfoPath,
     const std::string& windowTitle);
-	
-	

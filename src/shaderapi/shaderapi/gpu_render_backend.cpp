@@ -28,7 +28,7 @@ IGPURenderInterface* InternalCreateGPUAPI()
     }
 
     const char* overrideName = getenv("INC_GPU_BACKEND");
-	const char* defaults[] = { "shaderapi_null.dll", "shaderapi_gl.dll", "shaderapi_dx.dll", "shaderapi_vk.dll" };
+	const char* defaults[] = { "shaderapi_vk.dll", "shaderapi_dx.dll", "shaderapi_gl.dll", "shaderapi_null.dll" };
 
     auto tryLoad = [&](const char* name) -> bool {
         char path[MAX_PATH];

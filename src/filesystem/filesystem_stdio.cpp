@@ -1,5 +1,5 @@
-#include "filesystem.h"                 // IFileSystem interface
-#include "filesystem_stdio_dll_api.h"   // C API
+#include "inc_dll_utils.h"
+#include "filesystem.h"
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -54,12 +54,30 @@ extern "C" DLL_EXPORT IFileSystem* GetFileSystemInterface() {
 // C API IMPLEMENTATION
 // ---------------------
 
-DLL_EXPORT bool FS_Init(const std::string& gameinfo_path) {
-    g_gameDir = fs::absolute(fs::path(gameinfo_path)).parent_path().string();
+extern "C" __declspec(dllexport) bool FS_Init(const std::string& gameinfo_path) {
+    // Reset internal state if needed
+    g_gameDir.clear();
+    g_searchPaths.clear();
+
+    fs::path gameinfo(gameinfo_path);
+    if (!fs::exists(gameinfo)) {
+        std::cerr << "[FS] FS_Init: gameinfo.txt not found: " << gameinfo_path << std::endl;
+        return false;
+    }
+
+    // Use the existing LoadGameInfo logic
+    CFileSystem_Stdio tempFS;  // Temporary instance to call LoadGameInfo (but LoadGameInfo is private)
+
+    // Since LoadGameInfo is private, move the loading logic here or
+    // make LoadGameInfo static or public, or move it outside class.
+
+    // For now, copy-paste your LoadGameInfo logic here:
+
+    g_gameDir = fs::absolute(gameinfo).parent_path().string();
 
     std::ifstream file(gameinfo_path);
     if (!file.is_open()) {
-        std::cerr << "[FS] Failed to open gameinfo.txt: " << gameinfo_path << std::endl;
+        std::cerr << "[FS] FS_Init failed to open gameinfo.txt: " << gameinfo_path << std::endl;
         return false;
     }
 
@@ -87,10 +105,11 @@ DLL_EXPORT bool FS_Init(const std::string& gameinfo_path) {
     }
 
     if (g_gameDir.empty() || g_searchPaths.empty()) {
-        std::cerr << "[FS] Failed to parse gameinfo.txt correctly." << std::endl;
+        std::cerr << "[FS] FS_Init failed to parse gameinfo.txt correctly." << std::endl;
         return false;
     }
 
+    std::cout << "[FS] FS_Init successful.\n";
     std::cout << "[FS] Game Directory: " << g_gameDir << std::endl;
     for (const auto& path : g_searchPaths) {
         fs::path full = fs::path(g_gameDir) / path;
@@ -110,4 +129,11 @@ DLL_EXPORT const std::string& FS_GetGameDir() {
 
 DLL_EXPORT const std::vector<std::string>& FS_GetSearchPaths() {
     return g_searchPaths;
+}
+
+extern "C" DLL_EXPORT void FS_Shutdown() {
+    // Clear internal state and release any resources
+    g_gameDir.clear();
+    g_searchPaths.clear();
+    // Add other cleanup here if needed
 }
