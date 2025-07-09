@@ -1,4 +1,4 @@
-// what is this runtime kernel? It’s the central runtime control layer for your launcher (inc.exe) that owns and orchestrates all loaded modules, manages the main loop, and can be extended later for:
+// runtime kernel is the central runtime control layer for launcher That owns and orchestrates all loaded modules, manages the main loop, and can be extended later for:
 
 // Hot module reload
 // Dynamic module loading/unloading on demand

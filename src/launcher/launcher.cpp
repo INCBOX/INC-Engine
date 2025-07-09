@@ -11,8 +11,8 @@
 // Note:
 // - No SDL or rendering code here — that belongs to platform_host and engine DLL.
 
-#include "runtime_kernel.h" // REPLACES PLATFORM_HOST?? IS IT NEW LOOP? IDK
-#include "fs_launcher.h"     // FILESYSTEM
+#include "runtime_kernel.h" 	// MAIN LOOP IS HERE
+#include "fs_launcher.h"     	// FILESYSTEM
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
