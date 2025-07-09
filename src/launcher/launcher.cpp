@@ -10,15 +10,9 @@
 //
 // Note:
 // - No SDL or rendering code here — that belongs to platform_host and engine DLL.
-//
-#include "dll_exports.h"   // LibHandle, LoadLib, etc.
-#include "dll_platform.h"
-#include "dll_loader.h"
 
-
-#include "platform_host.h"   // MAIN LOOP MODULE
+#include "runtime_kernel.h" // REPLACES PLATFORM_HOST?? IS IT NEW LOOP? IDK
 #include "fs_launcher.h"     // FILESYSTEM
-
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -41,47 +35,22 @@ static void ShowError(const char* message) noexcept {
 using FSInitFn = bool(*)(const std::string&);
 
 int main(int argc, char* argv[]) {
-    // Resolve launch information (gameinfo path, DLL paths)
+    // Resolve launch info as before...
     const auto launchInfoOpt = ResolveFilesystemLaunchInfo(argc, argv);
     if (!launchInfoOpt) {
         ShowError("Failed to resolve filesystem launch info");
         return EXIT_FAILURE;
     }
-
     const auto& info = *launchInfoOpt;
 
-    // Load the filesystem DLL
-    const LibHandle fsLib = LoadLib(info.fsDllPath.c_str());
-    if (!fsLib) {
-        ShowError("Failed to load filesystem DLL");
+    RuntimeKernel kernel;
+    if (!kernel.Initialize(info.fsDllPath, info.engineDllPath, info.gameinfoPath.string())) {
+        ShowError("Runtime kernel failed initialization");
         return EXIT_FAILURE;
     }
 
-    // Obtain FS_Init function pointer from the DLL
-    const auto FS_Init = reinterpret_cast<FSInitFn>(GetLibProc(fsLib, "FS_Init"));
-    if (!FS_Init) {
-        ShowError("FS_Init symbol not found in filesystem DLL");
-        CloseLib(fsLib);
-        return EXIT_FAILURE;
-    }
-
-    // Initialize filesystem with gameinfo path
-    if (!FS_Init(info.gameinfoPath.string())) {
-        ShowError("FS_Init failed during initialization");
-        CloseLib(fsLib);
-        return EXIT_FAILURE;
-    }
-
-    // Run the engine main loop
-    const int result = PlatformHost_Run(
-        info.engineDllPath,
-        fsLib,
-        info.gameinfoPath.string(),
-        "INC Engine"
-    );
-
-    // Clean up the filesystem DLL
-    CloseLib(fsLib);
+    int result = kernel.RunMainLoop("INC Engine");
+    kernel.Shutdown();
 
     return result;
 }
