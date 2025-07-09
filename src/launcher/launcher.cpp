@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string gameName = launchInfo->gameinfoPath.parent_path().filename().string();
-	std::string title = "INC Runtime — [" + launchInfo->gameTitle + "]";
+	std::string title = "INC [" + launchInfo->gameTitle + "]";
 	int result = kernel.RunMainLoop(title.c_str());
 
     kernel.Shutdown();
