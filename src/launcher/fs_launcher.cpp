@@ -19,6 +19,9 @@
 
 namespace fs = std::filesystem;
 
+// Forward declaration for ParseGameTitle so it can be called in ResolveFilesystemLaunchInfo
+static std::string ParseGameTitle(const fs::path& gameinfoPath);
+
 static std::optional<fs::path> GetExecutableDir() {
 #if defined(_WIN32)
     char exePath[MAX_PATH] = {};
@@ -123,6 +126,10 @@ std::optional<FsLaunchInfo> ResolveFilesystemLaunchInfo(int argc, char* argv[]) 
         std::cerr << "[INC_FILESYS] gameinfo.txt not found in game directory: " << info.gameinfoPath << "\n";
         return std::nullopt;
     }
+	
+	info.gameTitle = ParseGameTitle(info.gameinfoPath);
+	std::cout << "[INC_FILESYS] Game Title: " << info.gameTitle << "\n";
+
 
     std::cout << "[INC_FILESYS] Using gameinfo.txt: " << info.gameinfoPath << "\n";
 
@@ -159,4 +166,37 @@ std::optional<FsLaunchInfo> ResolveFilesystemLaunchInfo(int argc, char* argv[]) 
     std::cout << "[INC_FILESYS] Engine DLL path: " << info.engineDllPath << "\n";
 
     return info;
+}
+
+static std::string ParseGameTitle(const fs::path& gameinfoPath) {
+    std::ifstream file(gameinfoPath);
+    if (!file.is_open()) {
+        std::cerr << "[INC_FILESYS] Failed to open gameinfo.txt for gametitle parsing\n";
+        return "Unknown Game";
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::string trimmed = Trim(line);
+
+        auto pos = trimmed.find("\"gametitle\"");
+        if (pos == std::string::npos) continue;
+
+        // Find the pair of quotes wrapping the key "gametitle"
+        auto firstKeyQuote = trimmed.find('"', pos);
+        if (firstKeyQuote == std::string::npos) continue;
+        auto secondKeyQuote = trimmed.find('"', firstKeyQuote + 1);
+        if (secondKeyQuote == std::string::npos) continue;
+
+        // Find the pair of quotes wrapping the value (game title)
+        auto firstValueQuote = trimmed.find('"', secondKeyQuote + 1);
+        if (firstValueQuote == std::string::npos) continue;
+        auto secondValueQuote = trimmed.find('"', firstValueQuote + 1);
+        if (secondValueQuote == std::string::npos) continue;
+
+        std::string title = trimmed.substr(firstValueQuote + 1, secondValueQuote - firstValueQuote - 1);
+        return title;
+    }
+
+    return "Unknown Game";
 }

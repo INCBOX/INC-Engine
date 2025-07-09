@@ -10,6 +10,7 @@ struct FsLaunchInfo {
     std::filesystem::path gameinfoPath;
     std::string fsDllPath;
     std::string engineDllPath;
+	std::string gameTitle;
 };
 
 // Resolves executable dir, game dir, gameinfo.txt path, and DLL paths.
