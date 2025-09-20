@@ -1,11 +1,3 @@
-# INC Engine
+# INC Kernel Operating System
 
-INC Engine is a modular, C++ game engine inspired by Valve's Source Engine architecture. It features:
-
-- Dynamic filesystem loading using `gameinfo.txt` and Source-style `searchpaths`
-- Modular runtime DLL structure (`engine.dll`, `client.dll`, etc.)
-- Custom ShaderAPI abstraction supporting OpenGL, Vulkan, and DirectX backends
-- Modern OpenGL rendering with VAOs/VBOs and MVP matrix math
-- Cross-platform support (Windows, Linux, macOS planned)
-
-INC Engine is built from the ground up with a clean, maintainable structure for serious engine development and experimentation.
+Pre-AAA: 64-bit, modular, ultra-low-level runtime. Pure C API, C++ core for optimal performance. Zero third-party dependencies, CRT-only, lightweight. Fully dynamic module system: load, unload, hot-reload at runtime. Headless mode, precise tickrate control, cross-platform (Windows, Linux, macOS), Vulkan-style GPU interface. Battle-tested stability under extreme multi-threaded loads.
