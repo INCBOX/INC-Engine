@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/splash_INC.png" alt="INC Logo" width="300">
+  <img src="assets/splash_INC.png" alt="INC Logo" width="500">
 </p>
 
 **INC** is a 64-bit modular runtime capable of hosting engines or running as an engine itself, supporting dynamic module loading and hot-reload.
