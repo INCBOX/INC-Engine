@@ -4,17 +4,26 @@
 
 **INC** is a 64-bit modular runtime capable of hosting engines or running as an engine itself, supporting dynamic module loading and hot-reload.
 
+# Features
+
+- Modular runtime with hot-reload support for any module.
+- Headless or full runtime modes with cross-platform compatibility.
+- Precise variable and fixed tickrate control for simulation and rendering.
+- Lightweight, ultra-optimized C API with C++ core.
+- Supports legacy engines (e.g., ID Tech 4) as loadable modules.
+- Vulkan-style GPU abstraction and multi-threaded CPU optimization.
+- Fully dynamic module dependency resolution at runtime.
+
 ## Releases
 
-- **INC** — prebuilt runtime with console, player platform, and module support.  
-- **Dhewm3** — prebuilt as a loadable module for INC.
+- **INC** — prebuilt runtime with terminal, console, platform, window, engine, renderer, level, and player modules backended by opengl, dx11.
+- **ID Tech 4** — prebuilt as a loadable module for INC.
 
 ## How to Test
 
-1. Place `Dhewm3.dll` and `Dhewm3.manifest` into the `/bin` folder of INC.  
+1. Place the desired module DLL(s) and corresponding .manifest into the /bin folder of INC.
 2. Run `INC.exe`. The module will load automatically.  
-3. To remove or reload the module at runtime, either delete the `.manifest` or use the console terminal commands (available as modules in `/bin`).  
-4. Observe performance improvements or behavior compared to standalone Dhewm3.
+3. To remove or reload modules at runtime, either delete the .manifest or use the console commands eg (unload, reload, load modulename).
 
 ## Community
 https://discord.gg/CMqShG6frV
@@ -22,5 +31,4 @@ https://discord.gg/CMqShG6frV
 ## Notes
 
 - **No source code included.**  
-- INC can host other engines or experimental modules in addition to Dhewm3.  
-- All rights to Dhewm3 belong to the original developers.
+- INC can host other engines or experimental modules beyond ID Tech 4.
