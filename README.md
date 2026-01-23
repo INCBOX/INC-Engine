@@ -2,17 +2,8 @@
   <img src="assets/splash_INC.png" alt="INC Logo" width="500">
 </p>
 
-**INC** is a 64-bit modular runtime capable of hosting engines or running as an engine itself, supporting dynamic module loading and hot-reload.
+**INC** is a modular runtime capable of hosting engines or running as an engine itself.
 
-# Features
-
-- Modular runtime with hot-reload support for any module.
-- Headless or full runtime modes with cross-platform compatibility.
-- Precise variable and fixed tickrate control for simulation and rendering.
-- Lightweight, ultra-optimized C API with C++ core.
-- Supports legacy engines (e.g., ID Tech 4) as loadable modules.
-- Vulkan-style GPU abstraction and multi-threaded CPU optimization.
-- Fully dynamic module dependency resolution at runtime.
 
 ## Releases
 
@@ -30,5 +21,4 @@ https://discord.gg/CMqShG6frV
 
 ## Notes
 
-- **No source code included.**  
-- INC can host other engines or experimental modules beyond ID Tech 4.
+- INC can host other engines or experimental modules beyond ID Tech 4 and X-Ray Engine.
