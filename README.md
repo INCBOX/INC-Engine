@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/splash_INC.png" alt="INC Logo" width="1024">
+  <img src="assets/splash_INC.png" alt="INC Logo" style="max-width:100%; height:auto;">
 </p>
 
 **INC** is a universal modular infrastructure kernel, capable of hosting applications and engines.
@@ -22,6 +22,7 @@ https://discord.gg/CMqShG6frV
 ## Notes
 
 - INC can host other engines or experimental modules beyond ID Tech 4 and X-Ray Engine.
+
 
 
 
