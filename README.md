@@ -2,7 +2,7 @@
   <img src="resources/assets/splash_INC.png" alt="INC Logo" style="max-width:100%; height:auto;">
 </p>
 
-**INC** is a universal modular infrastructure kernel, capable of hosting applications and engines.
+**INC** - a middleware runtime that hosts engines and applications as hot-reloadable native modules.
 
 
 ## Releases
@@ -22,6 +22,7 @@ https://discord.gg/CMqShG6frV
 ## Notes
 
 - INC can host other engines or experimental modules beyond ID Tech 4 and X-Ray Engine.
+
 
 
 
