@@ -8,7 +8,9 @@
 ## Releases
 
 - **INC** — prebuilt runtime with terminal, console, platform, window, engine, renderer, level, and player modules backended by opengl, dx11.
-- **ID Tech 4** — prebuilt as a loadable module for INC.
+- **ID Tech 4 dhewm3** DOOM 3
+- **ID Tech 3 ioquake3** Quake III Arena
+- **X-Ray Monolith** S.T.A.L.K.E.R. Anomaly
 
 ## How to Test
 
@@ -22,6 +24,7 @@ https://discord.gg/CMqShG6frV
 ## Notes
 
 - INC can host other engines or experimental modules beyond ID Tech 4 and X-Ray Engine.
+
 
 
 
