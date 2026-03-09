@@ -10,15 +10,18 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:       #000000;
-    --surface:  #030303;
-    --border:   #0f1f0f;
-    --green:    #00ff41;
-    --green-dim:#00cc33;
-    --green-lo: #001a06;
-    --muted:    #2a5c2a;
-    --text:     #7aab7a;
-    --bright:   #ccffcc;
+    --bg:        #050302;
+    --surface:   #0a0603;
+    --border:    #1f1108;
+    --red:       #e8420a;
+    --red-dim:   #b33208;
+    --red-lo:    #1a0800;
+    --orange:    #f07030;
+    --ochre:     #c8621a;
+    --muted:     #5a2e10;
+    --text:      #a06040;
+    --bright:    #f0c090;
+    --dust:      #8a5030;
   }
 
   html { scroll-behavior: smooth; }
@@ -38,7 +41,7 @@
     inset: 0;
     background: repeating-linear-gradient(
       0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+      rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
     );
     pointer-events: none;
     z-index: 9998;
@@ -54,14 +57,14 @@
     justify-content: space-between;
     padding: 1rem 2.5rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(0,0,0,0.97);
+    background: rgba(5,3,2,0.97);
   }
 
   .nav-logo {
     font-family: 'Orbitron', monospace;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--green);
+    color: var(--red);
     text-decoration: none;
     letter-spacing: 0.3em;
   }
@@ -78,7 +81,7 @@
   .status-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
-    background: var(--green);
+    background: var(--red);
     animation: blink 2s step-end infinite;
   }
 
@@ -93,7 +96,7 @@
     transition: color 0.15s;
   }
 
-  .nav-links a:hover { color: var(--green); }
+  .nav-links a:hover { color: var(--red); }
 
   /* ── Hero ── */
   .hero {
@@ -104,16 +107,28 @@
     justify-content: center;
     padding: 7rem 2rem 4rem;
     text-align: center;
+    position: relative;
+  }
+
+  /* Mars atmosphere glow behind logo */
+  .hero-glow {
+    position: absolute;
+    top: 38%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, rgba(232,66,10,0.08) 0%, transparent 65%);
+    pointer-events: none;
   }
 
   .hero-logo {
-    width: min(580px, 88vw);
+    width: min(560px, 86vw);
     margin-bottom: 2.5rem;
     opacity: 0;
     animation: fadeIn 1.4s ease forwards 0.3s;
+    position: relative;
     filter:
-      drop-shadow(0 0 30px rgba(0,255,65,0.3))
-      drop-shadow(0 0 80px rgba(0,255,65,0.12));
+      drop-shadow(0 0 30px rgba(232,66,10,0.4))
+      drop-shadow(0 0 90px rgba(232,66,10,0.15));
   }
 
   .hero-tag {
@@ -126,7 +141,7 @@
     animation: fadeIn 0.6s ease forwards 1.1s;
   }
 
-  .hero-tag span { color: var(--green); }
+  .hero-tag span { color: var(--red); }
 
   .hero-title {
     font-family: 'Orbitron', monospace;
@@ -170,7 +185,7 @@
     font-family: 'Orbitron', monospace;
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--green);
+    color: var(--red);
     display: block;
   }
 
@@ -201,7 +216,7 @@
     animation: fadeIn 0.6s ease forwards 1.7s;
   }
 
-  .prompt span { color: var(--green); animation: blink 1.1s step-end infinite; }
+  .prompt span { color: var(--red); animation: blink 1.1s step-end infinite; }
 
   /* ── Buttons ── */
   .btn {
@@ -216,22 +231,20 @@
     cursor: crosshair;
   }
 
-  .btn-primary { background: var(--green); color: #000; border-color: var(--green); font-weight: 700; }
-  .btn-primary:hover { background: transparent; color: var(--green); box-shadow: 0 0 20px rgba(0,255,65,0.15); }
+  .btn-primary { background: var(--red); color: #000; border-color: var(--red); font-weight: 700; }
+  .btn-primary:hover { background: transparent; color: var(--red); box-shadow: 0 0 20px rgba(232,66,10,0.2); }
   .btn-secondary { background: transparent; color: var(--text); border-color: var(--muted); }
-  .btn-secondary:hover { border-color: var(--green); color: var(--green); }
+  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
 
   hr.divider { border: none; border-top: 1px solid var(--border); }
 
   /* ── Engines ── */
   .engine-wrap { background: var(--surface); }
-
-  .engine-inner,
-  .section-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
+  .engine-inner, .section-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
 
   .section-label {
     font-size: 0.6rem;
-    color: var(--green);
+    color: var(--red);
     letter-spacing: 0.28em;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
@@ -275,13 +288,13 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 1px;
-    background: var(--green);
+    background: var(--red);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s;
   }
 
-  .engine-card:hover { background: var(--green-lo); }
+  .engine-card:hover { background: var(--red-lo); }
   .engine-card:hover::after { transform: scaleX(1); }
 
   .engine-tag { font-size: 0.56rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
@@ -300,7 +313,7 @@
     display: inline-block;
     margin-top: 1rem;
     font-size: 0.56rem;
-    color: var(--green);
+    color: var(--orange);
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
@@ -327,10 +340,10 @@
     justify-content: space-between;
     padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--border);
-    background: var(--green-lo);
+    background: var(--red-lo);
   }
 
-  .code-filename { font-size: 0.6rem; color: var(--green); letter-spacing: 0.1em; }
+  .code-filename { font-size: 0.6rem; color: var(--orange); letter-spacing: 0.1em; }
   .code-dots { display: flex; gap: 0.4rem; }
   .code-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
 
@@ -343,12 +356,12 @@
     padding: 1.25rem 1.5rem;
   }
 
-  .kw { color: var(--green); }
+  .kw { color: var(--red); }
   .cm { color: var(--muted); }
   .fn { color: var(--bright); }
-  .st { color: #00cc88; }
-  .tp { color: #66ffaa; }
-  .nm { color: var(--green-dim); }
+  .st { color: var(--orange); }
+  .tp { color: var(--ochre); }
+  .nm { color: var(--red-dim); }
 
   /* ── Steps ── */
   .steps {
@@ -396,8 +409,16 @@
   }
 
   .contact-inner .section-body { text-align: center; max-width: 100%; }
-
   .contact-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+  .contact-email {
+    font-size: 0.72rem;
+    color: var(--dust);
+    letter-spacing: 0.1em;
+  }
+
+  .contact-email a { color: var(--orange); text-decoration: none; }
+  .contact-email a:hover { color: var(--red); }
 
   /* ── Footer ── */
   footer {
@@ -422,7 +443,7 @@
     transition: color 0.15s;
   }
 
-  .footer-links a:hover { color: var(--green); }
+  .footer-links a:hover { color: var(--red); }
 
   /* ── Animations ── */
   @keyframes fadeIn {
@@ -462,6 +483,7 @@
 </nav>
 
 <section class="hero">
+  <div class="hero-glow"></div>
   <img class="hero-logo"
     src="https://raw.githubusercontent.com/INCBOX/INC/engine/resources/assets/splash_INC.png"
     alt="INC">
@@ -607,8 +629,10 @@
     <p class="section-label reveal">▸ commercial SDK</p>
     <h2 class="section-title reveal">Ready to build on INC?</h2>
     <p class="section-body reveal">Indie license is free. Studio and Enterprise licenses for commercial projects. SDK includes headers, docs, and examples. Kernel stays closed.</p>
+    <p class="contact-email reveal">License inquiries: <a href="mailto:teamincbox@gmail.com">teamincbox@gmail.com</a></p>
     <div class="contact-links reveal">
-      <a class="btn btn-primary" href="https://discord.gg/CMqShG6frV">Contact on Discord</a>
+      <a class="btn btn-primary" href="mailto:teamincbox@gmail.com">Email Us</a>
+      <a class="btn btn-secondary" href="https://discord.gg/CMqShG6frV">Discord</a>
       <a class="btn btn-secondary" href="https://github.com/INCBOX/INC">GitHub</a>
     </div>
   </div>
@@ -619,7 +643,7 @@
   <ul class="footer-links">
     <li><a href="https://github.com/INCBOX/INC">GitHub</a></li>
     <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
-    <li><a href="#contact">License</a></li>
+    <li><a href="mailto:teamincbox@gmail.com">Contact</a></li>
   </ul>
 </footer>
 
