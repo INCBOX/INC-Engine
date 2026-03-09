@@ -3,478 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INC — Universal Module Kernel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<title>INC™</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+  /* ════════════════════════════════════════════
+     COLOR TOKENS  –  edit everything from here
+  ════════════════════════════════════════════ */
   :root {
-    --bg:        #050302;
-    --surface:   #0a0603;
-    --border:    #1f1108;
-    --red:       #e8420a;
-    --red-dim:   #b33208;
-    --red-lo:    #1a0800;
-    --orange:    #f07030;
-    --ochre:     #c8621a;
-    --muted:     #5a2e10;
-    --text:      #a06040;
-    --bright:    #f0c090;
-    --dust:      #8a5030;
+    /* Layout */
+    --nav-height:        48px;
+    --local-nav-height:  64px;
+
+    /* Page backgrounds */
+    --bg-page:           #151616;
+    --bg-ea-play:        #151616;
+    --bg-network-nav:    #000000;
+	--bg-local-nav: rgba(21, 22, 22, 0.90);
+    --bg-card:           #323232;
+    --bg-local-footer:   #323232;
+    --bg-network-footer: #212222;
+
+    /* Text */
+    --text-primary:      #ffffff;
+    --text-muted:        rgba(255,255,255,0.75);
+    --text-faint:        rgba(255,255,255,0.4);
+    --text-nav-link:     rgba(255,255,255,0.8);
+    --text-footer-link:  rgba(255,255,255,0.75);
+    --text-nf-link:      rgba(255,255,255,0.6);
+
+    /* Buttons */
+    --btn-primary-bg:    #ffffff;
+    --btn-primary-text:  #000000;
+    --btn-gold-bg:       #b8892a;
+    --btn-gold-text:     #ffffff;
+    --btn-gold-hover:    #cfa040;
+
+    /* Tags */
+    --tag-solid-bg:      #ffffff;
+    --tag-solid-text:    #000000;
+    --tag-outline-text:  rgba(255,255,255,0.7);
+    --tag-outline-border:rgba(255,255,255,0.35);
+
+    /* Borders & dividers */
+    --border-nav:        rgba(255,255,255,0.08);
+    --border-icon-btn:   rgba(255,255,255,0.25);
+    --divider:           rgba(255,255,255,0.12);
+    --divider-footer:    rgba(255,255,255,0.1);
+    --divider-nf:        rgba(255,255,255,0.08);
+    --divider-nf-link:   rgba(255,255,255,0.18);
+
+    /* Misc */
+    --privacy-badge-bg:  #1558b0;
+    --esrb-text:         rgba(255,255,255,0.5);
   }
 
-  html { scroll-behavior: smooth; }
+  /* ════════════════════════════════════════════
+     BASE RESET
+  ════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg-page); color: var(--text-primary); scroll-behavior: smooth; }
+  body { font-family: 'Source Sans 3','Helvetica Neue',Arial,sans-serif; font-size: 16px; line-height: 1.5; background: var(--bg-page); overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  ul { list-style: none; }
+  button { background: none; border: none; cursor: pointer; font: inherit; color: inherit; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    line-height: 1.6;
-    overflow-x: hidden;
-    cursor: crosshair;
+  /* ─── NETWORK NAV ─── */
+  .network-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    height: var(--nav-height); background: var(--bg-network-nav);
+    display: flex; align-items: center; padding: 0 24px;
+    border-bottom: 1px solid var(--border-nav);
   }
+  .network-nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1270; margin: 0 auto; }
+  .icon-btn { width: 36px; height: 36px; border: 1px solid var(--border-icon-btn); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+  .icon-btn:hover { border-color: rgba(255,255,255,0.6); }
 
-  /* ── CRT scanlines ── */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
-    );
-    pointer-events: none;
-    z-index: 9998;
+  /* ─── LOCAL NAV ─── */
+  .local-nav {
+    position: fixed; top: var(--nav-height); left: 0; right: 0; z-index: 199;
+    height: var(--local-nav-height); background: var(--bg-local-nav);
+    backdrop-filter: blur(48px); border-bottom: 1px solid var(--border-nav);
+    display: flex; align-items: center; padding: 0 24px;
   }
+  .local-nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1270; margin: 0 auto; }
+  .local-nav-btn { display: flex; align-items: center; gap: 4px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: var(--text-nav-link); border-radius: 4px; transition: color 0.2s; }
+  .local-nav-btn:hover { color: var(--text-primary); }
 
-  /* ── Nav ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2.5rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(5,3,2,0.97);
+  /* ─── MAIN ─── */
+  main { padding-top: calc(var(--nav-height) + var(--local-nav-height)); }
+
+  /* ─── EDITORIAL SECTION ─── */
+  .editorial-section { display: grid; grid-template-columns: 1fr 1fr; align-items: center; max-width: 1392px; margin: 0 auto; padding: 64px 80px; gap: 48px; }
+  .editorial-title { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .editorial-divider { display: block; width: 48px; height: 3px; background: var(--text-primary); margin: 16px 0 24px; }
+  .editorial-text { font-size: 18px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; }
+
+  /* ─── BUTTONS ─── */
+  .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s; }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-lg { background: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 14px 32px; font-size: 16px; }
+  .btn-sm { background: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 10px 20px; font-size: 14px; }
+  .btn-gold { background: var(--btn-gold-bg); color: var(--btn-gold-text); padding: 10px 20px; font-size: 14px; }
+  .btn-gold:hover { background: var(--btn-gold-hover); opacity: 1; }
+
+ /* ─── DIVIDER ─── */
+  .section-divider { width: 100%; max-width: 1392px; height: 1px; background: var(--divider); margin: 0 auto; padding: 0 80px; background-clip: content-box; }
+
+.divider-wrap { padding: 0 80px; }
+.divider-wrap .section-divider { max-width: 1392px; margin: 0 auto; height: 1px; background: var(--divider); }
+
+  /* ─── MEDIA HEROES ─── */
+  .media-heroes-wrapper { max-width: 1392px; margin: 0 auto; padding: 64px 80px; display: flex; flex-direction: column; gap: 96px; }
+  .media-hero-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 48px; }
+  .media-hero-thumb { position: relative; overflow: hidden; border-radius: 4px; }
+  .media-hero-thumb img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; transition: transform 0.4s; }
+  .media-hero-thumb:hover img { transform: scale(1.02); }
+  .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); transition: background 0.2s; }
+  .play-overlay:hover { background: rgba(0,0,0,0.38); }
+  .play-circle { width: 64px; height: 64px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  .play-circle svg { margin-left: 4px; }
+  .media-hero-heading { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.3px; }
+  .media-hero-body { font-size: 16px; color: var(--text-muted); line-height: 1.65; margin-bottom: 24px; }
+
+  /* ─── GAME CARDS ─── */
+  .row-section { max-width: 1392px; margin: 0 auto; padding: 64px 80px; }
+  .row-section-title { font-size: 24px; font-weight: 700; margin-bottom: 32px; }
+  .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .card { display: block; background: var(--bg-card); border-radius: 8px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+  .card-body { padding: 16px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-solid { background: var(--tag-solid-bg); color: var(--tag-solid-text); }
+  .tag-outline { background: transparent; color: var(--tag-outline-text); border: 1px solid var(--tag-outline-border); }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+  .card-price { display: flex; align-items: baseline; gap: 1px; }
+  .price-dollar, .price-cents { font-size: 14px; font-weight: 700; }
+  .price-int { font-size: 22px; font-weight: 700; line-height: 1; }
+
+  /* ─── EA PLAY ─── */
+  .ea-play-section { background: var(--bg-ea-play); padding: 64px 80px; }
+  .ea-play-inner { max-width: 1392px; margin: 0 auto; }
+  .ea-play-grid { display: grid; grid-template-columns: 1.68fr 1fr; align-items: center; gap: 64px; }
+  .ea-play-heading { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+  .ea-play-body { font-size: 16px; color: var(--text-muted); line-height: 1.65; margin-bottom: 24px; }
+
+  /* ─── LOCAL FOOTER ─── */
+  .local-footer { background: var(--bg-local-footer); padding: 40px 80px 32px; }
+  .local-footer-inner { max-width: 1392px; margin: 0 auto; }
+  .footer-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+  .footer-social { display: flex; gap: 8px; }
+  .footer-right-row { display: flex; align-items: center; gap: 12px; }
+  .footer-lang-btn, .footer-backtop-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.7); border: 1px solid var(--border-icon-btn); border-radius: 4px; padding: 7px 14px; transition: border-color 0.2s; }
+  .footer-lang-btn:hover, .footer-backtop-btn:hover { border-color: rgba(255,255,255,0.7); color: var(--text-primary); }
+  .footer-logo-row { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--divider-footer); }
+  .footer-logo-row .esrb-badge { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .esrb-text { font-size: 11px; color: var(--esrb-text); max-width: 200px; line-height: 1.4; }
+  .footer-nav-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .footer-nav-links a { font-size: 14px; color: var(--text-footer-link); transition: color 0.2s; }
+  .footer-nav-links a:hover { color: var(--text-primary); }
+
+  /* ─── NETWORK FOOTER ─── */
+  .network-footer { background: var(--bg-network-footer); padding: 24px 80px 20px; border-top: 1px solid var(--divider-nf); }
+  .network-footer-inner { max-width: 1392px; margin: 0 auto; }
+  .nf-links { display: flex; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .nf-links a, .nf-links button { font-size: 13px; color: var(--text-nf-link); padding: 4px 14px; border-right: 1px solid var(--divider-nf-link); transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
+  .nf-links a:first-child, .nf-links button:first-child { padding-left: 0; }
+  .nf-links a:last-child { border-right: none; }
+  .nf-links a:hover, .nf-links button:hover { color: rgba(255,255,255,0.9); }
+  .privacy-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--privacy-badge-bg); color: var(--text-primary); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 3px; }
+  .footer-vat { font-size: 12px; color: var(--text-faint); margin-bottom: 16px; line-height: 1.5; }
+  .footer-copyright-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--divider-nf); }
+  .footer-copyright { font-size: 13px; color: var(--text-faint); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .editorial-section, .media-heroes-wrapper, .row-section, .ea-play-section, .local-footer, .network-footer { padding-left: 40px; padding-right: 40px; }
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
   }
-
-  .nav-logo {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--red);
-    text-decoration: none;
-    letter-spacing: 0.3em;
-  }
-
-  .nav-status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-  }
-
-  .status-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--red);
-    animation: blink 2s step-end infinite;
-  }
-
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-
-  .nav-links a {
-    font-size: 0.65rem;
-    color: var(--muted);
-    text-decoration: none;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-
-  .nav-links a:hover { color: var(--red); }
-
-  /* ── Hero ── */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 7rem 2rem 4rem;
-    text-align: center;
-    position: relative;
-  }
-
-.hero-glow {
-  position: absolute;
-  top: 38%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 700px; height: 500px;
-  background: radial-gradient(ellipse, rgba(120,35,8,0.06) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-  .hero-tag {
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 1.25rem;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.1s;
-  }
-
-  .hero-tag span { color: var(--red); }
-
-  .hero-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1rem, 2.5vw, 1.75rem);
-    font-weight: 900;
-    color: var(--bright);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    margin-bottom: 1.25rem;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.2s;
-  }
-
-  .hero-sub {
-    font-size: 0.82rem;
-    color: var(--text);
-    max-width: 480px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.9;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.3s;
-  }
-
-  .hero-stats {
-    display: flex;
-    border: 1px solid var(--border);
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.4s;
-  }
-
-  .stat {
-    padding: 1rem 2rem;
-    border-right: 1px solid var(--border);
-    text-align: center;
-  }
-
-  .stat:last-child { border-right: none; }
-
-  .stat-val {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--red);
-    display: block;
-  }
-
-  .stat-label {
-    font-size: 0.56rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    display: block;
-    margin-top: 0.2rem;
-  }
-
-  .hero-cta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.5s;
-  }
-
-  .prompt {
-    margin-top: 3.5rem;
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards 1.7s;
-  }
-
-  .prompt span { color: var(--red); animation: blink 1.1s step-end infinite; }
-
-  /* ── Buttons ── */
-  .btn {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    padding: 0.75rem 1.75rem;
-    border: 1px solid;
-    transition: all 0.15s;
-    cursor: crosshair;
-  }
-
-  .btn-primary { background: var(--red); color: #000; border-color: var(--red); font-weight: 700; }
-  .btn-primary:hover { background: transparent; color: var(--red); box-shadow: 0 0 20px rgba(232,66,10,0.2); }
-  .btn-secondary { background: transparent; color: var(--text); border-color: var(--muted); }
-  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
-
-  hr.divider { border: none; border-top: 1px solid var(--border); }
-
-  /* ── Engines ── */
-  .engine-wrap { background: var(--surface); }
-  .engine-inner, .section-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
-
-  .section-label {
-    font-size: 0.6rem;
-    color: var(--red);
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  .section-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.1rem, 2.5vw, 1.9rem);
-    font-weight: 700;
-    color: var(--bright);
-    letter-spacing: 0.08em;
-    margin-bottom: 1rem;
-    line-height: 1.25;
-  }
-
-  .section-body {
-    font-size: 0.8rem;
-    color: var(--text);
-    max-width: 480px;
-    line-height: 1.9;
-  }
-
-  .engine-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-top: 3rem;
-  }
-
-  .engine-card {
-    background: var(--bg);
-    padding: 1.75rem;
-    transition: background 0.15s;
-    position: relative;
-  }
-
-  .engine-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: var(--red);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s;
-  }
-
-  .engine-card:hover { background: var(--red-lo); }
-  .engine-card:hover::after { transform: scaleX(1); }
-
-  .engine-tag { font-size: 0.56rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
-
-  .engine-name {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--bright);
-    margin-bottom: 0.3rem;
-  }
-
-  .engine-desc { font-size: 0.72rem; color: var(--muted); }
-
-  .engine-status {
-    display: inline-block;
-    margin-top: 1rem;
-    font-size: 0.56rem;
-    color: var(--orange);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  .engine-status::before { content: '● '; animation: blink 2s step-end infinite; }
-
-  /* ── Code ── */
-  .code-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-    align-items: start;
-  }
-
-  .code-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    margin-top: 2rem;
-  }
-
-  .code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--red-lo);
-  }
-
-  .code-filename { font-size: 0.6rem; color: var(--orange); letter-spacing: 0.1em; }
-  .code-dots { display: flex; gap: 0.4rem; }
-  .code-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
-
-  pre {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.74rem;
-    line-height: 1.8;
-    color: var(--text);
-    overflow-x: auto;
-    padding: 1.25rem 1.5rem;
-  }
-
-  .kw { color: var(--red); }
-  .cm { color: var(--muted); }
-  .fn { color: var(--bright); }
-  .st { color: var(--orange); }
-  .tp { color: var(--ochre); }
-  .nm { color: var(--red-dim); }
-
-  /* ── Steps ── */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-top: 3rem;
-  }
-
-  .step { background: var(--bg); padding: 2rem; }
-
-  .step-num {
-    font-family: 'Orbitron', monospace;
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--border);
-    line-height: 1;
-    margin-bottom: 1rem;
-  }
-
-  .step-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--bright);
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .step-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.75; }
-
-  /* ── Contact ── */
-  .contact-wrap { border-top: 1px solid var(--border); text-align: center; }
-
-  .contact-inner {
-    max-width: 580px;
-    margin: 0 auto;
-    padding: 6rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .contact-inner .section-body { text-align: center; max-width: 100%; }
-  .contact-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-
-  .contact-email { font-size: 0.72rem; color: var(--dust); letter-spacing: 0.1em; }
-  .contact-email a { color: var(--orange); text-decoration: none; }
-  .contact-email a:hover { color: var(--red); }
-
-  /* ── Footer ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 1.5rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .footer-brand { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
-  .footer-links { display: flex; gap: 1.5rem; list-style: none; }
-
-  .footer-links a {
-    font-size: 0.6rem;
-    color: var(--muted);
-    text-decoration: none;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-
-  .footer-links a:hover { color: var(--red); }
-
-  /* ── General animations ── */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
-
-  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+  
+@media (max-width: 1024px) { .divider-wrap { padding: 0 40px; } }
+@media (max-width: 768px)  { .divider-wrap { padding: 0 20px; } }
 
   @media (max-width: 768px) {
-    .code-wrap { grid-template-columns: 1fr; gap: 2rem; }
-    .hero-stats { flex-wrap: wrap; }
-    .stat { flex: 1 1 40%; }
-    nav .nav-links { display: none; }
-    nav .nav-status { display: none; }
+    .editorial-section, .media-hero-grid, .ea-play-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+    .editorial-section, .media-heroes-wrapper, .row-section, .ea-play-section, .local-footer, .network-footer { padding-left: 20px; padding-right: 20px; }
+    .editorial-title { font-size: 32px; }
   }
-
-
-/* ============================================================
+ 
+ 
+ 
+ /* ============================================================
    LOGO EFFECTS — edit only this block to change logo behavior
    ===========================================================*/
-
-@keyframes logoFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 @keyframes corrupt {
   0%,91%,100% {
     clip-path: none;
     transform: translate(0) skewX(0deg);
-    filter:
-      drop-shadow(0 0 30px rgba(232,66,10,0.4))
-      drop-shadow(0 0 90px rgba(232,66,10,0.15));
+    filter: none;
   }
   92% {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
     transform: translate(-12px, 0) skewX(-3deg);
-    filter: drop-shadow(0 0 20px rgba(232,66,10,0.3)) brightness(0.4);
+    filter: brightness(0.4);
   }
   93% {
     clip-path: polygon(0 42%, 100% 42%, 100% 61%, 0 61%);
     transform: translate(14px, 0) skewX(4deg);
-    filter: drop-shadow(-6px 0 rgba(255,0,0,0.8)) drop-shadow(6px 0 rgba(0,80,255,0.8)) brightness(2.5);
+    filter: brightness(2.5);
   }
   94% {
     clip-path: polygon(0 8%, 100% 8%, 100% 22%, 0 22%);
@@ -484,229 +223,143 @@
   95% {
     clip-path: polygon(0 70%, 100% 70%, 100% 88%, 0 88%);
     transform: translate(10px, 0) skewX(2deg);
-    filter: drop-shadow(0 0 80px rgba(255,80,20,1)) brightness(3);
+    filter: brightness(3);
   }
   96% {
     clip-path: none;
     transform: translate(-4px, 0) skewX(0deg);
-    filter: brightness(1.8) saturate(2);
+    filter: brightness(1.2);
   }
   97% {
     transform: translate(0);
-    filter:
-      drop-shadow(0 0 30px rgba(232,66,10,0.4))
-      drop-shadow(0 0 90px rgba(232,66,10,0.15));
+    filter: none;
   }
 }
-
 .hero-logo {
-  width: 97;
-  margin-bottom: 2.5rem;
-  opacity: 0;
-  animation:
-    logoFadeIn 1.4s ease     forwards 0.3s,
-    corrupt    7s  step-end  infinite 2s;
-  filter:
-    drop-shadow(0 0 30px rgba(232,66,10,0.4))
-    drop-shadow(0 0 90px rgba(232,66,10,0.15));
+  width: 100%;
+  opacity: 1;
+  animation: corrupt 5s step-end infinite 2s;
 }
 
 /* ============================================================
    END LOGO EFFECTS
    ===========================================================*/
-
-
 </style>
 </head>
+
 <body>
 
-<nav>
-  <a class="nav-logo" href="#">INC</a>
-  <div class="nav-status">
-    <div class="status-dot"></div>
-    KERNEL ONLINE
+<!-- NETWORK NAV -->
+<nav class="network-nav">
+  <div class="network-nav-inner">
+  
+<a aria-label="INC" title="INC" href="INC.DOT" style="display:flex;align-items:center;">
+  <svg data-view-component="true" viewBox="0 0 50 15" width="75" height="17" style="margin-top:3px;" aria-hidden="true">
+    <path fill-rule="evenodd" fill="currentColor" d="M42.1 2.93l-11.41 0 -2.19 6.94 11.41 0 -0.59 1.88 -15.23 0 3.71 -11.75 15.22 0 -0.92 2.93zm-19.84 7.12l0.99 -3.13 0 0 0.01 -0.04 0.57 -1.8 0 0.01 0.45 -1.44 1.15 -3.65 -2.85 0 -2 0 -5.86 0 -3.82 0 -2.78 8.82 -0.12 0.41 4.23 -1.34 1.99 -6.32 5.87 0 -1.35 4.27 0 0 -0.54 1.73 -1.32 4.18 5.38 -1.7zm-16.88 0l3.17 -10.05 -4.85 0 -3.7 11.75 0 0 5.38 -1.7z"></path>
+  </svg>
+</a>
+
+    <a href="incbox.github.io/INC/" class="icon-btn" aria-label="Profile">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.7 9.315A3.777 3.777 0 0 0 12.034 6.444a3.81 3.81 0 1 0-7.62 0c0 1.149.518 2.178 1.333 2.87C4.049 10.2 2.891 11.966 2.891 14h1.524c0-2.086 1.705-3.778 3.809-3.778 2.104 0 3.809 1.692 3.809 3.778h1.524c0-2.034-1.158-3.8-2.857-4.685ZM5.938 6.444a2.286 2.286 0 1 1 4.572 0 2.286 2.286 0 0 1-4.572 0Z" fill="currentColor"/></svg>
+    </a>
   </div>
-  <ul class="nav-links">
-    <li><a href="#engines">Engines</a></li>
-    <li><a href="#api">API</a></li>
-    <li><a href="#how">Deploy</a></li>
-    <li><a href="#contact">License</a></li>
-    <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
-  </ul>
 </nav>
 
-<section class="hero">
-  <div class="hero-glow"></div>
-  <img class="hero-logo"
-    src="https://raw.githubusercontent.com/INCBOX/INC/engine/resources/assets/splash_INC.png"
-    alt="INC">
+<!-- LOCAL NAV -->
+<nav class="local-nav">
+  <div class="local-nav-inner">
+ 
+    <button class="local-nav-btn">
 
-  <p class="hero-tag"><span>▸</span> FEED THE TECH — INCBOX — EST. 2007</p>
-  <h1 class="hero-title">Universal Module Kernel</h1>
-  <p class="hero-sub">A 5kb runtime that hosts any native module.<br>Drop a DLL. Drop a manifest. It runs.</p>
+    </button>
 
-  <div class="hero-stats">
-    <div class="stat"><span class="stat-val">5kb</span><span class="stat-label">Runtime</span></div>
-    <div class="stat"><span class="stat-val">0</span><span class="stat-label">Heap / tick</span></div>
-    <div class="stat"><span class="stat-val">3</span><span class="stat-label">Functions</span></div>
-    <div class="stat"><span class="stat-val">∞</span><span class="stat-label">Possibilities</span></div>
+    <button class="local-nav-btn">
+      teamincbox@gmail.com
+      <svg viewBox="0 1 24 24" width="12" height="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.56 8.46a1 1 0 0 1 0 2.22l-7.5 7.857a1 1 0 0 1-1.464 0L4.096 10.68a1 1 0 1 1 1.465-1.362L12 15.206l6.44-6.746a1 1 0 0 1 2.12 0Z" fill="currentColor"/></svg>
+    </button>
+
   </div>
+</nav>
 
-  <div class="hero-cta">
-    <a class="btn btn-primary" href="https://github.com/INCBOX/INC/releases">Download</a>
-    <a class="btn btn-secondary" href="#api">View API</a>
-    <a class="btn btn-secondary" href="#contact">License</a>
-  </div>
+<main>
 
-  <p class="prompt">C:\INC> kernel.exe --scan bin/ <span>_</span></p>
-</section>
+  <!-- 4. INC LOGO -->
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+          <div>
+		        <h3 class="row-section-title">Universal Modular Infrastructure
+™</h3>
+			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="aspect-ratio:16/9;width:100%;object-fit:contain">
 
-<hr class="divider">
-
-<div class="engine-wrap" id="engines">
-  <div class="engine-inner">
-    <p class="section-label reveal">▸ proven on real engines</p>
-    <h2 class="section-title reveal">Three engines.<br>Zero source changes.</h2>
-    <p class="section-body reveal">ioquake3, dhewm3, and X-Ray all run as INC modules — unmodified. Same kernel. Same three functions. Different universe inside each.</p>
-    <div class="engine-grid reveal">
-      <div class="engine-card">
-        <p class="engine-tag">ID Tech 3</p>
-        <p class="engine-name">ioquake3</p>
-        <p class="engine-desc">Quake III Arena</p>
-        <span class="engine-status">Running</span>
-      </div>
-      <div class="engine-card">
-        <p class="engine-tag">ID Tech 4</p>
-        <p class="engine-name">dhewm3</p>
-        <p class="engine-desc">DOOM 3</p>
-        <span class="engine-status">Running</span>
-      </div>
-      <div class="engine-card">
-        <p class="engine-tag">X-Ray Monolith</p>
-        <p class="engine-name">S.T.A.L.K.E.R.</p>
-        <p class="engine-desc">Anomaly</p>
-        <span class="engine-status">Running</span>
-      </div>
-      <div class="engine-card">
-        <p class="engine-tag">Custom</p>
-        <p class="engine-name">Modular Engine</p>
-        <p class="engine-desc">platform · engine · dx11 · player</p>
-        <span class="engine-status">Running</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<hr class="divider">
-
-<div id="api">
-  <div class="section-inner">
-    <div class="code-wrap">
-      <div>
-        <p class="section-label reveal">▸ the entire contract</p>
-        <h2 class="section-title reveal">Three functions.<br>One header.</h2>
-        <p class="section-body reveal">Your module owns everything inside — renderer, physics, audio, simulation. The kernel never touches your internals.</p>
-        <p class="section-body reveal" style="margin-top:1rem; color:var(--muted);">Modules you build are yours. INC claims nothing.</p>
-      </div>
-      <div class="reveal">
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">module_hello_world.c</span>
-            <div class="code-dots">
-              <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
-            </div>
           </div>
-<pre><span class="cm">// entire INC module contract.</span>
-<span class="cm">// same pattern: hello world → universe sim.</span>
-
-<span class="kw">#include</span> <span class="st">&lt;interface_module.h&gt;</span>
-<span class="kw">#include</span> <span class="st">&lt;stdio.h&gt;</span>
-
-<span class="kw">static void</span> <span class="fn">Hello_Tick</span>(<span class="tp">float</span> dt) {
-    printf(<span class="st">"Hello, World!\n"</span>);
-}
-
-<span class="kw">static int</span> <span class="fn">Hello_Init</span>(
-    <span class="tp">IModule</span>        *self,
-    <span class="tp">IRuntimeContext</span> *ctx,
-    <span class="tp">void</span>          (**tick)(<span class="tp">float</span>))
-{
-    *tick = Hello_Tick;
-    <span class="kw">return</span> <span class="nm">1</span>;
-}
-
-<span class="kw">static void</span> <span class="fn">Hello_Shutdown</span>(<span class="tp">IModule</span> *self) { }
-
-<span class="fn">INC</span>(Hello_Init, Hello_Shutdown)</pre>
-        </div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<hr class="divider">
 
-<div id="how">
-  <div class="section-inner">
-    <p class="section-label reveal">▸ deployment</p>
-    <h2 class="section-title reveal">Drop it in. It runs.</h2>
-    <div class="steps reveal">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">Build your module</div>
-        <div class="step-desc">Implement Init, Tick, Shutdown. Stamp with INC(). Compile to DLL or .so.</div>
+</main>
+
+<!-- LOCAL FOOTER -->
+<footer class="local-footer" id="local-footer">
+  <div class="local-footer-inner">
+
+    <div class="footer-top-row">
+      <div class="footer-social">
+        <a href="https://www.youtube.com/@incbox" target="_blank" rel="noreferrer" aria-label="INC - Youtube" class="icon-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.814 5.418c.86.23 1.538.908 1.768 1.768C22 8.746 22 12 22 12s0 3.254-.418 4.814a2.505 2.505 0 0 1-1.768 1.768C18.254 19 12 19 12 19s-6.254 0-7.814-.418a2.505 2.505 0 0 1-1.768-1.768C2 15.254 2 12 2 12s0-3.254.418-4.814c.23-.86.908-1.538 1.768-1.768C5.746 5 12 5 12 5s6.254 0 7.814.418zm-9.86 3.627v5.91L15.183 12 9.955 9.045z" fill="currentColor"/></svg>
+        </a>
+        <a href="https://twitter.com/incbox" target="_blank" rel="noreferrer" aria-label="INC - Twitter" class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M14.043 10.622L20.325 3H18.836l-5.454 6.618L9.025 3H4l6.588 10.007L4 21h1.489l5.76-6.989L15.85 21h5.025l-6.832-10.378ZM6.025 4.17h2.287l10.525 15.714h-2.287L6.025 4.17Z" fill="currentColor"/></svg>
+        </a>
+        <a href="https://www.instagram.com/incbox" target="_blank" rel="noreferrer" aria-label="INC - Instagram" class="icon-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.661 6.35c.218.218.343.52.343.83 0 .307-.125.61-.343.828-.218.217-.52.343-.829.343a1.18 1.18 0 0 1-.827-.343 1.181 1.181 0 0 1-.344-.828 1.177 1.177 0 0 1 1.17-1.172c.31 0 .613.125.83.343zM12 15.042A3.044 3.044 0 0 1 8.959 12 3.045 3.045 0 0 1 12 8.959 3.045 3.045 0 0 1 15.041 12 3.044 3.044 0 0 1 12 15.041zm0-7.679A4.643 4.643 0 0 0 7.362 12 4.643 4.643 0 0 0 12 16.639 4.643 4.643 0 0 0 16.638 12 4.643 4.643 0 0 0 12 7.362zm7.403 8.67a3.375 3.375 0 0 1-3.371 3.371H7.967a3.374 3.374 0 0 1-3.37-3.37V7.968c0-1.86 1.512-3.37 3.37-3.37h8.065a3.374 3.374 0 0 1 3.371 3.37v8.065zM16.032 3H7.967A4.973 4.973 0 0 0 3 7.968v8.065A4.972 4.972 0 0 0 7.967 21h8.065A4.973 4.973 0 0 0 21 16.033V7.968A4.973 4.973 0 0 0 16.032 3z" fill="currentColor"/></svg>
+        </a>
+        <a href="https://www.facebook.com/incbox" target="_blank" rel="noreferrer" aria-label="INC - Facebook" class="icon-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" fill="currentColor"/></svg>
+        </a>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">Drop in /bin</div>
-        <div class="step-desc">Place the DLL and .manifest in /bin. No config. No registry. No build system.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">Run INC.exe</div>
-        <div class="step-desc">Kernel scans /bin, resolves dependencies, loads in order, starts ticking.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-title">Hot reload</div>
-        <div class="step-desc">Swap the DLL at runtime. Kernel detects the change and reloads in 16ms.</div>
+      <div class="footer-right-row">
+        <button class="footer-lang-btn">
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.45)">Language</span>
+          &nbsp;<span style="font-size:14px">English</span>
+          <svg width="16" height="16" viewBox="0 0 25 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.96 17.707L3.96 9.707l1.414-1.414 7.293 7.293 7.293-7.293 1.414 1.414-8 8a1 1 0 0 1-1.414 0Z" fill="currentColor"/></svg>
+        </button>
+        <button class="footer-backtop-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+          Back to top
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.707 3.293a1 1 0 0 0-1.414 0l-8 8 1.414 1.414L11 6.414V21h2V6.414l6.293 6.293 1.414-1.414-8-8z" fill="currentColor"/></svg>
+        </button>
       </div>
     </div>
-  </div>
-</div>
 
-<hr class="divider">
-
-<div class="contact-wrap" id="contact">
-  <div class="contact-inner">
-    <p class="section-label reveal">▸ commercial SDK</p>
-    <h2 class="section-title reveal">Ready to build on INC?</h2>
-    <p class="section-body reveal">Indie license is free. Studio and Enterprise licenses for commercial projects. SDK includes headers, docs, and examples. Kernel stays closed.</p>
-    <p class="contact-email reveal">License inquiries: <a href="mailto:teamincbox@gmail.com">teamincbox@gmail.com</a></p>
-    <div class="contact-links reveal">
-      <a class="btn btn-primary" href="mailto:teamincbox@gmail.com">Email Us</a>
-      <a class="btn btn-secondary" href="https://discord.gg/CMqShG6frV">Discord</a>
-      <a class="btn btn-secondary" href="https://github.com/INCBOX/INC">GitHub</a>
+    <div class="footer-logo-row">
+		<a href="/" style="flex-shrink:0">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/IncBox_Logo.svg" alt="INC" style="height:56px;width:auto;filter:brightness(0) invert(1);">
+		</a>
     </div>
-  </div>
-</div>
 
-<footer>
-  <span class="footer-brand">INC — Feed the Tech — INCBOX — Est. 2007</span>
-  <ul class="footer-links">
-    <li><a href="https://github.com/INCBOX/INC">GitHub</a></li>
-    <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
-    <li><a href="mailto:teamincbox@gmail.com">Contact</a></li>
-  </ul>
+    <div class="footer-nav-links">
+      <a href="https://github.com/INCBOX/INC" target="_blank" rel="noreferrer">Developer SDK</a>
+    </div>
+
+  </div>
 </footer>
 
-<script>
-  const els = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-  }, { threshold: 0.08 });
-  els.forEach(el => io.observe(el));
-</script>
+<!-- NETWORK FOOTER -->
+<footer class="network-footer" id="network-footer">
+  <div class="network-footer-inner">
+    <nav class="nf-links">
+      <a href="incbox.github.io/INC/" target="_blank" rel="noreferrer">Help</a>
+      <button>Legal &amp; Privacy <svg viewBox="0 1 24 24" width="12" height="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.56 8.46a1 1 0 0 1 0 2.223l-7.5 7.857a1 1 0 0 1-1.464 0L4.096 10.683a1 1 0 1 1 1.465-1.362L12 15.206l6.44-6.746a1 1 0 0 1 2.12 0Z" fill="currentColor"/></svg></button>
+
+    </nav>
+    <p class="footer-vat">INC is an independent research initiative. All specifications, APIs, and module contracts are subject to change as the architecture evolves.</p>
+    <div class="footer-copyright-bar">
+      <span class="footer-copyright">© 2026 INC INCBOX Feed the Tech.</span>
+
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
