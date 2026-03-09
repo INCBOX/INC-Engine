@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INC — Universal Module Kernel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #080808;
+    --surface:  #0f0f0f;
+    --border:   #1e1e1e;
+    --accent:   #c8f135;
+    --dim:      #3a3a3a;
+    --muted:    #666;
+    --text:     #d8d8d8;
+    --bright:   #f0f0f0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
+    opacity: 0.4;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 30%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(200,241,53,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .hero-title {
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--bright);
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+
+  .hero-title span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--muted);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.35s;
+  }
+
+  .hero-stat-row {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.45s;
+  }
+
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+
+  .stat-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.55s;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.85rem 1.75rem;
+    border: 1px solid;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--dim);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Section base ── */
+  section { padding: 6rem 2.5rem; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--bright);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .section-body {
+    color: var(--muted);
+    max-width: 520px;
+    font-size: 1rem;
+  }
+
+  /* ── Engines ── */
+  .engines { border-top: 1px solid var(--border); }
+
+  .engine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+  }
+
+  .engine-card {
+    background: var(--surface);
+    padding: 2rem;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .engine-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .engine-card:hover { background: #141414; }
+  .engine-card:hover::before { transform: scaleX(1); }
+
+  .engine-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .engine-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--bright);
+    margin-bottom: 0.4rem;
+  }
+
+  .engine-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .engine-badge {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: #000;
+    background: var(--accent);
+    padding: 0.2rem 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── Code block ── */
+  .code-section {
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .code-section { grid-template-columns: 1fr; }
+  }
+
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  .code-label {
+    position: absolute;
+    top: -1px; right: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: #000;
+    background: var(--accent);
+    padding: 0.15rem 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .kw  { color: var(--accent); }
+  .cm  { color: #4a4a4a; }
+  .fn  { color: #88c0d0; }
+  .st  { color: #a3be8c; }
+  .tp  { color: #81a1c1; }
+
+  /* ── How it works ── */
+  .how { border-top: 1px solid var(--border); }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  .step {
+    background: var(--surface);
+    padding: 2rem;
+  }
+
+  .step-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--bright);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Contact ── */
+  .contact {
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .contact .section-title { max-width: 600px; }
+  .contact .section-body { text-align: center; margin: 0 auto; }
+
+  .contact-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="#">INC//</a>
+  <ul class="nav-links">
+    <li><a href="#engines">Engines</a></li>
+    <li><a href="#api">API</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#contact">License</a></li>
+    <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <p class="hero-tag">Feed the Tech — INCBOX — Est. 2007</p>
+
+  <h1 class="hero-title">
+    The<br><span>Module</span><br>Kernel.
+  </h1>
+
+  <p class="hero-sub">
+    A 5kb runtime that hosts any native module. Drop a DLL and a manifest.
+    INC loads it, ticks it, hot-reloads it. No framework. No overhead.
+  </p>
+
+  <div class="hero-stat-row">
+    <div class="stat">
+      <span class="stat-val">5kb</span>
+      <span class="stat-label">Runtime size</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">0</span>
+      <span class="stat-label">Heap allocs / tick</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">3</span>
+      <span class="stat-label">Functions to implement</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">∞</span>
+      <span class="stat-label">What you can host</span>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="https://github.com/INCBOX/INC/releases">Download</a>
+    <a class="btn btn-secondary" href="#api">View API</a>
+    <a class="btn btn-secondary" href="#contact">License Inquiry</a>
+  </div>
+</section>
+
+<!-- Engines -->
+<section class="engines" id="engines">
+  <p class="section-label reveal">Proven on real engines</p>
+  <h2 class="section-title reveal">Three engines.<br>Zero source changes.</h2>
+  <p class="section-body reveal">ioquake3, dhewm3, and X-Ray all run as INC modules — unmodified. Same kernel. Same three functions. Different universe inside each.</p>
+
+  <div class="engine-grid reveal">
+    <div class="engine-card">
+      <p class="engine-tag">ID Tech 3</p>
+      <p class="engine-name">ioquake3</p>
+      <p class="engine-desc">Quake III Arena</p>
+      <span class="engine-badge">Running</span>
+    </div>
+    <div class="engine-card">
+      <p class="engine-tag">ID Tech 4</p>
+      <p class="engine-name">dhewm3</p>
+      <p class="engine-desc">DOOM 3</p>
+      <span class="engine-badge">Running</span>
+    </div>
+    <div class="engine-card">
+      <p class="engine-tag">X-Ray Monolith</p>
+      <p class="engine-name">S.T.A.L.K.E.R.</p>
+      <p class="engine-desc">Anomaly</p>
+      <span class="engine-badge">Running</span>
+    </div>
+    <div class="engine-card">
+      <p class="engine-tag">Custom</p>
+      <p class="engine-name">Modular Engine</p>
+      <p class="engine-desc">platform · engine · dx11 · player</p>
+      <span class="engine-badge">Running</span>
+    </div>
+  </div>
+</section>
+
+<!-- API -->
+<section class="code-section" id="api">
+  <div>
+    <p class="section-label reveal">The entire contract</p>
+    <h2 class="section-title reveal">Three functions.<br>One header.</h2>
+    <p class="section-body reveal">
+      That's the full API surface. Init, Tick, Shutdown.
+      Your module owns everything inside. The kernel never touches your internals —
+      renderer, physics, simulation, audio. All yours.
+    </p>
+    <p class="section-body reveal" style="margin-top:1rem;">
+      Modules you build are yours. INC claims nothing.
+    </p>
+  </div>
+
+  <div>
+    <div class="code-block reveal">
+      <span class="code-label">INC Module — Hello World</span>
+<pre><span class="cm">// The entire INC module contract.</span>
+<span class="cm">// Same pattern whether you're printing</span>
+<span class="cm">// text or running a universe sim.</span>
+
+<span class="kw">#include</span> <span class="st">&lt;interface_module.h&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="kw">static void</span> <span class="fn">HelloWorld_Tick</span>(<span class="tp">float</span> dt) {
+    printf(<span class="st">"Hello, World!\n"</span>);
+}
+
+<span class="kw">static int</span> <span class="fn">HelloWorld_Init</span>(
+    IModule *self,
+    IRuntimeContext *ctx,
+    <span class="tp">void</span> (**tick)(<span class="tp">float</span>))
+{
+    *tick = HelloWorld_Tick;
+    <span class="kw">return</span> 1;
+}
+
+<span class="kw">static void</span> <span class="fn">HelloWorld_Shutdown</span>(IModule *self) { }
+
+<span class="fn">INC</span>(HelloWorld_Init, HelloWorld_Shutdown)</pre>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how" id="how">
+  <p class="section-label reveal">Dead simple deployment</p>
+  <h2 class="section-title reveal">Drop it in. It runs.</h2>
+
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Build your module</div>
+      <div class="step-desc">Implement Init, Tick, Shutdown. Stamp with INC(). Compile to DLL or .so.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Drop in /bin</div>
+      <div class="step-desc">Place the DLL and a .manifest file in the /bin folder. No config. No registry.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Run INC.exe</div>
+      <div class="step-desc">Kernel scans /bin, resolves dependencies, loads in order, starts ticking.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">Hot reload</div>
+      <div class="step-desc">Swap the DLL at runtime. Kernel detects the change and reloads automatically.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <p class="section-label reveal">Commercial SDK</p>
+  <h2 class="section-title reveal">Ready to build on INC?</h2>
+  <p class="section-body reveal">
+    Indie license is free. Studio and Enterprise licenses available for commercial projects.
+    SDK includes headers, docs, and examples. Kernel stays closed.
+  </p>
+  <div class="contact-links reveal">
+    <a class="btn btn-primary" href="https://discord.gg/CMqShG6frV">Contact on Discord</a>
+    <a class="btn btn-secondary" href="https://github.com/INCBOX/INC">GitHub</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-brand">INC — FEED THE TECH — INCBOX — EST. 2007</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com/INCBOX/INC">GitHub</a></li>
+    <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
+    <li><a href="#contact">License</a></li>
+  </ul>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
