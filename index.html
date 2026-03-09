@@ -35,6 +35,7 @@
     cursor: crosshair;
   }
 
+  /* ── CRT scanlines ── */
   body::after {
     content: '';
     position: fixed;
@@ -110,26 +111,14 @@
     position: relative;
   }
 
-  /* Mars atmosphere glow behind logo */
-  .hero-glow {
-    position: absolute;
-    top: 38%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 700px; height: 500px;
-    background: radial-gradient(ellipse, rgba(232,66,10,0.08) 0%, transparent 65%);
-    pointer-events: none;
-  }
-
-  .hero-logo {
-    width: 97vw;
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    animation: fadeIn 1.4s ease forwards 0.3s;
-    position: relative;
-    filter:
-      drop-shadow(0 0 30px rgba(232,66,10,0.4))
-      drop-shadow(0 0 90px rgba(232,66,10,0.15));
-  }
+.hero-glow {
+  position: absolute;
+  top: 38%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, rgba(120,35,8,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
 
   .hero-tag {
     font-size: 0.62rem;
@@ -411,12 +400,7 @@
   .contact-inner .section-body { text-align: center; max-width: 100%; }
   .contact-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
-  .contact-email {
-    font-size: 0.72rem;
-    color: var(--dust);
-    letter-spacing: 0.1em;
-  }
-
+  .contact-email { font-size: 0.72rem; color: var(--dust); letter-spacing: 0.1em; }
   .contact-email a { color: var(--orange); text-decoration: none; }
   .contact-email a:hover { color: var(--red); }
 
@@ -445,7 +429,7 @@
 
   .footer-links a:hover { color: var(--red); }
 
-  /* ── Animations ── */
+  /* ── General animations ── */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -463,6 +447,75 @@
     nav .nav-links { display: none; }
     nav .nav-status { display: none; }
   }
+
+
+/* ============================================================
+   LOGO EFFECTS — edit only this block to change logo behavior
+   ===========================================================*/
+
+@keyframes logoFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes corrupt {
+  0%,91%,100% {
+    clip-path: none;
+    transform: translate(0) skewX(0deg);
+    filter:
+      drop-shadow(0 0 30px rgba(232,66,10,0.4))
+      drop-shadow(0 0 90px rgba(232,66,10,0.15));
+  }
+  92% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translate(-12px, 0) skewX(-3deg);
+    filter: drop-shadow(0 0 20px rgba(232,66,10,0.3)) brightness(0.4);
+  }
+  93% {
+    clip-path: polygon(0 42%, 100% 42%, 100% 61%, 0 61%);
+    transform: translate(14px, 0) skewX(4deg);
+    filter: drop-shadow(-6px 0 rgba(255,0,0,0.8)) drop-shadow(6px 0 rgba(0,80,255,0.8)) brightness(2.5);
+  }
+  94% {
+    clip-path: polygon(0 8%, 100% 8%, 100% 22%, 0 22%);
+    transform: translate(-8px, 0) skewX(-2deg);
+    filter: brightness(4) saturate(0);
+  }
+  95% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 88%, 0 88%);
+    transform: translate(10px, 0) skewX(2deg);
+    filter: drop-shadow(0 0 80px rgba(255,80,20,1)) brightness(3);
+  }
+  96% {
+    clip-path: none;
+    transform: translate(-4px, 0) skewX(0deg);
+    filter: brightness(1.8) saturate(2);
+  }
+  97% {
+    transform: translate(0);
+    filter:
+      drop-shadow(0 0 30px rgba(232,66,10,0.4))
+      drop-shadow(0 0 90px rgba(232,66,10,0.15));
+  }
+}
+
+.hero-logo {
+  width: 97;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation:
+    logoFadeIn 1.4s ease     forwards 0.3s,
+    corrupt    7s  step-end  infinite 2s;
+  filter:
+    drop-shadow(0 0 30px rgba(232,66,10,0.4))
+    drop-shadow(0 0 90px rgba(232,66,10,0.15));
+}
+
+/* ============================================================
+   END LOGO EFFECTS
+   ===========================================================*/
+
+
 </style>
 </head>
 <body>
