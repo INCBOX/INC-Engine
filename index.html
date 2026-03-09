@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>INC — Universal Module Kernel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:       #080808;
-    --surface:  #0f0f0f;
-    --border:   #1e1e1e;
-    --accent:   #c8f135;
-    --dim:      #3a3a3a;
-    --muted:    #666;
-    --text:     #d8d8d8;
-    --bright:   #f0f0f0;
+    --bg:       #000000;
+    --surface:  #030303;
+    --border:   #0f1f0f;
+    --green:    #00ff41;
+    --green-dim:#00cc33;
+    --green-lo: #001a06;
+    --muted:    #2a5c2a;
+    --text:     #7aab7a;
+    --bright:   #ccffcc;
   }
 
   html { scroll-behavior: smooth; }
@@ -25,20 +26,22 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Share Tech Mono', monospace;
     line-height: 1.6;
     overflow-x: hidden;
+    cursor: crosshair;
   }
 
-  /* ── Grain overlay ── */
-  body::before {
+  body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.025;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+    );
     pointer-events: none;
-    z-index: 9999;
+    z-index: 9998;
   }
 
   /* ── Nav ── */
@@ -49,318 +52,305 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 2.5rem;
+    padding: 1rem 2.5rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(8,8,8,0.92);
-    backdrop-filter: blur(12px);
+    background: rgba(0,0,0,0.97);
   }
 
   .nav-logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 1rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 0.15em;
+    color: var(--green);
     text-decoration: none;
+    letter-spacing: 0.3em;
   }
 
-  .nav-links {
+  .nav-status {
     display: flex;
-    gap: 2rem;
-    list-style: none;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
   }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: blink 2s step-end infinite;
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
 
   .nav-links a {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     color: var(--muted);
     text-decoration: none;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    transition: color 0.2s;
+    transition: color 0.15s;
   }
 
-  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover { color: var(--green); }
 
   /* ── Hero ── */
   .hero {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    padding: 8rem 2.5rem 4rem;
-    position: relative;
-    overflow: hidden;
+    padding: 7rem 2rem 4rem;
+    text-align: center;
   }
 
-  .hero-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
-    opacity: 0.4;
-  }
-
-  .hero-glow {
-    position: absolute;
-    top: 30%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px; height: 400px;
-    background: radial-gradient(ellipse, rgba(200,241,53,0.06) 0%, transparent 70%);
-    pointer-events: none;
+  .hero-logo {
+    width: min(580px, 88vw);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeIn 1.4s ease forwards 0.3s;
+    filter:
+      drop-shadow(0 0 30px rgba(0,255,65,0.3))
+      drop-shadow(0 0 80px rgba(0,255,65,0.12));
   }
 
   .hero-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    letter-spacing: 0.25em;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     opacity: 0;
-    animation: fadeUp 0.6s ease forwards 0.1s;
+    animation: fadeIn 0.6s ease forwards 1.1s;
   }
+
+  .hero-tag span { color: var(--green); }
 
   .hero-title {
-    font-size: clamp(4rem, 12vw, 9rem);
-    font-weight: 800;
-    line-height: 0.9;
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1rem, 2.5vw, 1.75rem);
+    font-weight: 900;
     color: var(--bright);
-    letter-spacing: -0.03em;
-    margin-bottom: 1rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
     opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.2s;
+    animation: fadeIn 0.6s ease forwards 1.2s;
   }
-
-  .hero-title span { color: var(--accent); }
 
   .hero-sub {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    color: var(--muted);
-    max-width: 540px;
-    margin-bottom: 3rem;
-    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--text);
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.9;
     opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.35s;
+    animation: fadeIn 0.6s ease forwards 1.3s;
   }
 
-  .hero-stat-row {
+  .hero-stats {
     display: flex;
-    gap: 3rem;
-    margin-bottom: 3rem;
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
     opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.45s;
+    animation: fadeIn 0.6s ease forwards 1.4s;
   }
 
-  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat {
+    padding: 1rem 2rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .stat:last-child { border-right: none; }
 
   .stat-val {
-    font-family: 'Space Mono', monospace;
-    font-size: 1.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: var(--accent);
+    color: var(--green);
+    display: block;
   }
 
   .stat-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.56rem;
     color: var(--muted);
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    display: block;
+    margin-top: 0.2rem;
   }
 
   .hero-cta {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    justify-content: center;
     opacity: 0;
-    animation: fadeUp 0.7s ease forwards 0.55s;
+    animation: fadeIn 0.6s ease forwards 1.5s;
   }
 
+  .prompt {
+    margin-top: 3.5rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards 1.7s;
+  }
+
+  .prompt span { color: var(--green); animation: blink 1.1s step-end infinite; }
+
+  /* ── Buttons ── */
   .btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 0.85rem 1.75rem;
+    padding: 0.75rem 1.75rem;
     border: 1px solid;
-    transition: all 0.2s;
-    cursor: pointer;
+    transition: all 0.15s;
+    cursor: crosshair;
   }
 
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    border-color: var(--accent);
-    font-weight: 700;
-  }
+  .btn-primary { background: var(--green); color: #000; border-color: var(--green); font-weight: 700; }
+  .btn-primary:hover { background: transparent; color: var(--green); box-shadow: 0 0 20px rgba(0,255,65,0.15); }
+  .btn-secondary { background: transparent; color: var(--text); border-color: var(--muted); }
+  .btn-secondary:hover { border-color: var(--green); color: var(--green); }
 
-  .btn-primary:hover {
-    background: transparent;
-    color: var(--accent);
-  }
+  hr.divider { border: none; border-top: 1px solid var(--border); }
 
-  .btn-secondary {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--dim);
-  }
+  /* ── Engines ── */
+  .engine-wrap { background: var(--surface); }
 
-  .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* ── Section base ── */
-  section { padding: 6rem 2.5rem; }
+  .engine-inner,
+  .section-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
 
   .section-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--accent);
-    letter-spacing: 0.25em;
+    font-size: 0.6rem;
+    color: var(--green);
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .section-title {
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.1rem, 2.5vw, 1.9rem);
+    font-weight: 700;
     color: var(--bright);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.08em;
     margin-bottom: 1rem;
+    line-height: 1.25;
   }
 
   .section-body {
-    color: var(--muted);
-    max-width: 520px;
-    font-size: 1rem;
+    font-size: 0.8rem;
+    color: var(--text);
+    max-width: 480px;
+    line-height: 1.9;
   }
-
-  /* ── Engines ── */
-  .engines { border-top: 1px solid var(--border); }
 
   .engine-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1px;
     background: var(--border);
-    margin-top: 3rem;
     border: 1px solid var(--border);
+    margin-top: 3rem;
   }
 
   .engine-card {
-    background: var(--surface);
-    padding: 2rem;
-    transition: background 0.2s;
+    background: var(--bg);
+    padding: 1.75rem;
+    transition: background 0.15s;
     position: relative;
-    overflow: hidden;
   }
 
-  .engine-card::before {
+  .engine-card::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--green);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s;
   }
 
-  .engine-card:hover { background: #141414; }
-  .engine-card:hover::before { transform: scaleX(1); }
+  .engine-card:hover { background: var(--green-lo); }
+  .engine-card:hover::after { transform: scaleX(1); }
 
-  .engine-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.62rem;
-    color: var(--accent);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
+  .engine-tag { font-size: 0.56rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
 
   .engine-name {
-    font-size: 1.1rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.88rem;
     font-weight: 700;
     color: var(--bright);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
   }
 
-  .engine-desc {
-    font-size: 0.85rem;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
+  .engine-desc { font-size: 0.72rem; color: var(--muted); }
 
-  .engine-badge {
+  .engine-status {
     display: inline-block;
     margin-top: 1rem;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    color: #000;
-    background: var(--accent);
-    padding: 0.2rem 0.5rem;
-    letter-spacing: 0.1em;
+    font-size: 0.56rem;
+    color: var(--green);
+    letter-spacing: 0.2em;
     text-transform: uppercase;
   }
 
-  /* ── Code block ── */
-  .code-section {
-    border-top: 1px solid var(--border);
+  .engine-status::before { content: '● '; animation: blink 2s step-end infinite; }
+
+  /* ── Code ── */
+  .code-wrap {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    gap: 5rem;
     align-items: start;
-  }
-
-  @media (max-width: 768px) {
-    .code-section { grid-template-columns: 1fr; }
   }
 
   .code-block {
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: 1.5rem;
-    position: relative;
     margin-top: 2rem;
   }
 
-  .code-label {
-    position: absolute;
-    top: -1px; right: 1rem;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    color: #000;
-    background: var(--accent);
-    padding: 0.15rem 0.5rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--green-lo);
   }
+
+  .code-filename { font-size: 0.6rem; color: var(--green); letter-spacing: 0.1em; }
+  .code-dots { display: flex; gap: 0.4rem; }
+  .code-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
 
   pre {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    line-height: 1.7;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.74rem;
+    line-height: 1.8;
     color: var(--text);
     overflow-x: auto;
-    white-space: pre;
+    padding: 1.25rem 1.5rem;
   }
 
-  .kw  { color: var(--accent); }
-  .cm  { color: #4a4a4a; }
-  .fn  { color: #88c0d0; }
-  .st  { color: #a3be8c; }
-  .tp  { color: #81a1c1; }
+  .kw { color: var(--green); }
+  .cm { color: var(--muted); }
+  .fn { color: var(--bright); }
+  .st { color: #00cc88; }
+  .tp { color: #66ffaa; }
+  .nm { color: var(--green-dim); }
 
-  /* ── How it works ── */
-  .how { border-top: 1px solid var(--border); }
-
+  /* ── Steps ── */
   .steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -370,59 +360,49 @@
     margin-top: 3rem;
   }
 
-  .step {
-    background: var(--surface);
-    padding: 2rem;
-  }
+  .step { background: var(--bg); padding: 2rem; }
 
   .step-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
     color: var(--border);
     line-height: 1;
     margin-bottom: 1rem;
   }
 
   .step-title {
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--bright);
     margin-bottom: 0.5rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .step-desc {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+  .step-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.75; }
 
   /* ── Contact ── */
-  .contact {
-    border-top: 1px solid var(--border);
+  .contact-wrap { border-top: 1px solid var(--border); text-align: center; }
+
+  .contact-inner {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
     gap: 1.5rem;
   }
 
-  .contact .section-title { max-width: 600px; }
-  .contact .section-body { text-align: center; margin: 0 auto; }
+  .contact-inner .section-body { text-align: center; max-width: 100%; }
 
-  .contact-links {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 1rem;
-  }
+  .contact-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
   /* ── Footer ── */
   footer {
     border-top: 1px solid var(--border);
-    padding: 2rem 2.5rem;
+    padding: 1.5rem 2.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -430,229 +410,212 @@
     gap: 1rem;
   }
 
-  .footer-brand {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-  }
+  .footer-brand { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .footer-links { display: flex; gap: 1.5rem; list-style: none; }
 
   .footer-links a {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--dim);
+    font-size: 0.6rem;
+    color: var(--muted);
     text-decoration: none;
     letter-spacing: 0.1em;
-    transition: color 0.2s;
+    text-transform: uppercase;
+    transition: color 0.15s;
   }
 
-  .footer-links a:hover { color: var(--accent); }
+  .footer-links a:hover { color: var(--green); }
 
   /* ── Animations ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
 
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .code-wrap { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { flex-wrap: wrap; }
+    .stat { flex: 1 1 40%; }
+    nav .nav-links { display: none; }
+    nav .nav-status { display: none; }
   }
 </style>
 </head>
 <body>
 
-<!-- Nav -->
 <nav>
-  <a class="nav-logo" href="#">INC//</a>
+  <a class="nav-logo" href="#">INC</a>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    KERNEL ONLINE
+  </div>
   <ul class="nav-links">
     <li><a href="#engines">Engines</a></li>
     <li><a href="#api">API</a></li>
-    <li><a href="#how">How it works</a></li>
+    <li><a href="#how">Deploy</a></li>
     <li><a href="#contact">License</a></li>
     <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
   </ul>
 </nav>
 
-<!-- Hero -->
 <section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
+  <img class="hero-logo"
+    src="https://raw.githubusercontent.com/INCBOX/INC/engine/resources/assets/splash_INC.png"
+    alt="INC">
 
-  <p class="hero-tag">Feed the Tech — INCBOX — Est. 2007</p>
+  <p class="hero-tag"><span>▸</span> FEED THE TECH — INCBOX — EST. 2007</p>
+  <h1 class="hero-title">Universal Module Kernel</h1>
+  <p class="hero-sub">A 5kb runtime that hosts any native module.<br>Drop a DLL. Drop a manifest. It runs.</p>
 
-  <h1 class="hero-title">
-    The<br><span>Module</span><br>Kernel.
-  </h1>
-
-  <p class="hero-sub">
-    A 5kb runtime that hosts any native module. Drop a DLL and a manifest.
-    INC loads it, ticks it, hot-reloads it. No framework. No overhead.
-  </p>
-
-  <div class="hero-stat-row">
-    <div class="stat">
-      <span class="stat-val">5kb</span>
-      <span class="stat-label">Runtime size</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">0</span>
-      <span class="stat-label">Heap allocs / tick</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">3</span>
-      <span class="stat-label">Functions to implement</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">∞</span>
-      <span class="stat-label">What you can host</span>
-    </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-val">5kb</span><span class="stat-label">Runtime</span></div>
+    <div class="stat"><span class="stat-val">0</span><span class="stat-label">Heap / tick</span></div>
+    <div class="stat"><span class="stat-val">3</span><span class="stat-label">Functions</span></div>
+    <div class="stat"><span class="stat-val">∞</span><span class="stat-label">Possibilities</span></div>
   </div>
 
   <div class="hero-cta">
     <a class="btn btn-primary" href="https://github.com/INCBOX/INC/releases">Download</a>
     <a class="btn btn-secondary" href="#api">View API</a>
-    <a class="btn btn-secondary" href="#contact">License Inquiry</a>
+    <a class="btn btn-secondary" href="#contact">License</a>
   </div>
+
+  <p class="prompt">C:\INC> kernel.exe --scan bin/ <span>_</span></p>
 </section>
 
-<!-- Engines -->
-<section class="engines" id="engines">
-  <p class="section-label reveal">Proven on real engines</p>
-  <h2 class="section-title reveal">Three engines.<br>Zero source changes.</h2>
-  <p class="section-body reveal">ioquake3, dhewm3, and X-Ray all run as INC modules — unmodified. Same kernel. Same three functions. Different universe inside each.</p>
+<hr class="divider">
 
-  <div class="engine-grid reveal">
-    <div class="engine-card">
-      <p class="engine-tag">ID Tech 3</p>
-      <p class="engine-name">ioquake3</p>
-      <p class="engine-desc">Quake III Arena</p>
-      <span class="engine-badge">Running</span>
-    </div>
-    <div class="engine-card">
-      <p class="engine-tag">ID Tech 4</p>
-      <p class="engine-name">dhewm3</p>
-      <p class="engine-desc">DOOM 3</p>
-      <span class="engine-badge">Running</span>
-    </div>
-    <div class="engine-card">
-      <p class="engine-tag">X-Ray Monolith</p>
-      <p class="engine-name">S.T.A.L.K.E.R.</p>
-      <p class="engine-desc">Anomaly</p>
-      <span class="engine-badge">Running</span>
-    </div>
-    <div class="engine-card">
-      <p class="engine-tag">Custom</p>
-      <p class="engine-name">Modular Engine</p>
-      <p class="engine-desc">platform · engine · dx11 · player</p>
-      <span class="engine-badge">Running</span>
+<div class="engine-wrap" id="engines">
+  <div class="engine-inner">
+    <p class="section-label reveal">▸ proven on real engines</p>
+    <h2 class="section-title reveal">Three engines.<br>Zero source changes.</h2>
+    <p class="section-body reveal">ioquake3, dhewm3, and X-Ray all run as INC modules — unmodified. Same kernel. Same three functions. Different universe inside each.</p>
+    <div class="engine-grid reveal">
+      <div class="engine-card">
+        <p class="engine-tag">ID Tech 3</p>
+        <p class="engine-name">ioquake3</p>
+        <p class="engine-desc">Quake III Arena</p>
+        <span class="engine-status">Running</span>
+      </div>
+      <div class="engine-card">
+        <p class="engine-tag">ID Tech 4</p>
+        <p class="engine-name">dhewm3</p>
+        <p class="engine-desc">DOOM 3</p>
+        <span class="engine-status">Running</span>
+      </div>
+      <div class="engine-card">
+        <p class="engine-tag">X-Ray Monolith</p>
+        <p class="engine-name">S.T.A.L.K.E.R.</p>
+        <p class="engine-desc">Anomaly</p>
+        <span class="engine-status">Running</span>
+      </div>
+      <div class="engine-card">
+        <p class="engine-tag">Custom</p>
+        <p class="engine-name">Modular Engine</p>
+        <p class="engine-desc">platform · engine · dx11 · player</p>
+        <span class="engine-status">Running</span>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- API -->
-<section class="code-section" id="api">
-  <div>
-    <p class="section-label reveal">The entire contract</p>
-    <h2 class="section-title reveal">Three functions.<br>One header.</h2>
-    <p class="section-body reveal">
-      That's the full API surface. Init, Tick, Shutdown.
-      Your module owns everything inside. The kernel never touches your internals —
-      renderer, physics, simulation, audio. All yours.
-    </p>
-    <p class="section-body reveal" style="margin-top:1rem;">
-      Modules you build are yours. INC claims nothing.
-    </p>
-  </div>
+<hr class="divider">
 
-  <div>
-    <div class="code-block reveal">
-      <span class="code-label">INC Module — Hello World</span>
-<pre><span class="cm">// The entire INC module contract.</span>
-<span class="cm">// Same pattern whether you're printing</span>
-<span class="cm">// text or running a universe sim.</span>
+<div id="api">
+  <div class="section-inner">
+    <div class="code-wrap">
+      <div>
+        <p class="section-label reveal">▸ the entire contract</p>
+        <h2 class="section-title reveal">Three functions.<br>One header.</h2>
+        <p class="section-body reveal">Your module owns everything inside — renderer, physics, audio, simulation. The kernel never touches your internals.</p>
+        <p class="section-body reveal" style="margin-top:1rem; color:var(--muted);">Modules you build are yours. INC claims nothing.</p>
+      </div>
+      <div class="reveal">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">module_hello_world.c</span>
+            <div class="code-dots">
+              <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+            </div>
+          </div>
+<pre><span class="cm">// entire INC module contract.</span>
+<span class="cm">// same pattern: hello world → universe sim.</span>
 
 <span class="kw">#include</span> <span class="st">&lt;interface_module.h&gt;</span>
 <span class="kw">#include</span> <span class="st">&lt;stdio.h&gt;</span>
 
-<span class="kw">static void</span> <span class="fn">HelloWorld_Tick</span>(<span class="tp">float</span> dt) {
+<span class="kw">static void</span> <span class="fn">Hello_Tick</span>(<span class="tp">float</span> dt) {
     printf(<span class="st">"Hello, World!\n"</span>);
 }
 
-<span class="kw">static int</span> <span class="fn">HelloWorld_Init</span>(
-    IModule *self,
-    IRuntimeContext *ctx,
-    <span class="tp">void</span> (**tick)(<span class="tp">float</span>))
+<span class="kw">static int</span> <span class="fn">Hello_Init</span>(
+    <span class="tp">IModule</span>        *self,
+    <span class="tp">IRuntimeContext</span> *ctx,
+    <span class="tp">void</span>          (**tick)(<span class="tp">float</span>))
 {
-    *tick = HelloWorld_Tick;
-    <span class="kw">return</span> 1;
+    *tick = Hello_Tick;
+    <span class="kw">return</span> <span class="nm">1</span>;
 }
 
-<span class="kw">static void</span> <span class="fn">HelloWorld_Shutdown</span>(IModule *self) { }
+<span class="kw">static void</span> <span class="fn">Hello_Shutdown</span>(<span class="tp">IModule</span> *self) { }
 
-<span class="fn">INC</span>(HelloWorld_Init, HelloWorld_Shutdown)</pre>
+<span class="fn">INC</span>(Hello_Init, Hello_Shutdown)</pre>
+        </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- How it works -->
-<section class="how" id="how">
-  <p class="section-label reveal">Dead simple deployment</p>
-  <h2 class="section-title reveal">Drop it in. It runs.</h2>
+<hr class="divider">
 
-  <div class="steps reveal">
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-title">Build your module</div>
-      <div class="step-desc">Implement Init, Tick, Shutdown. Stamp with INC(). Compile to DLL or .so.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-title">Drop in /bin</div>
-      <div class="step-desc">Place the DLL and a .manifest file in the /bin folder. No config. No registry.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-title">Run INC.exe</div>
-      <div class="step-desc">Kernel scans /bin, resolves dependencies, loads in order, starts ticking.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">04</div>
-      <div class="step-title">Hot reload</div>
-      <div class="step-desc">Swap the DLL at runtime. Kernel detects the change and reloads automatically.</div>
+<div id="how">
+  <div class="section-inner">
+    <p class="section-label reveal">▸ deployment</p>
+    <h2 class="section-title reveal">Drop it in. It runs.</h2>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Build your module</div>
+        <div class="step-desc">Implement Init, Tick, Shutdown. Stamp with INC(). Compile to DLL or .so.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Drop in /bin</div>
+        <div class="step-desc">Place the DLL and .manifest in /bin. No config. No registry. No build system.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Run INC.exe</div>
+        <div class="step-desc">Kernel scans /bin, resolves dependencies, loads in order, starts ticking.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">Hot reload</div>
+        <div class="step-desc">Swap the DLL at runtime. Kernel detects the change and reloads in 16ms.</div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Contact -->
-<section class="contact" id="contact">
-  <p class="section-label reveal">Commercial SDK</p>
-  <h2 class="section-title reveal">Ready to build on INC?</h2>
-  <p class="section-body reveal">
-    Indie license is free. Studio and Enterprise licenses available for commercial projects.
-    SDK includes headers, docs, and examples. Kernel stays closed.
-  </p>
-  <div class="contact-links reveal">
-    <a class="btn btn-primary" href="https://discord.gg/CMqShG6frV">Contact on Discord</a>
-    <a class="btn btn-secondary" href="https://github.com/INCBOX/INC">GitHub</a>
+<hr class="divider">
+
+<div class="contact-wrap" id="contact">
+  <div class="contact-inner">
+    <p class="section-label reveal">▸ commercial SDK</p>
+    <h2 class="section-title reveal">Ready to build on INC?</h2>
+    <p class="section-body reveal">Indie license is free. Studio and Enterprise licenses for commercial projects. SDK includes headers, docs, and examples. Kernel stays closed.</p>
+    <div class="contact-links reveal">
+      <a class="btn btn-primary" href="https://discord.gg/CMqShG6frV">Contact on Discord</a>
+      <a class="btn btn-secondary" href="https://github.com/INCBOX/INC">GitHub</a>
+    </div>
   </div>
-</section>
+</div>
 
-<!-- Footer -->
 <footer>
-  <span class="footer-brand">INC — FEED THE TECH — INCBOX — EST. 2007</span>
+  <span class="footer-brand">INC — Feed the Tech — INCBOX — Est. 2007</span>
   <ul class="footer-links">
     <li><a href="https://github.com/INCBOX/INC">GitHub</a></li>
     <li><a href="https://discord.gg/CMqShG6frV">Discord</a></li>
@@ -661,11 +624,10 @@
 </footer>
 
 <script>
-  // Reveal on scroll
   const els = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.08 });
   els.forEach(el => io.observe(el));
 </script>
 
