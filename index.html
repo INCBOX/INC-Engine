@@ -187,7 +187,60 @@
     .editorial-section, .media-heroes-wrapper, .row-section, .ea-play-section, .local-footer, .network-footer { padding-left: 20px; padding-right: 20px; }
     .editorial-title { font-size: 32px; }
   }
- 
+
+@media (max-width: 768px) {
+  .local-footer,
+  .network-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+    overflow: hidden;
+  }
+
+  .local-footer-inner,
+  .network-footer-inner {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .footer-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-right-row {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .footer-lang-btn,
+  .footer-backtop-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nf-links {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nf-links a,
+  .nf-links button {
+    padding: 8px 0;
+    border-right: none;
+    border-bottom: 1px solid var(--divider-nf-link);
+  }
+
+  .nf-links a:last-child,
+  .nf-links button:last-child {
+    border-bottom: none;
+  }
+
+  .footer-copyright-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
  
  
  /* ============================================================
@@ -283,8 +336,8 @@
     <div class="ea-play-section">
       <div class="ea-play-inner">
           <div>
-		        <h3 class="row-section-title">Universal Modular Infrastructure
-™</h3>
+		        <h3 class="row-section-title">Universal Modular Infrastructure™</h3>
+
 			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="aspect-ratio:16/9;width:100%;object-fit:contain">
 
           </div>
