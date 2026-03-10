@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>INC™</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;600;700;800&display=swap');
+
   :root {
     /* Layout */
     --nav-height:        48px;
@@ -56,7 +58,7 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { background: var(--bg-page); color: var(--text-primary); scroll-behavior: smooth; }
-  body { font-family: 'Source Sans 3','Helvetica Neue',Arial,sans-serif; font-size: 16px; line-height: 1.5; background: var(--bg-page); overflow-x: hidden; }
+  body { font-family: 'Oxanium'; font-size: 16px; line-height: 1.5; background: var(--bg-page); overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }
   img { display: block; max-width: 100%; }
   ul { list-style: none; }
@@ -122,7 +124,7 @@
 
   /* ─── GAME CARDS ─── */
   .row-section { max-width: 1392px; margin: 0 auto; padding: 64px 80px; }
-  .row-section-title { font-size: 24px; font-weight: 700; margin-bottom: 32px; }
+  .row-section-title { font-size: 66px; font-weight: 200; margin-bottom: 32px; }
   .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
   .card { display: block; background: var(--bg-card); border-radius: 8px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; }
   .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
@@ -187,65 +189,29 @@
     .editorial-section, .media-heroes-wrapper, .row-section, .ea-play-section, .local-footer, .network-footer { padding-left: 20px; padding-right: 20px; }
     .editorial-title { font-size: 32px; }
   }
-
-@media (max-width: 768px) {
-  .local-footer,
-  .network-footer {
-    padding-left: 16px;
-    padding-right: 16px;
-    overflow: hidden;
-  }
-
-  .local-footer-inner,
-  .network-footer-inner {
-    width: 100%;
-    overflow: hidden;
-  }
-
+ 
+/* ─── MOBILE FIX RESPONSIVE ─── */
+ @media (max-width: 768px) {
   .footer-top-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-
-  .footer-right-row {
-    width: 100%;
+  .footer-social {
     flex-wrap: wrap;
   }
-
+  .footer-right-row {
+    width: 100%;
+  }
   .footer-lang-btn,
   .footer-backtop-btn {
     flex: 1;
     justify-content: center;
-  }
-
-  .nf-links {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .nf-links a,
-  .nf-links button {
-    padding: 8px 0;
-    border-right: none;
-    border-bottom: 1px solid var(--divider-nf-link);
-  }
-
-  .nf-links a:last-child,
-  .nf-links button:last-child {
-    border-bottom: none;
-  }
-
-  .footer-copyright-bar {
-    flex-direction: column;
-    gap: 8px;
+    min-width: 120px;
   }
 }
- 
- 
- /* ============================================================
-   LOGO EFFECTS
-   ===========================================================*/
+
+/* LOGO EFFECTS */
 
 @keyframes corrupt {
   0%,91%,100% {
@@ -289,9 +255,8 @@
   animation: corrupt 5s step-end infinite 2s;
 }
 
-/* ============================================================
-   LOGO EFFECTS
-   ===========================================================*/
+/* LOGO EFFECTS */
+
 </style>
 </head>
 
@@ -336,15 +301,29 @@
     <div class="ea-play-section">
       <div class="ea-play-inner">
           <div>
-		        <h3 class="row-section-title">Universal Modular Infrastructure™</h3>
-
-			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="aspect-ratio:16/9;width:100%;object-fit:contain">
+			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="width:100%;object-fit:contain">
 
           </div>
       </div>
     </div>
   </section>
 
+<section>
+  <div class="ea-play-section">
+    <div class="ea-play-inner">
+      <div>
+        <h3 class="row-section-title">Universal Module Execution Infrastructure Kernel™</h3>
+        <p style="font-size:28px;font-weight:500;line-height:1.5;max-width:720px;margin-bottom:20px;">A freestanding runtime that hosts native engines through a single, stable ABI interface.</p>
+        <p style="font-size:22px;font-weight:300;line-height:1.7;max-width:640px;color:var(--text-muted);margin-bottom:16px;">A high-performance platform for modular engines, applications, and systems. The INC SDK enables developers to build modules that run isolated, hot-reloadable, and execute at near-zero input latency with maximum speed. Lightweight and dependency-free.</p>
+        <p style="font-size:15px;font-weight:600;line-height:1.9;max-width:640px;color:var(--text-muted);margin-bottom:32px;">Licensed commercially for indies, AAA studios, and proprietary engines.</p>
+        <div style="display:flex;gap:32px;flex-wrap:wrap;">
+          <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Developer SDK &rarr;</a>
+          <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">Contact &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 </main>
 
