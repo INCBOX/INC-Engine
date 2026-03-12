@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INC™</title>
+<title>INC™ Engine</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -30,8 +30,8 @@
   <div class="local-nav-inner">
  
 	<button class="local-nav-btn" style="gap:22px;padding-left:0;">
-		<a href="https://incbox.github.io/INC/" style="font-size:14px;font-weight:600;color:var(--text-primary);">INC</a>
-		<a href="https://incbox.github.io/INC/engine.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">Engine</a>
+		<a href="https://incbox.github.io/INC/" style="font-size:14px;font-weight:300;color:var(--text-primary);">INC</a>
+		<a href="https://incbox.github.io/INC/engine.html" style="font-size:14px;font-weight:600;color:var(--text-muted);">Engine</a>
 		<a href="https://incbox.github.io/INC/modules.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">Modules</a>
 		<a href="https://incbox.github.io/INC/sdk.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">SDK</a>
 	</button>
@@ -46,34 +46,95 @@
 
 <main>
 
-  <!-- 4. INC LOGO -->
   <section>
     <div class="ea-play-section">
       <div class="ea-play-inner">
-          <div>
-			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="width:100%;object-fit:contain">
-
-          </div>
+        <h3 class="row-section-title">INC Engine</h3>
+        <p style="font-size:18px;font-weight:300;color:var(--text-muted);max-width:640px;margin-bottom:48px;">A fully modular game engine built entirely on INC. Every system is an isolated, hot-reloadable module. No monolithic binary. No fixed runtime layout.</p>
       </div>
     </div>
   </section>
 
-<section>
-  <div class="ea-play-section">
-    <div class="ea-play-inner">
-      <div>
-        <h3 class="row-section-title">Universal Module Execution Infrastructure Kernel™</h3>
-        <p style="font-size:28px;font-weight:500;line-height:1.5;max-width:720px;margin-bottom:20px;">A freestanding runtime that hosts native engines through a single, stable ABI interface.</p>
-        <p style="font-size:22px;font-weight:300;line-height:1.7;max-width:640px;color:var(--text-muted);margin-bottom:16px;">A high-performance platform for modular engines, applications, and systems. The INC SDK enables developers to build modules that run isolated, hot-reloadable, and execute at near-zero input latency with maximum speed. Lightweight and dependency-free.</p>
-        <p style="font-size:15px;font-weight:600;line-height:1.9;max-width:640px;color:var(--text-muted);margin-bottom:32px;">Licensed commercially for indies, AAA studios, and proprietary engines.</p>
-        <div style="display:flex;gap:32px;flex-wrap:wrap;">
-          <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Developer SDK &rarr;</a>
-          <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">Contact &rarr;</a>
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <section>
+    <div class="media-heroes-wrapper">
+      <div class="media-hero-grid">
+        <div class="media-hero-thumb">
+          <img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC Engine">
+        </div>
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <span class="tag tag-solid">Prototype</span>
+            <span class="tag tag-outline">Active Development</span>
+          </div>
+          <h2 class="media-hero-heading">INC Engine</h2>
+          <p class="media-hero-body">A working prototype of a fully modular game engine. Runs headless. Swappable renderer — DX11, Vulkan, or nothing. Player, level, window, input — all isolated modules loaded and managed by the INC kernel at runtime.</p>
+          <p class="media-hero-body">No module knows about another. The kernel owns nothing except the interface table. Everything can be replaced at runtime without restarting.</p>
+          <p style="font-size:13px;color:var(--text-faint);">Not yet released. In active development.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+        <h3 style="font-size:22px;font-weight:600;margin-bottom:32px;color:var(--text-primary);">Current Systems</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:900px;">
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Renderer</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">DX11</p>
+            <p style="font-size:13px;color:var(--text-muted);">Swappable at runtime. Vulkan planned.</p>
+          </div>
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Platform</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">Windows / Linux</p>
+            <p style="font-size:13px;color:var(--text-muted);">Input, window, timing — isolated module.</p>
+          </div>
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Execution</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">Headless Ready</p>
+            <p style="font-size:13px;color:var(--text-muted);">Runs without renderer. Modules load on demand.</p>
+          </div>
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Hot Reload</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">Runtime Swap</p>
+            <p style="font-size:13px;color:var(--text-muted);">Any module replaced without restart.</p>
+          </div>
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Input</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">Raw Input</p>
+            <p style="font-size:13px;color:var(--text-muted);">Near-zero latency. No middleware.</p>
+          </div>
+
+          <div style="background:var(--bg-card);border-radius:8px;padding:24px;">
+            <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;">Architecture</p>
+            <p style="font-size:16px;font-weight:600;margin-bottom:8px;">Zero Coupling</p>
+            <p style="font-size:13px;color:var(--text-muted);">Modules communicate through interfaces only.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+        <p style="font-size:15px;font-weight:300;color:var(--text-faint);max-width:640px;">Engine release details and screenshots coming. Built on the same kernel that runs ioquake3, dhewm3, and X-Ray Monolith.</p>
+      </div>
+    </div>
+  </section>
 
 </main>
 
