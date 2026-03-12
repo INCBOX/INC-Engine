@@ -29,12 +29,12 @@
 <nav class="local-nav">
   <div class="local-nav-inner">
  
-    <button class="local-nav-btn" style="gap:22px;padding-left:0;">
-      <a href="https://incbox.github.io/INC/" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);">INC</a>
-      <a href="https://incbox.github.io/INC/engine" target="_blank" style="font-size:14px;font-weight:300;color:var(--text-muted);">Engine</a>
-      <a href="https://incbox.github.io/INC/modules" target="_blank" style="font-size:14px;font-weight:300;color:var(--text-muted);">Modules</a>
-      <a href="https://incbox.github.io/INC/sdk" target="_blank" style="font-size:14px;font-weight:300;color:var(--text-muted);">SDK</a>
-    </button>
+<button class="local-nav-btn" style="gap:22px;padding-left:0;">
+  <a href="https://incbox.github.io/INC/" style="font-size:14px;font-weight:300;color:var(--text-muted);">INC</a>
+  <a href="https://incbox.github.io/INC/engine.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">Engine</a>
+  <a href="https://incbox.github.io/INC/modules.html" style="font-size:14px;font-weight:600;color:var(--text-primary);">Modules</a>
+  <a href="https://incbox.github.io/INC/sdk.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">SDK</a>
+</button>
 
     <button class="local-nav-btn">
       <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);">Contact</a>
@@ -46,34 +46,95 @@
 
 <main>
 
-  <!-- 4. INC LOGO -->
   <section>
     <div class="ea-play-section">
       <div class="ea-play-inner">
-          <div>
-			<img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="width:100%;object-fit:contain">
-
-          </div>
+        <h3 class="row-section-title">Modules</h3>
+        <p style="font-size:18px;font-weight:300;color:var(--text-muted);max-width:640px;margin-bottom:48px;">Native engines and systems running on INC. Each module is isolated, hot-reloadable, and executed through a single stable ABI interface.</p>
       </div>
     </div>
   </section>
 
-<section>
-  <div class="ea-play-section">
-    <div class="ea-play-inner">
-      <div>
-        <h3 class="row-section-title">Universal Module Execution Infrastructure Kernel™</h3>
-        <p style="font-size:28px;font-weight:500;line-height:1.5;max-width:720px;margin-bottom:20px;">A freestanding runtime that hosts native engines through a single, stable ABI interface.</p>
-        <p style="font-size:22px;font-weight:300;line-height:1.7;max-width:640px;color:var(--text-muted);margin-bottom:16px;">A high-performance platform for modular engines, applications, and systems. The INC SDK enables developers to build modules that run isolated, hot-reloadable, and execute at near-zero input latency with maximum speed. Lightweight and dependency-free.</p>
-        <p style="font-size:15px;font-weight:600;line-height:1.9;max-width:640px;color:var(--text-muted);margin-bottom:32px;">Licensed commercially for indies, AAA studios, and proprietary engines.</p>
-        <div style="display:flex;gap:32px;flex-wrap:wrap;">
-          <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Developer SDK &rarr;</a>
-          <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">Contact &rarr;</a>
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <!-- X-RAY MONOLITH -->
+  <section>
+    <div class="media-heroes-wrapper">
+      <div class="media-hero-grid">
+        <div class="media-hero-thumb">
+          <img src="https://media.moddb.com/images/members/5/4513/4512957/profile/splash_INC.png" alt="X-Ray Monolith">
+        </div>
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <span class="tag tag-solid">Released</span>
+            <span class="tag tag-outline">X-Ray Engine</span>
+            <span class="tag tag-outline">Early Access</span>
+          </div>
+          <h2 class="media-hero-heading">X-Ray Monolith</h2>
+          <p class="media-hero-body">S.T.A.L.K.E.R. Anomaly executed inside INC. The X-Ray engine runs as a hosted module — source code untouched. Same game. Different foundation.</p>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            <a href="https://github.com/INCBOX/INC-Engine/releases/tag/X-RayMonolith" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Download &rarr;</a>
+            <a href="https://www.moddb.com/members/incbox" target="_blank" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">ModDB &rarr;</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <!-- IOQUAKE3 -->
+  <section>
+    <div class="media-heroes-wrapper">
+      <div class="media-hero-grid">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <span class="tag tag-outline">id Tech 3</span>
+            <span class="tag tag-outline">Internal</span>
+          </div>
+          <h2 class="media-hero-heading">ioquake3</h2>
+          <p class="media-hero-body">id Tech 3 running as an INC module. The engine executes inside the INC runtime with lower latency and more controlled scheduling than its original bootstrap. Source code untouched.</p>
+          <p style="font-size:13px;color:var(--text-faint);margin-top:8px;">No public release at this time.</p>
+        </div>
+        <div class="media-hero-thumb">
+          <img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="ioquake3">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <!-- DHEWM3 -->
+  <section>
+    <div class="media-heroes-wrapper">
+      <div class="media-hero-grid">
+        <div class="media-hero-thumb">
+          <img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="dhewm3">
+        </div>
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <span class="tag tag-outline">id Tech 4</span>
+            <span class="tag tag-outline">Internal</span>
+          </div>
+          <h2 class="media-hero-heading">dhewm3</h2>
+          <p class="media-hero-body">id Tech 4 running as an INC module. Doom 3 engine hosted inside the INC runtime. Source code untouched.</p>
+          <p style="font-size:13px;color:var(--text-faint);margin-top:8px;">No public release at this time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider-wrap"><div class="section-divider"></div></div>
+
+  <!-- COMING SOON -->
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+        <p style="font-size:15px;font-weight:300;color:var(--text-faint);max-width:640px;">Additional modules in development. Any engine. Any system. One runtime.</p>
+      </div>
+    </div>
+  </section>
 
 </main>
 
