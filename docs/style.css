@@ -112,7 +112,7 @@
   .play-overlay:hover { background: rgba(0,0,0,0.38); }
   .play-circle { width: 64px; height: 64px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
   .play-circle svg { margin-left: 4px; }
-  .media-hero-heading { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.3px; }
+  .media-hero-heading { font-size: 28px; font-weight: 600; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.3px; }
   .media-hero-body { font-size: 16px; color: var(--text-muted); line-height: 1.65; margin-bottom: 24px; }
 
   /* ─── GAME CARDS ─── */
