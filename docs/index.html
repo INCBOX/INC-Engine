@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INC™</title>
+<title>INC</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -29,7 +29,7 @@
 <nav class="local-nav">
   <div class="local-nav-inner">
  
-	<button class="local-nav-btn" style="gap:22px;padding-left:0;">
+	<button class="local-nav-btn" style="gap:20px;padding-left:0;">
 		<a href="https://incbox.github.io/INC/" style="font-size:14px;font-weight:600;color:var(--text-primary);">INC</a>
 		<a href="https://incbox.github.io/INC/engine.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">Engine</a>
 		<a href="https://incbox.github.io/INC/modules.html" style="font-size:14px;font-weight:300;color:var(--text-muted);">Modules</a>
@@ -46,11 +46,11 @@
 
 <main>
 
-  <!-- INC LOGO -->
+  <!-- HERO: full-bleed logo + single punchy line -->
   <section>
-    <div class="ea-play-section">
+    <div class="ea-play-section" style="padding-top:140px;padding-bottom:0;">
       <div class="ea-play-inner">
-        <img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="width:100%;object-fit:contain">
+        <img src="https://raw.githubusercontent.com/INCBOX/INC/refs/heads/engine/resources/assets/splash_INC_clean.png" alt="INC logo." class="hero-logo" style="width:100%;object-fit:contain;">
       </div>
     </div>
   </section>
@@ -66,12 +66,60 @@
         <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:24px;">A high-performance capability bus replaces monolithic engines. Rendering, physics, audio, and networking run as isolated, hot-swappable modules, letting engines be assembled from interchangeable components that are fully interoperable.</p>
         <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">Middleware, AAA studios, and independent developers build once and deploy everywhere through INC modules — forming an open ecosystem of interoperable technology.</p>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+        <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;margin-bottom:56px;">How It Works</p>
+        <p style="font-size:42px;font-weight:200;line-height:1.3;margin-bottom:32px;">Two primitives. Any module finds any other.</p>
+        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">RegisterInterface and QueryInterface are the entire API surface. One module registers what it provides. Any other module queries for it at runtime. O(1) lookup. Hot-reload safe. No shared headers required.</p>
+
+        <!-- Code block -->
+        <div style="border:1px solid var(--divider);border-radius:4px;overflow:hidden;margin-bottom:64px;">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--divider);">
+            <span style="font-family:'SF Mono',monospace;font-weight:500;font-size:16px;color:var(--text-faint);">havok_module.c</span>
+          </div>
+          <pre style="padding:32px 42px;font-family:'SF Mono',monospace;font-weight:500;font-size:18px;line-height:2;color:var(--text-muted);overflow-x:auto;"><span style="color:#666;">/* middleware registers once, works in every INC project */</span>
+ctx->RegisterInterface(INTERFACE_HAVOK, &g_havok);
+<span style="color:#666;">/* engine consumes it — zero coupling, hot-reload safe */</span>
+IHavok* havok = ctx->QueryInterface(INTERFACE_HAVOK);
+if (havok) havok->StepSimulation(dt);</pre>
+        </div>
+
+        <!-- 3 steps -->
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--divider);">
+            <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">01</span>
+            <div>
+              <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Implement IModule</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Two functions. Init registers your interface, Shutdown cleans up. Kernel handles the rest.</p>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--divider);">
+            <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">02</span>
+            <div>
+              <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Register your interface</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Frozen ID, O(1) lookup. Any module in the runtime finds you instantly. No linking, no includes.</p>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);">
+            <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">03</span>
+            <div>
+              <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Drop the DLL</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Place your module in bin/. Kernel detects it, resolves dependencies, initializes in order. No restart.</p>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
   </section>
 
-  <!-- MARKETPLACE -->
+  <!-- MODULE ECOSYSTEM -->
   <section>
     <div class="ea-play-section">
       <div class="ea-play-inner">
@@ -98,18 +146,53 @@
         <div style="display:flex;flex-direction:column;">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Middleware</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Ship one binary to all engines. No custom SDK, no per-studio integration.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Ship one binary to every INC-hosted project. No custom SDK per studio. No per-engine integration work. Build once, distribute everywhere — freely, commercially, or privately.</p>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">AAA Studios</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Hot-reload core systems in production. No process restart. No rebuild.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Hot-reload rendering, physics, and audio in production without restarting the process. Swap the renderer while the simulation runs. Update game logic mid-session. No rebuild. No downtime.</p>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Indies &amp; Individuals</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Assemble engines from modules. Deploy professional-grade systems instantly.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Assemble a professional-grade engine from community modules. Start with a renderer and physics, add audio and networking when you need them. Each module is a drop-in. Nothing is mandatory.</p>
           </div>
           <div style="padding-top:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
             <p style="font-size:13px;font-weight:600;color:var(--text-faint);">Commercial license. Indies, studios, middleware authors.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section>
+    <div class="ea-play-section">
+      <div class="ea-play-inner">
+
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:40px;border-bottom:1px solid var(--divider);">
+          <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;">Pricing</p>
+          <p style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--text-faint);">Free to build. Pay when you ship.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
+            <p style="font-size:32px;font-weight:200;flex-shrink:0;">Personal</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Build freely. Create modules, engines, or tools — you own everything you make. Free for personal projects and open source. No credit card. No time limit.</p>
+            <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Get SDK &rarr;</a>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
+            <p style="font-size:32px;font-weight:200;flex-shrink:0;">Indie Studio</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Commercial shipping rights for studios under $1M annual revenue. Priority support, module certification, and early API access included.</p>
+            <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Contact &rarr;</a>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
+            <p style="font-size:32px;font-weight:200;flex-shrink:0;">Enterprise</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">For AAA studios and middleware authors. Source access options, dedicated integration support, reserved interface IDs, SLA and legal coverage.</p>
+            <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Contact Sales &rarr;</a>
+          </div>
+          <div style="padding-top:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <p style="font-size:13px;font-weight:300;color:var(--text-faint);">You own what you build. A license is only required to ship commercially.</p>
             <div style="display:flex;gap:32px;">
               <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Developer SDK &rarr;</a>
               <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">Contact &rarr;</a>
