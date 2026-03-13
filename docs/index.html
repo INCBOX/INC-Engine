@@ -78,14 +78,14 @@
         <p style="font-size:42px;font-weight:200;line-height:1.3;margin-bottom:32px;">Two primitives. Any module finds any other.</p>
         <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">RegisterInterface and QueryInterface are the entire API surface. One module registers what it provides. Any other module queries for it at runtime. O(1) lookup. Hot-reload safe. No shared headers required.</p>
 
-        <!-- Code block -->
+<!-- Code block -->
         <div style="border:1px solid var(--divider);border-radius:4px;overflow:hidden;margin-bottom:64px;">
           <div style="padding:20px 24px;border-bottom:1px solid var(--divider);">
             <span style="font-family:'SF Mono',monospace;font-weight:500;font-size:16px;color:var(--text-faint);">havok_module.c</span>
           </div>
-          <pre style="padding:32px 42px;font-family:'SF Mono',monospace;font-weight:500;font-size:18px;line-height:2;color:var(--text-muted);overflow-x:auto;"><span style="color:#666;">/* middleware registers once, works in every INC project */</span>
+          <pre style="padding:32px 42px;font-family:'SF Mono',monospace;font-weight:500;font-size:18px;line-height:2;color:var(--text-muted);overflow-x:auto;"><span style="color:rgba(255,255,255,0.3);font-weight:300;font-size:18px;">/* middleware registers once, works in every INC project */</span>
 ctx->RegisterInterface(INTERFACE_HAVOK, &g_havok);
-<span style="color:#666;">/* engine consumes it — zero coupling, hot-reload safe */</span>
+<span style="color:rgba(255,255,255,0.3);font-weight:300;font-size:18px;">/* engine consumes it — zero coupling, hot-reload safe */</span>
 IHavok* havok = ctx->QueryInterface(INTERFACE_HAVOK);
 if (havok) havok->StepSimulation(dt);</pre>
         </div>
