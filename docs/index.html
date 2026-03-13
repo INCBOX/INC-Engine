@@ -62,8 +62,8 @@
 
         <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;margin-bottom:56px;">Universal · Module · Infrastructure</p>
 
-        <p style="font-size:42px;font-weight:200;line-height:1.5;margin-bottom:24px;">A stable ABI forms the foundation, allowing technologies from different creators to coexist in the same runtime.</p>
-        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:24px;">A high-performance capability bus replaces monolithic engines — rendering, physics, audio, and networking run as isolated, hot-swappable modules, letting engines be assembled from fully interoperable components. Middleware, AAA studios, and indie developers build once and ship everywhere, forming an open ecosystem of interoperable technology</p>
+        <p style="font-size:42px;font-weight:200;line-height:1.5;margin-bottom:24px;">A stable ABI forms the foundation. Technologies from independent vendors coexist in the same runtime.</p>
+        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:24px;">A high-performance capability bus replaces the monolithic engine. Rendering, physics, audio, and networking run as isolated, hot-swappable modules — assembled into engines from fully interoperable components. A module built once runs across every INC-hosted project. Middleware, AAA studios, and indie developers publish once. The ecosystem is open — distribute freely, commercially, or keep modules private.</p>
 
       </div>
     </div>
@@ -75,7 +75,7 @@
       <div class="ea-play-inner">
         <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;margin-bottom:56px;">How It Works</p>
         <p style="font-size:42px;font-weight:200;line-height:1.3;margin-bottom:32px;">Two primitives. Any module finds any other.</p>
-        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">RegisterInterface and QueryInterface are the entire API surface. One module registers what it provides. Any other module queries for it at runtime. O(1) lookup. Hot-reload safe. No shared headers required.</p>
+        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">RegisterInterface and QueryInterface are the complete API surface. A module registers what it exports. Any other module resolves it at runtime. O(1) lookup. ABI-stable. No shared headers, no link-time coupling.</p>
 
 <!-- Code block -->
         <div style="border:1px solid var(--divider);border-radius:4px;overflow:hidden;margin-bottom:64px;">
@@ -95,21 +95,21 @@ if (havok) havok->StepSimulation(dt);</pre>
             <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">01</span>
             <div>
               <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Implement IModule</p>
-              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Two functions. Init registers your interface, Shutdown cleans up. Kernel handles the rest.</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Implement Init and Shutdown. The kernel manages load order, versioning, and hot-reload.</p>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:80px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--divider);">
             <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">02</span>
             <div>
               <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Register your interface</p>
-              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Frozen ID, O(1) lookup. Any module in the runtime finds you instantly. No linking, no includes.</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Assign a stable numeric ID. Any module in the process resolves it in constant time.</p>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:80px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);">
             <span style="font-family:'SF Mono',monospace;font-size:14px;color:var(--text-faint);padding-top:3px;">03</span>
             <div>
               <p style="font-size:16px;font-weight:400;margin-bottom:8px;">Drop the DLL</p>
-              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Place your module in bin/. Kernel detects it, resolves dependencies, initializes in order. No restart.</p>
+              <p style="font-size:14px;font-weight:300;line-height:1.7;color:var(--text-faint);">Place the compiled module in bin/. The kernel detects it, resolves dependencies, and initializes in order.</p>
             </div>
           </div>
         </div>
@@ -125,8 +125,8 @@ if (havok) havok->StepSimulation(dt);</pre>
 
         <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;margin-bottom:56px;">Module Ecosystem</p>
 
-        <p style="font-size:42px;font-weight:200;line-height:1.3;margin-bottom:32px;">Build modules — middleware, tools, or systems — that run across every INC-hosted project.</p>
-        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">Distribute freely, commercially, or keep them private. Any module built to the INC interface works across every INC-hosted project.</p>
+        <p style="font-size:42px;font-weight:200;line-height:1.3;margin-bottom:32px;">Modules built to the INC interface are binary-compatible across every INC-hosted runtime.</p>
+        <p style="font-size:32px;font-weight:200;line-height:1.5;color:var(--text-faint);margin-bottom:64px;">Distribution is unrestricted. Publish open source, sell commercially, or keep internal. The interface contract is the only requirement.</p>
 
       </div>
     </div>
@@ -139,21 +139,20 @@ if (havok) havok->StepSimulation(dt);</pre>
 
         <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:40px;border-bottom:1px solid var(--divider);">
           <p style="font-size:16px;font-weight:300;color:var(--text-faint);letter-spacing:4px;text-transform:uppercase;">Who is it for</p>
-          <p style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--text-faint);">03 Targets</p>
         </div>
 
         <div style="display:flex;flex-direction:column;">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Middleware</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Ship one binary to every INC-hosted project. No custom SDK per studio. No per-engine integration work. Build once, distribute everywhere — freely, commercially, or privately.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">One binary. Every INC-hosted project. No per-engine integration, no custom SDK per studio.</p>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">AAA Studios</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Hot-reload rendering, physics, and audio in production without restarting the process. Swap the renderer while the simulation runs. Update game logic mid-session. No rebuild. No downtime.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Replace subsystems without process restart. The renderer, physics, and audio are modules — swap any of them while the runtime is live.</p>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Indies &amp; Individuals</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Assemble a professional-grade engine from community modules. Start with a renderer and physics, add audio and networking when you need them. Each module is a drop-in. Nothing is mandatory.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);text-align:right;max-width:480px;">Compose an engine from discrete modules. Add capabilities incrementally. Nothing is linked at compile time.</p>
           </div>
           <div style="padding-top:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
             <p style="font-size:13px;font-weight:600;color:var(--text-faint);">Commercial license. Indies, studios, middleware authors.</p>
@@ -177,21 +176,21 @@ if (havok) havok->StepSimulation(dt);</pre>
         <div style="display:flex;flex-direction:column;">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Personal</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Build freely. Create modules, engines, or tools — you own everything you make. Free for personal projects and open source. No credit card. No time limit.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Full SDK. All targets. Unrestricted for personal and open source use.</p>
             <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Get SDK &rarr;</a>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Indie Studio</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Commercial shipping rights for studios under $1M annual revenue. Priority support, module certification, and early API access included.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Commercial distribution rights for studios under $1M annual revenue. Includes priority support and early API access.</p>
             <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Contact &rarr;</a>
           </div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:40px;padding:28px 0;border-bottom:1px solid var(--divider);">
             <p style="font-size:32px;font-weight:200;flex-shrink:0;">Enterprise</p>
-            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">For AAA studios and middleware authors. Source access options, dedicated integration support, reserved interface IDs, SLA and legal coverage.</p>
+            <p style="font-size:16px;font-weight:200;line-height:1.6;color:var(--text-faint);max-width:480px;">Source access, reserved interface IDs, dedicated integration support, SLA coverage..</p>
             <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;white-space:nowrap;flex-shrink:0;">Contact Sales &rarr;</a>
           </div>
           <div style="padding-top:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-            <p style="font-size:13px;font-weight:300;color:var(--text-faint);">You own what you build. A license is only required to ship commercially.</p>
+            <p style="font-size:13px;font-weight:300;color:var(--text-faint);">You own your modules. A license is required only for commercial distribution of products built on INC.</p>
             <div style="display:flex;gap:32px;">
               <a href="https://github.com/INCBOX/INC" target="_blank" style="font-size:14px;font-weight:600;color:var(--text-primary);border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;">Developer SDK &rarr;</a>
               <a href="mailto:teamincbox@gmail.com" style="font-size:14px;font-weight:300;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:2px;">Contact &rarr;</a>
